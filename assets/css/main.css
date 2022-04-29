@@ -255,6 +255,10 @@ input, select, textarea {
 			align-items: flex-end;
 		}
 
+		.row.aln-content-center{
+			align-content: center;
+		}
+
 		.row > .imp {
 			order: -1;
 		}
@@ -1836,7 +1840,7 @@ input, select, textarea {
 	}
 
 		.feature-list section {
-			border-top: solid 1px #eee;
+			/* border-top: solid 1px #eee; */
 			padding-top: 3em;
 			padding-left: 5em;
 			position: relative;
