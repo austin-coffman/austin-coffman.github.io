@@ -122,7 +122,8 @@ body {
     border: none;
     flex-grow: 1;
     overflow: auto;
-    margin-right: -18px;
+    margin-right: -17px;
+    margin-bottom: -17px;
   }
 
   .iframe-container {

@@ -2,7 +2,7 @@ $(function() {
     var data = [
       { 
             action: 'type',
-            strings: ['hi there, need a developer?', '', 'hrm.. let me show you some of my work', '', '<br>'],
+            strings: ['hi there, need a developer?', '', 'hrm.. let me show you my work', '', '<br>'],
             postDelay: 1000
         },
         

@@ -1624,6 +1624,7 @@ input, select, textarea {
 			width: 100%;
 			overflow: hidden;
 			max-height: 150px;
+			min-height: 150px;
 			margin: 0 0 2em 0;
 		}
 
@@ -1959,7 +1960,6 @@ input, select, textarea {
 
 	.blur-img{
 		filter: blur(1px);
-	
 	}
 
 /* Wrapper */
