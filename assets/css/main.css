@@ -1628,6 +1628,10 @@ input, select, textarea {
 			margin: 0 0 2em 0;
 		}
 
+		.featured-p {
+			min-height: 100px;
+		}
+
 /* Button */
 
 	input[type="button"],
