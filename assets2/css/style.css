@@ -296,8 +296,9 @@ h6 {
 # Sections General
 --------------------------------------------------------------*/
 section {
-  padding: 60px 0;
+  /* padding: 60px 0; */
   overflow: hidden;
+  padding: 1rem;
 }
 
 .section-bg-light {
@@ -563,6 +564,14 @@ section {
   position: relative;
   overflow: hidden;
   z-index: 1;
+
+}
+
+.portfolio .portfolio-wrap .portfolio-header {
+  text-align: center;
+  color: lightgray;
+  background-color: #2850FC;
+  padding: 0.5rem;
 }
 
 .portfolio .portfolio-wrap::before {
@@ -594,17 +603,18 @@ section {
   color: #fff;
   font-size: 28px;
   text-align: center;
-  background: rgba(20, 157, 221, 0.75);
+  background: #2850FC;
   transition: 0.3s;
-  width: 50%;
+  width: 100%;
 }
 
 .portfolio .portfolio-wrap .portfolio-links a:hover {
-  background: rgba(20, 157, 221, 0.95);
+  background: lightgray;
+  color: #2850FC;
 }
 
 .portfolio .portfolio-wrap .portfolio-links a+a {
-  border-left: 1px solid #37b3ed;
+  border-left: 1px solid #2850FC;
 }
 
 .portfolio .portfolio-wrap:hover::before {
