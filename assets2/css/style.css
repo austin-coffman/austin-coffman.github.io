@@ -601,26 +601,26 @@ section {
   opacity: 1;
   left: 0;
   right: 0;
-  bottom: -60px;
+  bottom: -180px;
+  background: lightgray;
   z-index: 3;
+  height: 100%;
   position: absolute;
   transition: all ease-in-out 0.3s;
   display: flex;
   justify-content: center;
+  vertical-align: center;
 }
 
 .portfolio .portfolio-wrap .portfolio-links a {
-  color: white;
+  
   font-size: 28px;
   text-align: center;
-  background: #2850FC;
+  vertical-align: center;
+  /* background: #2850FC; */
   transition: 0.3s;
   width: 100%;
-}
-
-.portfolio .portfolio-wrap .portfolio-links a:hover {
-  background: lightgray;
-  color: #2850FC;
+  margin: auto;
 }
 
 .portfolio .portfolio-wrap .portfolio-links a+a {
