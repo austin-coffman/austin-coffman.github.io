@@ -26,6 +26,11 @@
 
   <!-- Template Main CSS File -->
   <link href="assets2/css/style.css" rel="stylesheet">
+
+  
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script src="assets2/js/contact.js"></script>
 </head>
 
 <body>
@@ -55,7 +60,7 @@
           <li><a href="#soft-skills" class="nav-link scrollto"><i class="bx bxs-conversation"></i> <span>Soft Skills</span></a></li>
           <li><a href="#resume" class="nav-link scrollto"><i class="bx bx-file-blank"></i> <span>Resume</span></a></li>
           <li><a href="#portfolio" class="nav-link scrollto"><i class="bx bx-book-content"></i> <span>Portfolio</span></a></li>
-          <!-- <li><a href="#contact" class="nav-link scrollto"><i class="bx bx-envelope"></i> <span>Contact</span></a></li> -->
+          <li><a href="#contact" class="nav-link scrollto"><i class="bx bx-envelope"></i> <span>Contact</span></a></li>
         </ul>
       </nav><!-- .nav-menu -->
     </div>
@@ -402,6 +407,17 @@
             </div>
           </div>
 
+          <div class="col-lg-4 col-md-6 portfolio-item filter-professional">
+            <div class="portfolio-wrap">
+              <div>
+                <img src="images/pi-race-strategy/pi-race-strategy-0.jpg" class="img-fluid" alt="">
+              </div>
+              <div class="portfolio-links">
+                <a href="pi-race-strategy-details.html" title="More Details">Pi Race Strategy</a>
+              </div>
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -538,7 +554,7 @@
     <!-- End Testimonials Section -->
 
     <!-- ======= Contact Section ======= -->
-    <!-- <section id="contact" class="contact section-bg-light">
+    <section id="contact" class="contact section-bg-light">
       <div class="container">
 
         <div class="section-title">
@@ -551,15 +567,16 @@
         
 
           <div class="col-lg-7 mt-5 mt-lg-0 d-flex align-items-stretch">
-            <form action="forms/contact.php" method="post" role="form" class="php-email-form">
+            <form id="contact-form" class="php-email-form">
               <div class="row">
                 <div class="form-group col-md-6">
+                  <input type="hidden" name="contact_number">
                   <label for="name">Your Name</label>
-                  <input type="text" name="name" class="form-control" id="name" required>
+                  <input type="text" name="from_name" class="form-control" id="name" required>
                 </div>
                 <div class="form-group col-md-6">
                   <label for="name">Your Email</label>
-                  <input type="email" class="form-control" name="email" id="email" required>
+                  <input type="email" class="form-control" name="reply_to" id="email" required>
                 </div>
               </div>
               <div class="form-group">
@@ -571,9 +588,9 @@
                 <textarea class="form-control" name="message" rows="10" required></textarea>
               </div>
               <div class="my-3">
-                <div class="loading">Loading</div>
-                <div class="error-message"></div>
-                <div class="sent-message">Your message has been sent. Thank you!</div>
+                <div id="loading" class="loading disable">Loading</div>
+                <div id="error-message" class="error-message disable"></div>
+                <div id="sent-message" class="sent-message disable">Your message has been sent. Thank you!</div>
               </div>
               <div class="text-center"><button type="submit">Send Message</button></div>
             </form>
@@ -582,7 +599,7 @@
         </div>
 
       </div>
-    </section> -->
+    </section>
     <!-- End Contact Section -->
 
   </main><!-- End #main -->
@@ -615,7 +632,6 @@
   <script src="assets2/vendor/swiper/swiper-bundle.min.js"></script>
   <script src="assets2/vendor/typed.js/typed.min.js"></script>
   <script src="assets2/vendor/waypoints/noframework.waypoints.js"></script>
-  <script src="assets2/vendor/php-email-form/validate.js"></script>
 
   <!-- Template Main JS File -->
   <script src="assets2/js/main.js"></script>
