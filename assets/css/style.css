@@ -602,7 +602,6 @@ section {
   left: 0;
   right: 0;
   bottom: -180px;
-  background: lightgray;
   z-index: 3;
   height: 100%;
   position: absolute;
@@ -614,12 +613,13 @@ section {
 
 .portfolio .portfolio-wrap .portfolio-links a {
   
-  font-size: 20px;
+  font-size: 22px;
   padding-top: 75px;
   text-align: center;
   vertical-align: center;
   background: #2850FC;
-  transition: 0.7s;
+  transition: 0.1s;
+  opacity: 0.85;
   width: 100%;
   height: 100%;
   margin: auto;
