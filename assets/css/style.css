@@ -14,7 +14,7 @@ body {
 }
 
 a {
-  color: #2850FC;
+  color: #5E04A8 ;
   text-decoration: none;
 }
 
@@ -42,7 +42,7 @@ h6 {
   right: 15px;
   bottom: 15px;
   z-index: 996;
-  background: #2850FC;
+  background: #5E04A8 ;
   width: 40px;
   height: 40px;
   border-radius: 50px;
@@ -57,8 +57,8 @@ h6 {
 
 .back-to-top:hover {
   background: lightgray;
-  color: #2850FC;
-  border: 1px solid #2850FC;
+  color: #5E04A8 ;
+  border: 1px solid #5E04A8 ;
 }
 
 .back-to-top.active {
@@ -122,7 +122,7 @@ h6 {
 }
 
 #header .profile .social-links a:hover {
-  background: #2850FC;
+  background: #5E04A8 ;
   color: #fff;
   text-decoration: none;
 }
@@ -190,7 +190,7 @@ h6 {
 .nav-menu .active i,
 .nav-menu .active:focus i,
 .nav-menu li:hover>a i {
-  color: #2850FC;
+  color: #5E04A8 ;
 }
 
 /* Mobile Navigation */
@@ -203,7 +203,7 @@ h6 {
   font-size: 24px;
   transition: all 0.4s;
   outline: none !important;
-  background-color: #2850FC;
+  background-color: #5E04A8 ;
   color: #fff;
   width: 40px;
   height: 40px;
@@ -270,7 +270,7 @@ h6 {
   color: #fff;
   padding-bottom: 4px;
   letter-spacing: 1px;
-  border-bottom: 3px solid #2850FC;
+  border-bottom: 3px solid #5E04A8 ;
 }
 
 @media (min-width: 1024px) {
@@ -306,7 +306,7 @@ section {
 }
 
 .section-bg-dark {
-  background: #2850FC;
+  background: #5E04A8 ;
 }
 
 .section-title {
@@ -319,7 +319,7 @@ section {
   margin-bottom: 20px;
   padding-bottom: 20px;
   position: relative;
-  color: #2850FC;
+  color: #5E04A8 ;
 }
 
 .section-title h2::after {
@@ -328,7 +328,7 @@ section {
   display: block;
   width: 50px;
   height: 3px;
-  background: #2850FC;
+  background: #5E04A8 ;
   bottom: 0;
   left: 0;
 }
@@ -343,7 +343,7 @@ section {
 .about .content h3 {
   font-weight: 700;
   font-size: 26px;
-  color: #2850FC;
+  color: #5E04A8 ;
 }
 
 .about .content ul {
@@ -364,7 +364,7 @@ section {
 .about .content ul i {
   font-size: 16px;
   margin-right: 5px;
-  color: #2850FC;
+  color: #5E04A8 ;
   line-height: 0;
 }
 
@@ -387,7 +387,7 @@ section {
 .facts .count-box i {
   display: block;
   font-size: 44px;
-  color: #2850FC;
+  color: #5E04A8 ;
   float: left;
   line-height: 0;
 }
@@ -457,7 +457,7 @@ section {
   width: 1px;
   height: 10px;
   transition: 0.9s;
-  background-color: #2850FC;
+  background-color: #5E04A8 ;
 }
 
 /*--------------------------------------------------------------
@@ -468,13 +468,13 @@ section {
   font-weight: 700;
   margin-top: 20px;
   margin-bottom: 20px;
-  color: #2850FC;
+  color: #5E04A8 ;
 }
 
 .resume .resume-item {
   padding: 0 0 20px 20px;
   margin-top: -2px;
-  border-left: 2px solid #2850FC;
+  border-left: 2px solid #5E04A8 ;
   position: relative;
 }
 
@@ -562,7 +562,7 @@ section {
 
 .portfolio #portfolio-flters li:hover,
 .portfolio #portfolio-flters li.filter-active {
-  color: #2850FC;
+  color: #5E04A8 ;
 }
 
 .portfolio #portfolio-flters li:last-child {
@@ -580,29 +580,29 @@ section {
 .portfolio .portfolio-wrap .portfolio-header {
   text-align: center;
   color: lightgray;
-  background-color: #2850FC;
+  background-color: #5E04A8 ;
   padding: 0.5rem;
 }
 
 .portfolio .card-button {
-  background: #2850FC;
+  background: #5E04A8 ;
   border: 0;
   padding: 10px 24px;
   color: #fff;
   transition: 0.4s;
   border-radius: 4px;
-  border: 1px solid #2850FC;
+  border: 1px solid #5E04A8 ;
 }
 
 .portfolio .card-button:hover {
   background: lightgray;
-  color: #2850FC;
-  border: 1px solid #2850FC;
+  color: #5E04A8 ;
+  border: 1px solid #5E04A8 ;
 }
 
 
 .portfolio .portfolio-wrap .portfolio-links a+a {
-  border-left: 1px solid #2850FC;
+  border-left: 1px solid #5E04A8 ;
 }
 
 .portfolio .portfolio-wrap:hover::before {
@@ -640,11 +640,11 @@ section {
   height: 12px;
   background-color: lightgray;
   opacity: 1;
-  border: 1px solid #2850FC;
+  border: 1px solid #5E04A8 ;
 }
 
 .portfolio-details .portfolio-details-slider .swiper-pagination .swiper-pagination-bullet-active {
-  background-color: #2850FC;
+  background-color: #5E04A8 ;
 }
 
 .portfolio-details .portfolio-info {
@@ -699,10 +699,10 @@ section {
   justify-content: center;
   width: 54px;
   height: 54px;
-  background: #2850FC;
+  background: #5E04A8 ;
   border-radius: 50%;
   transition: 0.5s;
-  border: 1px solid #2850FC;
+  border: 1px solid #5E04A8 ;
 }
 
 .services .icon i {
@@ -716,7 +716,7 @@ section {
 }
 
 .services .icon-box:hover .icon i {
-  color: #2850FC;
+  color: #5E04A8 ;
 }
 
 .services .title {
@@ -731,7 +731,7 @@ section {
 }
 
 .services .title a:hover {
-  color: #2850FC;
+  color: #5E04A8 ;
 }
 
 .services .description {
@@ -825,11 +825,11 @@ section {
   height: 12px;
   background-color: #fff;
   opacity: 1;
-  border: 1px solid #2850FC;
+  border: 1px solid #5E04A8 ;
 }
 
 .testimonials .swiper-pagination .swiper-pagination-bullet-active {
-  background-color: #2850FC;
+  background-color: #5E04A8 ;
 }
 
 /*--------------------------------------------------------------
@@ -848,7 +848,7 @@ section {
 
 .contact .info i {
   font-size: 20px;
-  color: #2850FC;
+  color: #5E04A8 ;
   float: left;
   width: 44px;
   height: 44px;
@@ -872,7 +872,7 @@ section {
   padding: 0 0 10px 60px;
   margin-bottom: 20px;
   font-size: 14px;
-  color: #2850FC;
+  color: #5E04A8 ;
 }
 
 .contact .info .email p {
@@ -899,14 +899,14 @@ section {
 }
 
 .contact .info .social-links a:hover {
-  background: #2850FC;
+  background: #5E04A8 ;
   color: #fff;
 }
 
 .contact .info .email:hover i,
 .contact .info .address:hover i,
 .contact .info .phone:hover i {
-  background: #2850FC;
+  background: #5E04A8 ;
   color: #fff;
 }
 
@@ -999,19 +999,19 @@ section {
 }
 
 .contact .php-email-form button[type=submit] {
-  background: #2850FC;
+  background: #5E04A8 ;
   border: 0;
   padding: 10px 24px;
   color: #fff;
   transition: 0.4s;
   border-radius: 4px;
-  border: 1px solid #2850FC;
+  border: 1px solid #5E04A8 ;
 }
 
 .contact .php-email-form button[type=submit]:hover {
   background: lightgray;
-  color: #2850FC;
-  border: 1px solid #2850FC;
+  color: #5E04A8 ;
+  border: 1px solid #5E04A8 ;
 }
 
 @-webkit-keyframes animate-loading {
