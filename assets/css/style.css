@@ -86,8 +86,8 @@ h6 {
 #header .profile img {
   margin: 15px auto;
   display: block;
-  width: 120px;
-  border: 8px solid #2c2f3f;
+  width: 180px;
+  border: 4px solid #2c2f3f;
 }
 
 #header .profile h1 {
@@ -420,7 +420,7 @@ section {
 }
 
 .facts .count-box a:hover {
-  color: #1f5297;
+  color: #5E04A8;
 }
 
 /*--------------------------------------------------------------
@@ -517,7 +517,7 @@ section {
   left: -9px;
   top: 0;
   background: #fff;
-  border: 2px solid #1f5297;
+  border: 2px solid #5E04A8;
 }
 
 /*--------------------------------------------------------------
