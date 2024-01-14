@@ -600,6 +600,13 @@ section {
   border: 1px solid #5E04A8 ;
 }
 
+.portfolio .card-container {
+  min-height: 250px;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
 
 .portfolio .portfolio-wrap .portfolio-links a+a {
   border-left: 1px solid #5E04A8 ;
