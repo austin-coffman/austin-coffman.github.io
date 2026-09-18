@@ -4,28 +4,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Austin Coffman's personal portfolio site, hosted on GitHub Pages at the repo root. It is plain static HTML/CSS/JS built on the BootstrapMade **iPortfolio v3.8.1** template. There is no build step, package manager, linter, or test suite — `_config.yml` exists only to enable the `jekyll-seo-tag` plugin on GitHub Pages; Jekyll does no templating here.
+Austin Coffman's personal portfolio site, hosted on GitHub Pages at the repo root. Plain static HTML/CSS/JS — no build step, package manager, linter or test suite. `_config.yml` exists only to enable `jekyll-seo-tag` on GitHub Pages; Jekyll does no templating here. Deploy is automatic: push to `main` publishes.
+
+The home page is a live three.js scene: a GT3 R lapping a real track model, and the page scrolls as the lap. Detail pages are plain dark pages with no scene. Both share one design system.
 
 ## Running locally
 
-Open `index.html` directly in a browser, or serve the folder with any static server. The author's VS Code Live Server config uses port 5501 (`.vscode/settings.json`, gitignored). Deploy is automatic: push to `main` publishes.
+Serve the folder with any static server (ES modules and glTF loading need `http://`, not `file://`). `.claude/launch.json` starts `python -m http.server 5501`; the author's VS Code Live Server also uses 5501.
+
+three.js is loaded from jsdelivr through an import map in each page that needs it (`index.html`, `lab/*.html`). Google Fonts is the only other network dependency.
 
 ## Structure
 
-- `index.html` — the entire single-page site. Sections are `<section id="...">` blocks in this order: `hero`, `about`, `facts`, `technologies`, `soft-skills`, `resume`, `portfolio`, `testimonials`, `contact`. The sidebar nav (`#navbar`) links to these by hash; `assets/js/main.js` highlights the active link on scroll and smooth-scrolls on click (`.scrollto`), so a new section needs a matching `id` and nav entry.
-- `pages/<slug>-details.html` — one standalone page per portfolio project (`gps`, `amaro`, `eseat`, `terminal`, `pi-race-strategy`). All asset paths are `../`-relative and nav links point to `../index.html#<section>`.
-- `assets/css/style.css` — template stylesheet with small local additions (`.portfolio .card-button`, `.portfolio .card-container`, `.contact .php-email-form .disable`).
-- `assets/js/main.js` — unmodified template script (Typed.js hero, Waypoints skill bars, Isotope portfolio filter, GLightbox, Swiper sliders, AOS, PureCounter).
-- `assets/js/contact.js` — EmailJS contact-form handler (site-specific).
-- `assets/vendor/` — all third-party libraries are vendored; nothing is fetched at build time. The only CDN dependency is the EmailJS browser SDK in `index.html`'s `<head>`.
+- `index.html` — home. Sections: `hero`, `about`, `projects` (featured cards + "the log"), `contact`, separated by empty `.breather` gaps where the scene shows through. Inline module script wires scrolling, HUD, the Track settings panel, eased in-page navigation, and the loading curtain.
+- `about.html` — About & Résumé (experience timeline, awards, technologies, soft skills, education, contact).
+- `projects/index.html` — the full project log with a Play / Read / Watch filter; `projects/<slug>.html` — one page per project (`terminal.html` is the template). A project page is the blog post; there is no separate blog.
+- `design.html` — the design guide (internal, not linked). Renders every component from `site.css`; keep it truthful when changing styles.
+- `assets/css/site.css` — the design system: tokens, base type, nav, footer, components, detail-page shell. `assets/css/home.css` imports it and adds home-page-only rules (scene layers, HUD, Track panel, section backdrops).
+- `assets/js/scene.js` — the world: spline, sky/sun/weather, rain, light poles, cameras (helmet / hood / chase ride inside the player car), cars, the loading gate (`scene.ready`). `createTrackScene(canvas, { track, onProgress })`.
+- `assets/js/car.js` — `loadCarModel(url)` normalises any GLB/glTF car to one contract (forward +Z, hub-pivoted wheels, steering wheel, paint/livery, glow materials); `buildProceduralGT3()` is the fallback. `setCarPaint(car, hex|null)`.
+- `assets/js/track.js` — `loadTrackModel(url)`: render flags only, never edits geometry or textures.
+- `assets/models/` — `2024_porsche_992_gt3_r/` (CC BY 4.0), `drift_race_track_free/` (CC BY-ND 4.0 — must ship unmodified; no re-encoding, stripping or compression), `drift_track.path.json` (our traced driving line for the ring, 117 waypoints). Both are credited in the home footer; keep the credits if the models stay.
+- `assets/images/` — `headshot.jpeg`, favicon/touch icon, and `<slug>/<slug>-N.jpg` per project (`-0` is the card thumbnail, 16:10).
+- `lab/car.html` — car showroom (orbit, turntable, paint, tri count). `lab/track.html` — track lab: loads a track model, finds boundary loops, traces a centreline, exports `path.json`.
 
-## Conventions that span multiple files
+## Conventions
 
-**The header/nav is duplicated verbatim** in `index.html` and every `pages/*.html`. A nav change must be applied to all six files (the detail pages use `../index.html#...` hrefs and mark Portfolio as `active`).
-
-**Adding a portfolio project** touches three places:
-1. Images in `assets/images/<slug>/` named `<slug>-N.ext` — `-0` is the card thumbnail, `-1..N` go in the detail page's Swiper slider.
-2. A card in `index.html`'s `.portfolio-container` with class `portfolio-item filter-professional` or `filter-personal` (these classes are what the `#portfolio-flters` Isotope buttons match on) linking to `pages/<slug>-details.html`.
-3. A new `pages/<slug>-details.html`, most easily copied from an existing one (breadcrumb, "Project Details" list, "Project Images" slider).
-
-**Contact form** (`#contact-form` in `index.html`) is wired to EmailJS in `contact.js` with hardcoded public key / service ID / template ID. Input `name` attributes (`from_name`, `reply_to`, `subject`, `message`, hidden `contact_number`) must match the EmailJS template variables. Success/error feedback toggles the `disable` class on `#loading`, `#sent-message`, `#error-message`. Note `contact.js` is loaded in `<head>` and assigns `window.onload` directly — anything else that sets `window.onload` will clobber it.
+- **Nav and footer are duplicated per page** (`index.html`, `about.html`, `design.html`, `projects/*.html`). Nav is Projects · About · Contact; About and Contact point at the home page sections (`index.html#about`, `index.html#contact`), Projects at `projects/`. Change all copies together.
+- **Adding a project**: images under `assets/images/<slug>/`; copy `projects/terminal.html` to `projects/<slug>.html` (eyebrow `PROJECT NNN — BUILD · MON YYYY`, meta, story sectors, "Try it", pager); add a row to the log in `projects/index.html` (`<li data-kind="play|read|watch">`) and, if recent, to the home log; add a featured card on the home page and `projects/index.html` if it is showcase-worthy.
+- **Design rules live in `design.html`** — one amber accent, mono eyebrows, condensed display type, square corners, hairlines not shadows, no invented facts (unknowns stay as visible `[BRACKETS]`). Read it before restyling anything.
+- **Home page scroll** drives the car by distance in either direction (odometer), damped with a critically-damped spring; the camera aims in the car's own frame so it never looks backward. In-page links ride to their target and any user input cancels the ride. Defaults: 21:30, rain 85%, helmet cam.
+- **Cache-busting**: `index.html` imports `scene.js?v=N`; bump N when changing `scene.js` (browsers cache the module aggressively during local dev).
+- **Licences**: no game captures, no NC-licensed models, no third-party logos we did not license. Sponsor boards in the track model are hidden at render time (`hideMatch` in `track.js`).

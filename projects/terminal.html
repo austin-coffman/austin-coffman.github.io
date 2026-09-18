@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terminal in CSS — Austin Coffman</title>
+<meta name="description" content="A browser terminal built to get properly comfortable with CSS animation and vanilla JavaScript.">
+<link rel="icon" href="../assets/images/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/css/site.css">
+<style>
+  /* project pages: a hero figure, then a narrow reading column with full-width figures between */
+  .hero-figure { margin-top: var(--s-6); }
+  .hero-figure img { aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+  .story { display: flex; flex-direction: column; gap: var(--s-7); }
+  .story h2 { font-size: clamp(32px, 3.6vw, 44px); margin-bottom: var(--s-4); }
+  .story .full { width: min(100%, var(--col)); margin-left: 50%; transform: translateX(-50%); }
+  .callout { border-left: 2px solid var(--accent); padding: var(--s-3) var(--s-5); background: var(--panel); font-family: var(--display); font-size: 24px; text-transform: uppercase; line-height: 1.1; color: var(--ink); }
+  .try { display: flex; align-items: center; justify-content: space-between; gap: var(--s-5); padding: var(--s-6); background: var(--panel); border: 1px solid var(--line); flex-wrap: wrap; }
+  .try h3 { font-size: 34px; }
+  .try p { color: var(--soft); font-size: 15px; margin-top: 6px; }
+</style>
+</head>
+<body class="page-detail">
+
+<header class="nav">
+  <a class="brand" href="../index.html">Austin Coffman</a>
+  <nav>
+    <a href="./" class="current">Projects</a>
+    <a href="../index.html#about" class="muted">About</a>
+    <a href="../index.html#contact" class="muted">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <section class="page-head">
+    <div class="wrap">
+      <span class="eyebrow">Project 001 — build · Nov 2021</span>
+      <h1>Terminal in CSS.</h1>
+      <p class="lede">A browser terminal that talks back. A quick side project to get properly comfortable with CSS animation and vanilla JavaScript — no framework, no build step.</p>
+      <dl class="meta">
+        <div><dt>When</dt><dd>November 2021</dd></div>
+        <div><dt>Stack</dt><dd>HTML · CSS · JavaScript</dd></div>
+        <div><dt>Status</dt><dd>Live</dd></div>
+        <div><dt>Site</dt><dd><a href="https://austin-coffman.github.io/terminal-in-css">austin-coffman.github.io/terminal-in-css →</a></dd></div>
+      </dl>
+      <figure class="hero-figure">
+        <img src="../assets/images/terminal/terminal-0.jpg" alt="The terminal after a few commands: a fake directory listing and a prompt">
+        <figcaption>The prompt, mid-conversation.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap-narrow story">
+      <div>
+        <span class="eyebrow">Sector 1 — why</span>
+        <h2>The itch.</h2>
+        <div class="prose">
+          <p>Most of my day-job work lives behind an API. I wanted something small and visible where the entire point was the front end: how things move, how they respond, how it feels to type into it. A terminal is a perfect excuse — it’s all text, timing, and state.</p>
+          <p>[WHY A TERMINAL SPECIFICALLY — the thing you were curious about, or the reference you were chasing.]</p>
+        </div>
+      </div>
+
+      <div>
+        <span class="eyebrow">Sector 2 — how</span>
+        <h2>Built from the cursor up.</h2>
+        <div class="prose">
+          <p>The blinking cursor, the typewriter reveal and the window chrome are pure CSS animation; the command loop, history and responses are vanilla JavaScript. No dependencies — it was the whole point to feel each piece.</p>
+          <p>[TWO OR THREE SPECIFICS: the trickiest animation, how commands are parsed, what the “easter egg” commands are.]</p>
+        </div>
+        <pre class="code" style="margin-top: var(--s-5);">$ ls -l
+drwxr-xr-x   2 acoffman staff   Jan 05 2017  Desktop
+-rw-r--r--   1 acoffman staff   Jul 31 2020  webhooks
+$ [YOUR FAVOURITE COMMAND]</pre>
+      </div>
+
+      <figure class="full">
+        <img src="../assets/images/terminal/terminal-1.jpg" alt="Second screenshot of the terminal">
+        <figcaption>[CAPTION — what this screen shows]</figcaption>
+      </figure>
+
+      <div>
+        <span class="eyebrow">Sector 3 — what stuck</span>
+        <h2>Lessons.</h2>
+        <div class="prose">
+          <ul>
+            <li>[LESSON ONE — e.g. what CSS animation is good at, and where JS had to take over]</li>
+            <li>[LESSON TWO]</li>
+            <li>[SOMETHING YOU’D DO DIFFERENTLY]</li>
+          </ul>
+        </div>
+        <div class="callout" style="margin-top: var(--s-5);">“[ONE-LINE TAKEAWAY]”</div>
+      </div>
+
+      <div class="try">
+        <div>
+          <h3>Try it.</h3>
+          <p>It runs in the browser — type <code>help</code> to start.</p>
+        </div>
+        <a class="btn btn-primary" href="https://austin-coffman.github.io/terminal-in-css">Open the terminal →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <nav class="pager" aria-label="More projects">
+        <a href="./"><span class="label">← Back</span><strong>All projects</strong></a>
+        <a href="#"><span class="label">Next →</span><strong>[NEXT PROJECT]</strong></a>
+      </nav>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="checker"></div>
+    <div class="footer-row">
+      <a class="brand" href="../index.html" style="font-family: var(--display); font-size: 22px; text-transform: uppercase; color: var(--ink);">Austin Coffman</a>
+      <div class="links"><a href="../index.html#projects">Projects</a><a href="../about.html">About</a><a href="mailto:austincartercoffman@gmail.com">Email</a></div>
+    </div>
+    <div class="fine">© 2026 Austin Coffman.</div>
+  </div>
+</footer>
+
+</body>
+</html>

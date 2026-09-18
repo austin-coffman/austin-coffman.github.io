@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projects — Austin Coffman</title>
+<meta name="description" content="Everything Austin Coffman has built on his own time — apps, toys, experiments and the write-ups behind them.">
+<link rel="icon" href="../assets/images/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/css/site.css">
+<style>
+  .filters { display: flex; gap: var(--s-2); flex-wrap: wrap; margin-bottom: var(--s-6); }
+  .filters button { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); background: transparent; border: 1px solid var(--line); padding: 8px 12px; cursor: pointer; }
+  .filters button:hover { color: var(--ink); border-color: var(--line-strong); }
+  .filters button.on { color: var(--accent); border-color: var(--accent); }
+  .posts li[hidden] { display: none; }
+  .empty { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); padding: var(--s-6) 0; }
+</style>
+</head>
+<body class="page-detail">
+
+<header class="nav">
+  <a class="brand" href="../index.html">Austin Coffman</a>
+  <nav>
+    <a href="./" class="current">Projects</a>
+    <a href="../index.html#about" class="muted">About</a>
+    <a href="../index.html#contact" class="muted">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <section class="page-head">
+    <div class="wrap">
+      <span class="eyebrow">Sector 2 — projects</span>
+      <h1>Built on my<br>own time.</h1>
+      <p class="lede">Apps, toys, experiments, and the write-ups behind them. Every entry gets the same page: what it is, why it exists, what I learned, and a way to try it.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Featured</span>
+        <h2>The showcase.</h2>
+      </div>
+      <div class="grid-3">
+        <a class="card" href="terminal.html"><img src="../assets/images/terminal/terminal-0.jpg" alt="Terminal project"><span class="num">001 · Nov 2021 · CSS · JS</span><h3>Terminal in CSS</h3><p>A browser terminal that talks back — built to get properly comfortable with CSS animation and vanilla JavaScript.</p><span class="cta">Read the story →</span></a>
+        <a class="card" href="#"><span class="ph">[PROJECT IMAGE]</span><span class="num">002 · [DATE] · [STACK]</span><h3>[Showcase project]</h3><p>[ONE-LINE DESCRIPTION]</p><span class="cta">Read the story →</span></a>
+        <a class="card" href="#"><span class="ph">[PROJECT IMAGE]</span><span class="num">003 · [DATE] · [STACK]</span><h3>[Showcase project]</h3><p>[ONE-LINE DESCRIPTION]</p><span class="cta">Read the story →</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">The log</span>
+        <h2>Everything, newest first.</h2>
+      </div>
+      <div class="filters" role="group" aria-label="Filter projects">
+        <button class="on" data-kind="all">All</button>
+        <button data-kind="play">Play</button>
+        <button data-kind="read">Read</button>
+        <button data-kind="watch">Watch</button>
+      </div>
+      <ul class="posts" id="log">
+        <li data-kind="play"><a href="#"><small>[DATE]</small><span><strong>[Project title]</strong><em>[One-line summary]</em></span><b>PLAY</b></a></li>
+        <li data-kind="read"><a href="#"><small>[DATE]</small><span><strong>[Write-up title]</strong><em>[One-line summary]</em></span><b class="ghost">READ</b></a></li>
+        <li data-kind="watch"><a href="#"><small>[DATE]</small><span><strong>[Video or demo title]</strong><em>[One-line summary]</em></span><b class="ghost">WATCH</b></a></li>
+        <li data-kind="play"><a href="terminal.html"><small>2021-11</small><span><strong>Terminal in CSS</strong><em>A browser terminal that talks back — CSS animation and vanilla JS.</em></span><b>PLAY</b></a></li>
+      </ul>
+      <p class="empty" id="empty" hidden>Nothing here yet.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="checker"></div>
+    <div class="footer-row">
+      <a class="brand" href="../index.html" style="font-family: var(--display); font-size: 22px; text-transform: uppercase; color: var(--ink);">Austin Coffman</a>
+      <div class="links"><a href="./">Projects</a><a href="../about.html">About</a><a href="mailto:austincartercoffman@gmail.com">Email</a></div>
+    </div>
+    <div class="fine">© 2026 Austin Coffman.</div>
+  </div>
+</footer>
+
+<script>
+  const buttons = document.querySelectorAll('.filters button'), rows = document.querySelectorAll('#log li'), empty = document.getElementById('empty');
+  buttons.forEach((b) => b.addEventListener('click', () => {
+    buttons.forEach((x) => x.classList.toggle('on', x === b));
+    let shown = 0;
+    rows.forEach((r) => { const on = b.dataset.kind === 'all' || r.dataset.kind === b.dataset.kind; r.hidden = !on; shown += on; });
+    empty.hidden = shown > 0;
+  }));
+</script>
+</body>
+</html>

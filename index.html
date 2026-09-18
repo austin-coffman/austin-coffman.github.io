@@ -1,646 +1,283 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
-  <title>Austin Coffman | Software Engineer</title>
-  <meta content="" name="description">
-  <meta content="" name="keywords">
-
-  <link href="assets/images/favicon.ico" rel="icon">
-  <link href="assets/images/apple-touch-icon.png" rel="apple-touch-icon">
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
-  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
-  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-  <link href="assets/css/style.css" rel="stylesheet">
-
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-  <script src="assets/js/contact.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Austin Coffman — software engineer, after hours</title>
+<meta name="description" content="Austin Coffman builds data-heavy web apps by day. This is the lap through everything built after hours: projects, toys, experiments and the stories behind them.">
+<link rel="icon" href="assets/images/favicon.ico">
+<link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/css/home.css">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
 </head>
-
 <body>
-  <i class="bi bi-list mobile-nav-toggle d-xl-none"></i>
 
-  <header id="header">
-    <div class="d-flex flex-column">
+<canvas id="scene" aria-hidden="true"></canvas>
+<div class="grade" aria-hidden="true"></div>
+<div class="loading" id="loading"><span class="rec"></span> <span id="loading-text">loading the track…</span><span class="loading-bar"><i id="loading-fill"></i></span></div>
 
-      <!-- <div class="profile">
-        <img src="assets/images/headshot.jpeg" alt="" class="img-fluid rounded-circle">
-        <h1 class="text-light"><a href="index.html">Austin Coffman</a></h1>
-        <div class="social-links mt-3 text-center">
-          <a href="mailto:austincartercoffman@gmail.com"><i class="bx bx-envelope"></i></a>
-          <a href="https://www.linkedin.com/in/austin-coffman-82b4a495/"><i class="bx bxl-linkedin"></i></a>
-          <a href="https://github.com/austin-coffman"><i class="bx bxl-github"></i></a>
-        </div>
-      </div> -->
+<!-- fixed chrome -->
+<header class="nav">
+  <a class="brand" href="index.html">Austin Coffman</a>
+  <nav>
+    <a href="#projects">Projects</a>
+    <a href="#about" class="muted">About</a>
+    <a href="#contact" class="muted">Contact</a>
+  </nav>
+</header>
 
-      <nav id="navbar" class="nav-menu navbar">
-        <ul>
-          <li><a href="#hero" class="nav-link scrollto active"><i class="bx bx-home"></i> <span>Home</span></a></li>
-          <li><a href="#about" class="nav-link scrollto"><i class="bx bx-user"></i> <span>About</span></a></li>
-          <li><a href="#technologies" class="nav-link scrollto"><i class="bx bx-terminal"></i> <span>Technologies</span></a></li>
-          <li><a href="#soft-skills" class="nav-link scrollto"><i class="bx bxs-conversation"></i> <span>Soft Skills</span></a></li>
-          <li><a href="#resume" class="nav-link scrollto"><i class="bx bx-file-blank"></i> <span>Resume</span></a></li>
-          <li><a href="#portfolio" class="nav-link scrollto"><i class="bx bx-book-content"></i> <span>Portfolio</span></a></li>
-          <li><a href="#contact" class="nav-link scrollto"><i class="bx bx-envelope"></i> <span>Contact</span></a></li>
-        </ul>
-      </nav> 
+<!-- compact telemetry strip (the fade band behind it keeps content from running under the HUD) -->
+<div class="hud-fade" aria-hidden="true"></div>
+<div class="hud" aria-live="off">
+  <div class="hud-left">
+  <div class="tele">
+    <span class="rec"></span>
+    <span class="lbl">CAM 01</span>
+    <span class="sep"></span>
+    <span class="val" id="speed">0</span><span class="lbl">MPH</span>
+    <span class="sep"></span>
+    <span class="val accent" id="gear">N</span><span class="lbl">GEAR</span>
+    <span class="sep"></span>
+    <span class="segs" id="rpm"></span>
+    <span class="sep"></span>
+    <span class="lbl">S<b id="sector">1</b></span>
+  </div>
+  <!-- track settings: a quiet pill that opens a small panel above it -->
+  <div class="garage" id="garage">
+    <button class="garage-toggle" id="garage-toggle" aria-expanded="false" aria-controls="garage-panel">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+      Track
+    </button>
+    <div class="garage-panel" id="garage-panel" hidden>
+      <label>Time <output id="hour-out">21:30</output>
+        <input id="hour" type="range" min="0" max="24" step="0.1" value="21.5"></label>
+      <label>Rain <output id="rain-out">85%</output>
+        <input id="rain" type="range" min="0" max="1" step="0.05" value="0.85"></label>
+      <label>Camera
+        <select id="cam"><option value="helmet">Helmet</option><option value="hood">Hood</option><option value="chase">Chase</option></select></label>
+      <label>Paint
+        <span class="swatches" id="paint">
+          <button class="livery" data-c="livery" aria-label="livery" title="Race livery">#91</button>
+          <button style="--c:#2b6cff" data-c="#2b6cff" aria-label="blue"></button>
+          <button style="--c:#e4342f" data-c="#e4342f" aria-label="red"></button>
+          <button style="--c:#f2b33d" data-c="#f2b33d" aria-label="yellow"></button>
+          <button style="--c:#e8e6df" data-c="#e8e6df" aria-label="white"></button>
+          <button style="--c:#1a1c22" data-c="#1a1c22" aria-label="black"></button>
+        </span></label>
+      <div class="presets">
+        <button data-preset="golden">Golden</button>
+        <button data-preset="noon">Noon</button>
+        <button data-preset="night">Night</button>
+        <button data-preset="storm">Storm</button>
+      </div>
     </div>
-  </header>
+  </div>
+  </div>
+  <svg id="minimap" viewBox="0 0 120 120" width="84" height="84" aria-hidden="true">
+    <polyline id="map-outline" fill="none" stroke="#2A2F3E" stroke-width="7" stroke-linejoin="round"></polyline>
+    <polyline id="map-outline2" fill="none" stroke="#7C829A" stroke-width="2.5" stroke-linejoin="round"></polyline>
+    <circle id="map-dot" r="5" fill="#FFB627"></circle>
+  </svg>
+</div>
 
-  <section id="hero" class="d-flex flex-column justify-content-center align-items-center">
-    <div class="hero-container" data-aos="fade-in">
-      <h1>Austin Coffman</h1>
-      <p>I'm a <span class="typed" data-typed-items="Developer, Car Enthusiast, Pizza Enjoyer, Human Being"></span></p>
+
+<!-- the page: one lap -->
+<main class="page">
+
+  <section class="hero">
+    <span class="eyebrow">LAP 1 — PERSONAL WORK</span>
+    <h1>Built after<br>the checkered flag.</h1>
+    <p>Software engineer by day. Nights and weekends go to side projects, small tools and the occasional rabbit hole. Scroll to take a lap.</p>
+    <span class="scroll-cue">SCROLL TO DRIVE ↓</span>
+  </section>
+
+  <div class="breather"></div>
+
+  <section class="block" id="about">
+    <div class="col">
+      <span class="eyebrow">SECTOR 1 — THE DRIVER</span>
+      <h2>Coffee, cars, computers.</h2>
+      <div class="two">
+        <div class="prose">
+          <p class="lede">I’m Austin — a software engineer who builds data-heavy web apps by day and chases whatever’s interesting after hours: animation, hardware, race telemetry, the odd browser toy.</p>
+          <p>This site is a running log of that after-hours work. It’s deliberately not a résumé: the tech stack, soft skills and CV live on their own page so this lap can stay about the things I actually made.</p>
+          <a class="cta" href="about.html">About, résumé &amp; tools →</a>
+        </div>
+        <dl class="facts">
+          <div><dt>Now</dt><dd>[WHAT YOU ARE WORKING ON]</dd></div>
+          <div><dt>Based</dt><dd>[CITY]</dd></div>
+          <div><dt>Daily driver</dt><dd>[YOUR CAR]</dd></div>
+          <div><dt>Coffee</dt><dd>[HOW YOU TAKE IT]</dd></div>
+        </dl>
+      </div>
     </div>
   </section>
 
-  <main id="main">
-    <section id="about" class="about section-bg-light">
-      <div class="container">
+  <div class="breather"></div>
 
-        <div class="section-title">
-          <h2>About</h2>
-          <p>Software Engineer enjoying coffee, cars, and computers.</p>
+  <section class="block" id="projects">
+    <div class="col">
+      <span class="eyebrow">SECTOR 2 — PROJECTS</span>
+      <h2>Built on my own time.</h2>
+      <p class="lede narrow">Every project gets the same treatment: what it is, why it exists, what I learned — and a way to try it. Some are apps, some are toys, some are just the story.</p>
+      <a class="feature" href="projects/terminal.html">
+        <img src="assets/images/terminal/terminal-0.jpg" alt="Terminal project screenshot">
+        <div class="feature-text">
+          <small>001 · NOV 2021 · CSS · JAVASCRIPT</small>
+          <strong>Terminal</strong>
+          <p>A browser terminal built to get properly comfortable with CSS animation and vanilla JavaScript. Type a command; it talks back.</p>
+          <span class="cta">Read the story →</span>
         </div>
-        <div class="row">
-          <div class="col-lg-4" data-aos="fade-right">
-            <img src="assets/images/headshot.jpeg" class="img-fluid" alt="">
-          </div>
-          <div class="col-lg-8 pt-4 pt-lg-0 content" data-aos="fade-left">
-            <p class="fst-italic">
-              Here are some of my favorite <strong><a href="https://en.wikipedia.org/wiki/Aphorism" target="_blank">Aphorisms</a></strong>
-            </p>
-            <div class="row">
-              <div class="col-lg-12">
-                <ul>
-                  <li><i class="bi bi-chevron-right"></i> <span>Nothing is more permanent than a temporary fix.</span></li>
-                  <li><i class="bi bi-chevron-right"></i> <span>I don't need to be a chef to know when the food taste bad.</span></li>
-                  <li><i class="bi bi-chevron-right"></i> <span>All code is bad, but not all code adds value.</span></li>
-                  <li><i class="bi bi-chevron-right"></i> <span>There are two hard problems in computer science: cache invalidation, naming things, and off-by-one errors.</span></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
+      </a>
+      <div class="grid">
+        <a class="card" href="#next"><span class="ph">[PROJECT IMAGE]</span><small>002 · [DATE] · [STACK]</small><strong>[SHOWCASE PROJECT]</strong><p>[ONE-LINE DESCRIPTION]</p></a>
+        <a class="card" href="#next2"><span class="ph">[PROJECT IMAGE]</span><small>003 · [DATE] · [STACK]</small><strong>[SHOWCASE PROJECT]</strong><p>[ONE-LINE DESCRIPTION]</p></a>
+        <a class="card" href="#next3"><span class="ph">[PROJECT IMAGE]</span><small>004 · [DATE] · [STACK]</small><strong>[SHOWCASE PROJECT]</strong><p>[ONE-LINE DESCRIPTION]</p></a>
       </div>
-    </section>
-    <!-- End About Section -->
-
-    <!-- ======= Facts Section ======= -->
-    <!-- <section id="facts" class="facts">
-      <div class="container">
-
-        <div class="section-title">
-          <h2>Facts</h2>
-          <p>Magnam dolores commodi suscipit. Necessitatibus eius consequatur ex aliquid fuga eum quidem. Sit sint consectetur velit. Quisquam quos quisquam cupiditate. Et nemo qui impedit suscipit alias ea. Quia fugiat sit in iste officiis commodi quidem hic quas.</p>
-        </div>
-
-        <div class="row no-gutters">
-
-          <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch" data-aos="fade-up">
-            <div class="count-box">
-              <i class="bi bi-emoji-smile"></i>
-              <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter"></span>
-              <p><strong>Happy Clients</strong> consequuntur quae</p>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch" data-aos="fade-up" data-aos-delay="100">
-            <div class="count-box">
-              <i class="bi bi-journal-richtext"></i>
-              <span data-purecounter-start="0" data-purecounter-end="52" data-purecounter-duration="1" class="purecounter"></span>
-              <p><strong>Projects</strong> adipisci atque cum quia aut</p>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch" data-aos="fade-up" data-aos-delay="100">
-            <div class="count-box">
-              <i class="bi bi-headset"></i>
-              <span data-purecounter-start="0" data-purecounter-end="1453" data-purecounter-duration="1" class="purecounter"></span>
-              <p><strong>Hours Of Support</strong> aut commodi quaerat</p>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch" data-aos="fade-up" data-aos-delay="300">
-            <div class="count-box">
-              <i class="bi bi-people"></i>
-              <span data-purecounter-start="0" data-purecounter-end="32" data-purecounter-duration="1" class="purecounter"></span>
-              <p><strong>Hard Workers</strong> rerum asperiores dolor</p>
-            </div>
-          </div>
-
-        </div>
-
+      <div class="log-head">
+        <span class="eyebrow">The log</span>
+        <span class="label">Everything, newest first</span>
       </div>
-    </section> -->
+      <ul class="posts">
+        <li><a href="#p1"><small>[DATE]</small><span><strong>[PROJECT TITLE]</strong><em>[ONE-LINE SUMMARY]</em></span><b>PLAY</b></a></li>
+        <li><a href="#p2"><small>[DATE]</small><span><strong>[WRITE-UP TITLE]</strong><em>[ONE-LINE SUMMARY]</em></span><b class="ghost">READ</b></a></li>
+        <li><a href="projects/terminal.html"><small>2021-11</small><span><strong>Terminal in CSS</strong><em>A browser terminal that talks back — CSS animation and vanilla JS.</em></span><b>PLAY</b></a></li>
+      </ul>
+      <a class="cta" href="projects/">All projects →</a>
+    </div>
+  </section>
 
-    <!-- ======= Skills Section ======= -->
-    <section id="technologies" class="services section-bg-light">
-      <div class="container">
+  <div class="breather"></div>
 
-        <div class="section-title">
-          <h2>Technologies</h2>
-        </div>
+  <section class="block finish" id="contact">
+    <div class="col">
+      <div class="checker"></div>
+      <span class="eyebrow">FINISH LINE</span>
+      <h2>Let’s talk.</h2>
+      <a class="mail" href="mailto:austincartercoffman@gmail.com">austincartercoffman@gmail.com</a>
+      <div class="links"><a href="about.html">Résumé &amp; tools</a><a href="https://github.com/austin-coffman">GitHub</a><a href="https://www.linkedin.com/in/austin-coffman-82b4a495/">LinkedIn</a></div>
+      <span class="fine">© 2026 Austin Coffman · Scene built in three.js. Car: <a href="https://sketchfab.com/3d-models/2024-porsche-992-gt3-r-b76c9b2ae2d548c3869426eac4ab8a19">“2024 Porsche 992 GT3 R”</a> by <a href="https://sketchfab.com/Tyler_Dave">Dave Love</a>, <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, livery removed. Track: <a href="https://sketchfab.com/3d-models/drift-race-track-free-b4108132c93f4736957d97e274fbd11e">“Drift Race Track Free”</a> by <a href="https://sketchfab.com/Nicholas01">Nicholas-3D</a>, <a href="http://creativecommons.org/licenses/by-nd/4.0/">CC BY-ND 4.0</a>, used unmodified.</span>
+    </div>
+  </section>
 
-        <div class="row">
-          <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up" data-aos-delay="100">
-            <div class="icon"><i class="bi bi-windows"></i></div>
-            <h4 class="title">.NET</h4>
-            <p class="description">8+ years of .NET experience, building APIs that are easy to understand and use, creating maintainable code that is unit testable, and documenting process while following best practices.</p>
-          </div>
-          <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up" data-aos-delay="100">
-            <div class="icon"><i class="bx bxs-data"></i></div>
-            <h4 class="title">Databases</h4>
-            <p class="description">Elegant yet performant relational databases, heavy integration with Entity Framework, code first migrations using PostgreSQL, MSSQL. Experience with NoSQL using Redis and MongoDB.</p>
-          </div>
-          <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up" data-aos-delay="100">
-            <div class="icon"><i class="bx bxl-javascript"></i></div>
-            <h4 class="title">TypeScript</h4>
-            <p class="description">Functional applications with many variations of JS Frameworks implemented (including React, Next.JS), also event loop go brrr.</p>
-          </div>
-          <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up" data-aos-delay="100">
-            <div class="icon"><i class="bx bxl-docker"></i></div>
-            <h4 class="title">Docker</h4>
-            <p class="description">Containerization of apps and services, docker-compose, docker repositories and k8s implementations.</p>
-          </div>
-          <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up" data-aos-delay="100">
-            <div class="icon"><i class="bx bx-cloud"></i></div>
-            <h4 class="title">Cloud Services</h4>
-            <p class="description">Developed apps using AWS, Azure, GCP using Compute, Storage, Network services, and many more. Lots of integrations with Azure Entra.</p>
-          </div>
-          <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up" data-aos-delay="100">
-            <div class="icon"><i class="bx bx-network-chart"></i></div>
-            <h4 class="title">GraphQL</h4>
-            <p class="description">Scalable, dynamic data queries, both from a client side and server side. Large implementations across multiple data sources using Hasura.</p>
-          </div>
-        </div>
+</main>
 
-      </div>
-    </section>
-    <!-- End Skills Section -->
+<script type="module">
+  import { createTrackScene } from './assets/js/scene.js?v=23';
 
-    <!-- ======= Skills Section ======= -->
-    <section id="soft-skills" class="services section-bg-light">
-      <div class="container">
+  const $ = (id) => document.getElementById(id);
+  // A real track: a path traced in track.html plus the model it belongs to. Missing → procedural circuit.
+  let track = null;
+  try { const r = await fetch('./assets/models/drift_track.path.json'); if (r.ok) track = await r.json(); } catch (e) { /* procedural */ }
+  const loadingText = $('loading-text'), loadingFill = $('loading-fill');
+  const scene = createTrackScene($('scene'), {
+    track,
+    onProgress: ({ track: t, cars: c }) => {
+      loadingFill.style.transform = `scaleX(${((t + c) / 2).toFixed(3)})`;
+      loadingText.textContent = t < 1 ? 'loading the track…' : c < 1 ? 'loading the car…' : 'warming up…';
+    },
+  });
+  window.__track = scene; // debugging handle
+  // curtain stays down until every asset is in and shaders are compiled
+  scene.ready.then(() => { $('loading').classList.add('done'); });
 
-        <div class="section-title">
-          <h2>Soft Skills</h2>
-          <p>Technical expertise without soft skills, is much like a pizza without sauce.</p>
-        </div>
-        <div class="row">
-          <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up" data-aos-delay="100">
-            <div class="icon"><i class="bx bxs-user"></i></div>
-            <h4 class="title">Empathy</h4>
-            <p class="description">People need solutions created by people, it's always about understanding others deeply, allowing the ability to deliver <u><i>the</i></u> solution not <u><i>a</i></u> solution.</p>
-          </div>
-          <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up" data-aos-delay="100">
-            <div class="icon"><i class="bx bxs-group"></i></div>
-            <h4 class="title">Collaboration</h4>
-            <p class="description">Cross-functional teams provide an extremely high collaborative environment while providing unique perspectives.</p>
-          </div>
-          <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up" data-aos-delay="100">
-            <div class="icon"><i class="bx bx-question-mark"></i></div>
-            <h4 class="title">Fearless Problem Solving</h4>
-            <p class="description">Willing to accept challenges with confidence, that others may turn away.</p>
-          </div>
-          <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up" data-aos-delay="100">
-            <div class="icon"><i class="bx bx-chat"></i></div>
-            <h4 class="title">Approachability</h4>
-            <p class="description">Understanding that people have different levels of knowledge and may need topics discussed at different levels.</p>
-          </div>
-          <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up" data-aos-delay="100">
-            <div class="icon"><i class="bx bx-timer"></i></div>
-            <h4 class="title">Time Management</h4>
-            <p class="description">You cannot bake a 30 minute cake in 5 minutes, but first you need to know that cake takes 30 minutes.</p>
-          </div>
-          <div class="col-lg-4 col-md-6 icon-box" data-aos="fade-up" data-aos-delay="100">
-            <div class="icon"><i class="bx bx-brain"></i></div>
-            <h4 class="title">Open Minded</h4>
-            <p class="description">If I was always right, then I likely wouldn't have this site, as I would be retired already. Always willing to accept new ideas and concepts.</p>
-          </div>
-        </div>
+  // --- scroll → distance driven. Any scrolling, up or down, moves the car forward; the circuit is a
+  //     closed loop so it simply keeps lapping. One full page of scroll ≈ one lap.
+  let lastY = window.scrollY, odometer = 0; // in laps
+  const readScroll = () => {
+    const pxPerLap = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    odometer += Math.abs(window.scrollY - lastY) / pxPerLap;
+    lastY = window.scrollY;
+    scene.setProgress(odometer);
+  };
+  window.addEventListener('scroll', readScroll, { passive: true });
+  window.addEventListener('resize', () => { lastY = window.scrollY; });
+  readScroll();
 
-      </div>
-    </section><!-- End Skills Section -->
+  // --- in-page links: drive there instead of snapping. Duration scales with distance; a wheel/touch
+  //     from the user cancels the ride so they are never fought for control.
+  let ride = null;
+  const cancelRide = () => { if (ride) { cancelAnimationFrame(ride.raf); ride = null; } };
+  const rideTo = (targetY) => {
+    cancelRide();
+    const from = window.scrollY, to = Math.max(0, Math.min(targetY, document.documentElement.scrollHeight - window.innerHeight));
+    const dist = Math.abs(to - from);
+    if (dist < 2) return;
+    const dur = Math.min(2400, 500 + dist * 0.45);
+    const t0 = performance.now();
+    const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const step = (now) => {
+      const t = Math.min(1, (now - t0) / dur);
+      window.scrollTo(0, from + (to - from) * ease(t));
+      if (t < 1) ride.raf = requestAnimationFrame(step); else ride = null;
+    };
+    ride = { raf: requestAnimationFrame(step) };
+  };
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const el = document.getElementById(a.getAttribute('href').slice(1));
+    if (!el) return;
+    e.preventDefault();
+    const navH = document.querySelector('.nav').offsetHeight;
+    rideTo(window.scrollY + el.getBoundingClientRect().top - navH * 0.6);
+    history.replaceState(null, '', a.getAttribute('href'));
+  });
+  for (const ev of ['wheel', 'touchstart', 'keydown']) window.addEventListener(ev, cancelRide, { passive: true });
 
-    <!-- ======= Resume Section ======= -->
-    <section href="resume" id="resume" class="resume section-bg-light">
-      <div class="container">
+  // --- HUD ---
+  const rpm = $('rpm');
+  for (let i = 0; i < 10; i++) rpm.appendChild(document.createElement('i'));
+  const segs = [...rpm.children];
+  const pl = scene.trackOutline().points.map(p => p.join(',')).join(' ');
+  $('map-outline').setAttribute('points', pl);
+  $('map-outline2').setAttribute('points', pl);
 
-        <div class="section-title">
-          <h2>Resume</h2>
-          
-        </div>
+  scene.onFrame(({ u, speedMps }) => {
+    const mph = speedMps * 2.237;
+    $('speed').textContent = Math.round(mph);
+    $('gear').textContent = mph < 2 ? 'N' : Math.min(6, 1 + Math.floor(mph / 32));
+    const lit = mph < 2 ? 1 : Math.round(10 * (0.35 + ((mph % 32) / 32) * 0.6));
+    segs.forEach((s, i) => { s.className = i < lit ? (i >= 8 ? 'red' : i >= 6 ? 'amber' : 'on') : ''; });
+    $('sector').textContent = u < 0.28 ? '1' : u < 0.56 ? '2' : u < 0.84 ? '3' : 'F';
+    const [x, y] = scene.trackPoint2D(u);
+    $('map-dot').setAttribute('cx', x); $('map-dot').setAttribute('cy', y);
+  });
 
-        <div class="row">
-          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
-            <h3 class="resume-title">Summary</h3>
-            <div class="resume-item pb-0">
-              <h4>Austin Coffman</h4>
-              <p><em>Results-driven engineering leader with 8+ years of experience guiding teams and
-                architecting scalable solutions. Passionate about tackling complex engineering challenges,
-                optimizing systems, and fostering team growth. Excels in fast-paced environments,
-                balancing hands-on technical expertise with strategic leadership. Firm believer that <u>people
-                are key</u>, and that software starts and ends with people</em></p>
-            </div>
+  // --- garage ---
+  const toggle = $('garage-toggle'), panel = $('garage-panel');
+  toggle.addEventListener('click', () => {
+    const open = panel.hidden;
+    panel.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+    $('garage').classList.toggle('open', open);
+  });
+  document.addEventListener('click', (e) => {
+    if (!panel.hidden && !$('garage').contains(e.target)) { panel.hidden = true; toggle.setAttribute('aria-expanded', 'false'); $('garage').classList.remove('open'); }
+  });
 
-            <h3 class="resume-title">Education</h3>
-            <div class="resume-item">
-              <h4>B.S. in Computer Science</h4>
-              <h5>Aug 2013 - May 2017</h5>
-              <p><em>Indiana State University, Indiana</em></p>
-            </div>
-
-            <h3 class="resume-title">Awards</h3>
-            <div class="resume-item">
-              <h4>Ed-Fi Innovator of the Year</h4>
-              <h5>Resultant | 2023</h5>
-              <p><em>Lead developer for the Indiana Graduates Prepared to Succeed (GPS) Application. This comprehensive application
-                helps Indiana educators, learners, and parents better interact with and understand education data. As a result, 
-                Resultant was awarded the <a href="https://resultant.com/blog/company-news/idoe-dashboard-work-garners-ed-fi-award-for-resultant/" target="_blank">Ed-Fi Innovator of the Year</a> award.
-              </em></p>
-            </div>
-            <div class="resume-item">
-              <h4>2020 Industry Innovator Award</h4>
-              <h5>Resultant | 2020</h5>
-              <p><em>Lead backend developer for the AMARO solution. This solution was a cutting edge Microelectronics Supply Chain Risk tool for the US Navy.
-                This product achieved a 40% reduction in the critical supply chain risk-assessment process. 
-                As a result, Resultant was awarded the coveted <a href="https://resultant.com/blog/company-news/resultant-amaro-solution-earns-coveted-2020-industry-innovator-award/" target="_blank">2020 Industry Innovator Award</a>.
-              </em></p>
-            </div>
-            <div class="resume-item">
-              <h4>Commendation</h4>
-              <h5>Cosworth Electronics | 2019</h5>
-              <p><em>Awarded for the complete production of a telemetry system for <i>IndyCar</i> 
-                utilizing <a href="https://en.wikipedia.org/wiki/Vehicle-to-everything" target="_blank">Vehicle-to-everything (V2X)</a> technology. 
-                View the award <a href="assets/images/v2x.jpeg" target="_blank">here</a>.</em></p>
-            </div>
-            
-          </div>
-          <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
-            <h3 class="resume-title">Professional Experience</h3>
-            <div class="resume-item">
-              <h4>Senior Software Engineer</h4>
-              <h5>Jun 2025 - Present</h5>
-              <p><em>Emergent Software | Technology Consulting | Indianapolis, IN </em></p>
-              <ul>
-                <li>
-                  Architecting new applications and features using industry standard best practices.
-                </li>
-                <li>
-                  Meeting with clients to craft technology solutions that meet their business needs and estimate the effort required to deliver.
-                </li>
-                <li>
-                  Participating in technical requirements gathering, technology selection, data modeling, Azure infrastructure design, 
-                  and DevOps & CI/CD process design.
-                </li>
-                <li>
-                  Deepening expertise in the Microsoft ecosystem, while providing clients the best possible solutions.
-                </li>
-              </ul>
-            </div>
-            <div class="resume-item">
-              <h4>Software Engineering Manager</h4>
-              <h5>Feb 2024 - Jun 2025</h5>
-              <p><em>Resultant | Technology Consulting | Indianapolis, IN </em></p>
-              <ul>
-                <li>
-                  Managed and mentoring a diverse team of 5 engineers (Junior to Staff), providing a culture of
-                  continuous improvement and learning.
-                </li>
-                <li>
-                  Drove the direction of our 30+ person engineering department on topics such as tooling, process,
-                  values, mentoring, and career pathways.
-                </li>
-                <li>
-                  Orchestrated a hiring strategy, successfully recruiting 6 engineers and 2 interns in 2024.
-                </li>
-                <li>
-                  Served as Technical Solution Owner (TSO), directing system architecture, collaborating cross-functionally,
-                  and advising on technology solutions.
-                </li>
-              </ul>
-            </div>
-            <div class="resume-item">
-              <h4>Senior Software Engineer</h4>
-              <h5>Feb 2022 - Feb 2024</h5>
-              <p><em>Resultant | Technology Consulting | Indianapolis, IN </em></p>
-              <ul>
-                <li>
-                  Advised on new client projects as a solution architect, delivering strategic recommendations, outcomes,
-                  timelines, and expectations.
-                </li>
-                <li>
-                  Guided junior engineers through mentorship, conducting code reviews and leading knowledge-sharing
-                  session initiatives.
-                </li>
-                <li>
-                  Deployed cloud-based solutions across Azure, AWS and GCP.
-                </li>
-                <li>
-                  Implemented a custom GraphQL based Query Builder tool that allows users to query any parameter in a relational way 
-                  to generate results, reports, comparisons, and exports. All custom and in-house, while being scalable.
-                </li>
-                <li>
-                  Developed and automated CI/CD pipelines tailored to diverse deployment constraints.
-                </li>
-                <li>
-                  Refactored legacy systems, adding significant performance gains in data acquisition and load times.
-                </li>
-              </ul>
-            </div>
-            <div class="resume-item">
-              <h4>Software Engineer</h4>
-              <h5>Jan 2020 - Feb 2022</h5>
-              <p><em>Resultant | Technology Consulting | Indianapolis, IN </em></p>
-              <ul>
-                <li>
-                  Built and optimized RESTful APIs using primarily .NET, integrating multiple databases, background
-                  processes, authentication, and data transformation.
-                </li>
-                <li>
-                  Partnered with cross-functional teams, troubleshooting issues and steering projects through the SDLC.
-                </li>
-                <li>
-                  Leveraged deep expertise in .NET packages, including Entity Framework, LINQ, and Identity.
-                </li>
-                <li>
-                  Architected and optimized high-performant relational databases.
-                </li>
-                <li>
-                  Integrated WebSockets for real-time in-app notifications, improving system responsiveness.
-                </li>
-              </ul>
-            </div>
-            <div class="resume-item">
-              <h4>Software Engineer</h4>
-              <h5>Jun 2017 - Dec 2019</h5>
-              <p><em>Cosworth Electronics | Motorsport Electronics | Indianapolis, IN </em></p>
-              <ul>
-                <li>
-                  Developed and maintained software in a source-controlled environment (TFS).
-                </li>
-                <li>
-                  Managed the <i>Live on Air</i> WiMAX 3G telemetry system for the <i>IndyCar</i> Series.
-                  This involved a suite of software ranging from data analysis tools to hardware configuration tools.
-                </li>
-                <li>
-                  Authored and maintained documentation for actively developed software and products.
-                </li>
-                <li>
-                  Interfaced with executive customers and senior engineers as a technical resource.
-                </li>
-                <li>
-                  Maintained multiple .NET Framework projects, resolving defects and implementing new features.
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section><!-- End Resume Section -->
-
-    <!-- ======= Portfolio Section ======= -->
-    <section id="portfolio" class="portfolio section-bg-light">
-      <div class="container">
-
-        <div class="section-title">
-          <h2>Portfolio</h2>
-          <p>Please checkout some of my professional, personal and freelance work.</p>
-        </div>
-
-        <div class="row" data-aos="fade-up">
-          <div class="col-lg-12 d-flex justify-content-center">
-            <ul id="portfolio-flters">
-              <li data-filter="*" class="filter-active">All</li>
-              <li data-filter=".filter-professional">Professional</li>
-              <li data-filter=".filter-personal">Personal</li>
-              <!-- <li data-filter=".filter-freelance">Freelance</li> -->
-            </ul>
-          </div>
-        </div>
-
-        <div class="row portfolio-container" data-aos="fade-up" data-aos-delay="100">
-
-        
-          <div class="col-lg-4 col-md-6 portfolio-item filter-professional">
-            <div class="card">
-              <img src="assets/images/gps/gps-0.jpg" class="card-img-top" alt="">
-              <div class="card-body card-container d-flex flex-column">
-                <h5 class="card-title">Graduates Prepared to Succeed</h5>
-                <p class="card-text text-muted">Built for the Indiana Department of Education, serving as a state wide metrics for student and school performance.</p>
-                <a class="card-button align-self-end" href="pages/gps-details.html">More Details</i></a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-professional">
-            <div class="card">
-              <img src="assets/images/amaro/amaro-0.JPG" class="card-img-top" alt="">
-              <div class="card-body card-container d-flex flex-column">
-                <h5 class="card-title">AMARO</h5>
-                <p class="card-text text-muted">A part-centric supply chain solution providing microelectronics procurement assurance to the U.S. Department of Defense.</p>
-                <a class="card-button align-self-end" href="pages/amaro-details.html">More Details</i></a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-professional">
-            <div class="card">
-              <img src="assets/images/eseat/eseat-0.jpg" class="card-img-top" alt="">
-              <div class="card-body card-container d-flex flex-column">
-                <h5 class="card-title">ESEAT</h5>
-                <p class="card-text text-muted">Military curated budgetary document reference system, providing digestible data for at the sub-project and up level.</p>
-                <a class="card-button align-self-end" href="pages/eseat-details.html">More Details</i></a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-personal">
-            <div class="card">
-              <img src="assets/images/terminal/terminal-0.jpg" class="card-img-top" alt="">
-              <div class="card-body card-container d-flex flex-column">
-                <h5 class="card-title">Terminal in CSS</h5>
-                <p class="card-text text-muted">Small personal project to become more comfortable with working on CSS animations and JS.</p>
-                <a class="card-button align-self-end" href="pages/terminal-details.html">More Details</i></a>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-professional">
-            <div class="card">
-              <img src="assets/images/pi-race-strategy/pi-race-strategy-0.jpg" class="card-img-top" alt="">
-              <div class="card-body card-container d-flex flex-column">
-                <h5 class="card-title">Pi Race Strategy</h5>
-                <p class="card-text text-muted">Ingests Real-Time data logger streams for use by IndyCar teams to aid in possible pit strategies and fuel consumption.</p>
-                <a class="card-button align-self-end" href="pages/pi-race-strategy-details.html">More Details</i></a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-    <!-- End Portfolio Section -->
-
-
-    <!-- ======= Testimonials Section ======= -->
-    <!-- <section id="testimonials" class="testimonials section-bg-light">
-      <div class="container">
-
-        <div class="section-title">
-          <h2>Testimonials</h2>
-          <p>Magnam dolores commodi suscipit. Necessitatibus eius consequatur ex aliquid fuga eum quidem. Sit sint consectetur velit. Quisquam quos quisquam cupiditate. Et nemo qui impedit suscipit alias ea. Quia fugiat sit in iste officiis commodi quidem hic quas.</p>
-        </div>
-
-        <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="100">
-          <div class="swiper-wrapper">
-
-            <div class="swiper-slide">
-              <div class="testimonial-item" data-aos="fade-up">
-                <p>
-                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                  Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.
-                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                </p>
-                <img src="assets2/img/testimonials/testimonials-1.jpg" class="testimonial-img" alt="">
-                <h3>Saul Goodman</h3>
-                <h4>Ceo &amp; Founder</h4>
-              </div>
-            </div>
-
-            <div class="swiper-slide">
-              <div class="testimonial-item" data-aos="fade-up" data-aos-delay="100">
-                <p>
-                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                  Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid cillum eram malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.
-                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                </p>
-                <img src="assets2/img/testimonials/testimonials-2.jpg" class="testimonial-img" alt="">
-                <h3>Sara Wilsson</h3>
-                <h4>Designer</h4>
-              </div>
-            </div>
-
-            <div class="swiper-slide">
-              <div class="testimonial-item" data-aos="fade-up" data-aos-delay="100">
-                <p>
-                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                  Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.
-                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                </p>
-                <img src="assets2/img/testimonials/testimonials-3.jpg" class="testimonial-img" alt="">
-                <h3>Jena Karlis</h3>
-                <h4>Store Owner</h4>
-              </div>
-            </div>
-
-            <div class="swiper-slide">
-              <div class="testimonial-item" data-aos="fade-up" data-aos-delay="300">
-                <p>
-                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                  Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat minim velit minim dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore labore illum veniam.
-                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                </p>
-                <img src="assets2/img/testimonials/testimonials-4.jpg" class="testimonial-img" alt="">
-                <h3>Matt Brandon</h3>
-                <h4>Freelancer</h4>
-              </div>
-            </div>
-
-            <div class="swiper-slide">
-              <div class="testimonial-item" data-aos="fade-up" data-aos-delay="400">
-                <p>
-                  <i class="bx bxs-quote-alt-left quote-icon-left"></i>
-                  Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster veniam enim culpa labore duis sunt culpa nulla illum cillum fugiat legam esse veniam culpa fore nisi cillum quid.
-                  <i class="bx bxs-quote-alt-right quote-icon-right"></i>
-                </p>
-                <img src="assets2/img/testimonials/testimonials-5.jpg" class="testimonial-img" alt="">
-                <h3>John Larson</h3>
-                <h4>Entrepreneur</h4>
-              </div>
-            </div>
-
-          </div>
-          <div class="swiper-pagination"></div>
-        </div>
-
-      </div>
-    </section> -->
-    <!-- End Testimonials Section -->
-
-    <!-- ======= Contact Section ======= -->
-    <section id="contact" class="contact section-bg-light">
-      <div class="container">
-
-        <div class="section-title">
-          <h2>Contact</h2>
-          <p>If you'd like to know more about me, or pay me money, then drop a message. Otherwise, you can check out my <strong><a href="https://www.linkedin.com/in/austin-coffman-82b4a495/" target="_blank">LinkedIn</a></strong> or <strong><a href="https://github.com/austin-coffman" target="_blank">GitHub</a></strong></p>
-        </div>
-
-        <div class="row justify-content-center" data-aos="fade-in">
-          <div class="col-lg-7 mt-5 mt-lg-0 d-flex align-items-stretch">
-            <form id="contact-form" class="php-email-form">
-              <div class="row">
-                <div class="form-group col-md-6">
-                  <input type="hidden" name="contact_number">
-                  <label for="name">Your Name</label>
-                  <input type="text" name="from_name" class="form-control" id="name" required>
-                </div>
-                <div class="form-group col-md-6">
-                  <label for="name">Your Email</label>
-                  <input type="email" class="form-control" name="reply_to" id="email" required>
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="name">Subject</label>
-                <input type="text" class="form-control" name="subject" id="subject" required>
-              </div>
-              <div class="form-group">
-                <label for="name">Message</label>
-                <textarea class="form-control" name="message" rows="10" required></textarea>
-              </div>
-              <div class="my-3">
-                <div id="loading" class="loading disable">Loading</div>
-                <div id="error-message" class="error-message disable"></div>
-                <div id="sent-message" class="sent-message disable">Your message has been sent. Thank you!</div>
-              </div>
-              <div class="text-center"><button type="submit">Send Message</button></div>
-            </form>
-          </div>
-        </div>
-
-      </div>
-    </section>
-    <!-- End Contact Section -->
-
-  </main><!-- End #main -->
-
- 
-
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
-  <!-- Vendor JS Files -->
-  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
-  <script src="assets/vendor/aos/aos.js"></script>
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
-  <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
-  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
-  <script src="assets/vendor/typed.js/typed.min.js"></script>
-  <script src="assets/vendor/waypoints/noframework.waypoints.js"></script>
-
-  <!-- Template Main JS File -->
-  <script src="assets/js/main.js"></script>
-
+  const hour = $('hour'), hourOut = $('hour-out'), rainIn = $('rain'), rainOut = $('rain-out');
+  const showHour = (h) => { const hh = Math.floor(h), mm = Math.round((h - hh) * 60); hourOut.textContent = `${String(hh % 24).padStart(2, '0')}:${String(mm).padStart(2, '0')}`; };
+  let hourTimer = 0;
+  hour.addEventListener('input', () => { showHour(+hour.value); clearTimeout(hourTimer); hourTimer = setTimeout(() => scene.setTime(+hour.value), 60); });
+  rainIn.addEventListener('input', () => { rainOut.textContent = `${Math.round(rainIn.value * 100)}%`; scene.setRain(+rainIn.value); });
+  $('cam').addEventListener('change', (e) => scene.setCameraMode(e.target.value));
+  $('paint').addEventListener('click', (e) => { const c = e.target.dataset.c; if (c) scene.setPaint(c === 'livery' ? null : c); });
+  const presets = { golden: [18.8, 0], noon: [12.5, 0], night: [22, 0], storm: [21.5, 0.85] };
+  document.querySelector('.presets').addEventListener('click', (e) => {
+    const p = presets[e.target.dataset.preset]; if (!p) return;
+    hour.value = p[0]; showHour(p[0]); scene.setTime(p[0]);
+    rainIn.value = p[1]; rainOut.textContent = `${Math.round(p[1] * 100)}%`; scene.setRain(p[1]);
+  });
+</script>
 </body>
-
 </html>

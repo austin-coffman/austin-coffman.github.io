@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design Guide — Austin Coffman</title>
+<link rel="icon" href="assets/images/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/css/site.css">
+<style>
+  .guide-nav { position: sticky; top: 96px; display: flex; flex-direction: column; gap: 6px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
+  .guide-nav a { color: var(--muted); }
+  .guide-nav a:hover { color: var(--accent); }
+  .guide { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: var(--s-8); align-items: start; }
+  @media (max-width: 900px) { .guide { grid-template-columns: 1fr; } .guide-nav { position: static; flex-direction: row; flex-wrap: wrap; gap: 14px; } }
+  .rule { display: grid; grid-template-columns: 200px 1fr; gap: var(--s-5); padding: var(--s-4) 0; border-bottom: 1px solid var(--line); }
+  .rule b { font-family: var(--display); font-size: 22px; text-transform: uppercase; font-weight: 700; line-height: 1; }
+  .rule p { color: var(--soft); font-size: 15px; }
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: var(--s-3); }
+  .swatch { border: 1px solid var(--line); padding: var(--s-3); display: flex; flex-direction: column; gap: 8px; }
+  .swatch i { display: block; height: 56px; border: 1px solid var(--line); }
+  .swatch b { font-family: var(--mono); font-size: 11px; color: var(--ink); font-weight: 500; }
+  .swatch span { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+  .type-row { display: grid; grid-template-columns: 220px 1fr; gap: var(--s-5); align-items: baseline; padding: var(--s-4) 0; border-bottom: 1px solid var(--line); }
+  .type-row .label { padding-top: 4px; }
+  .spec { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 6px; }
+  .demo { padding: var(--s-6); border: 1px dashed var(--line-strong); display: flex; flex-direction: column; gap: var(--s-5); }
+  .demo + .demo { margin-top: var(--s-4); }
+  .scale { display: flex; align-items: flex-end; gap: var(--s-2); }
+  .scale i { display: block; background: var(--accent); width: 20px; }
+  .anatomy { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-5); }
+  .anatomy .card { min-height: 220px; }
+  .anatomy pre { margin: 0; font-family: var(--mono); font-size: 11px; line-height: 1.6; color: var(--soft); white-space: pre; }
+  @media (max-width: 900px) { .anatomy, .rule, .type-row { grid-template-columns: 1fr; } }
+  .bad, .good { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .good { color: var(--go); } .bad { color: var(--stop); }
+</style>
+</head>
+<body class="page-detail">
+
+<header class="nav">
+  <a class="brand" href="index.html">Austin Coffman</a>
+  <nav>
+    <a href="projects/">Projects</a>
+    <a href="index.html#about" class="muted">About</a>
+    <a href="design.html" class="current">Design</a>
+  </nav>
+</header>
+
+<main>
+  <section class="page-head">
+    <div class="wrap">
+      <span class="eyebrow">Internal — design guide</span>
+      <h1>One lap,<br>one voice.</h1>
+      <p class="lede">The rules that keep the home page (a live three.js lap) and every detail page (plain, dark, focused) feeling like the same site. Everything on this page is rendered from <code>site.css</code>, so if it looks right here it is right everywhere.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap guide">
+      <nav class="guide-nav" aria-label="Guide sections">
+        <a href="#principles">Principles</a>
+        <a href="#color">Color</a>
+        <a href="#type">Type</a>
+        <a href="#space">Space &amp; layout</a>
+        <a href="#voice">Voice</a>
+        <a href="#components">Components</a>
+        <a href="#anatomy">Page anatomy</a>
+        <a href="#motion">Motion</a>
+        <a href="#assets">Assets &amp; licences</a>
+      </nav>
+
+      <div style="display: flex; flex-direction: column; gap: var(--s-9);">
+
+        <div id="principles">
+          <div class="section-head"><span class="eyebrow">01</span><h2>Principles.</h2></div>
+          <div class="rule"><b>Content drives</b><p>The lap is a backdrop, not the subject. Text always sits on a surface that guarantees contrast; the scene is what shows through the gaps. Detail pages drop the scene entirely.</p></div>
+          <div class="rule"><b>Telemetry voice</b><p>Labels are mono, tracked and small — like a data logger. Headlines are condensed and loud. Body is calm. Never all three at the same volume.</p></div>
+          <div class="rule"><b>One accent</b><p>Amber is for the current thing: the active link, the eyebrow, the primary button, the dot on the map. Green and red exist only as telemetry (throttle/brake, go/stop) and never decorate.</p></div>
+          <div class="rule"><b>One kind of thing</b><p>There is no separate blog. Every entry is a project: an app, a toy, or just the write-up. A few are featured as cards; all of them appear in the log and share one detail template. The badge says what you can do with it — PLAY, READ, or WATCH.</p></div>
+          <div class="rule"><b>Racing as metaphor, lightly</b><p>Sectors, pit wall, finish line — used as section labels and never explained. If a racing term needs a footnote, cut it.</p></div>
+          <div class="rule"><b>Real over invented</b><p>No fake stats, no lorem ipsum, no placeholder projects presented as real. Unknown facts stay as visible <code>[BRACKETS]</code> until filled.</p></div>
+        </div>
+
+        <div id="color">
+          <div class="section-head"><span class="eyebrow">02</span><h2>Color.</h2></div>
+          <div class="swatches">
+            <div class="swatch"><i style="background: var(--bg)"></i><b>--bg</b><span>#07080B · page</span></div>
+            <div class="swatch"><i style="background: var(--bg-2)"></i><b>--bg-2</b><span>#0C0E13 · page head</span></div>
+            <div class="swatch"><i style="background: var(--panel)"></i><b>--panel</b><span>#101318 · cards, code</span></div>
+            <div class="swatch"><i style="background: var(--line-strong)"></i><b>--line</b><span>white 10% / 18%</span></div>
+            <div class="swatch"><i style="background: var(--ink)"></i><b>--ink</b><span>#F4F1EA · headings</span></div>
+            <div class="swatch"><i style="background: var(--soft)"></i><b>--soft</b><span>#D9D5CB · body</span></div>
+            <div class="swatch"><i style="background: var(--muted)"></i><b>--muted</b><span>#9B978E · labels</span></div>
+            <div class="swatch"><i style="background: var(--accent)"></i><b>--accent</b><span>#FFB627 · the one</span></div>
+            <div class="swatch"><i style="background: var(--go)"></i><b>--go</b><span>#3DD68C · telemetry only</span></div>
+            <div class="swatch"><i style="background: var(--stop)"></i><b>--stop</b><span>#FF3B30 · telemetry only</span></div>
+          </div>
+          <p class="prose" style="margin-top: var(--s-5);">Warm off-whites on a blue-black — never pure white, never pure black. Body text is <code>--soft</code> (4.5:1+ on every surface); <code>--muted</code> is for labels at 11px mono where the tracking carries legibility, not for paragraphs.</p>
+        </div>
+
+        <div id="type">
+          <div class="section-head"><span class="eyebrow">03</span><h2>Type.</h2></div>
+          <div class="type-row"><span class="label">Display · Saira Extra Condensed 800</span><div><h1 style="font-size: 72px;">Built after</h1><div class="spec">h1 · clamp(56px, 8vw, 112px) · line-height 0.88 · uppercase</div></div></div>
+          <div class="type-row"><span class="label">Heading · Saira Extra Condensed 700</span><div><h2>Coffee, cars, computers.</h2><div class="spec">h2 · clamp(40px, 5vw, 64px) · line-height 0.95 · uppercase</div></div></div>
+          <div class="type-row"><span class="label">Subhead</span><div><h3>Senior Software Engineer</h3><div class="spec">h3 · 26–34px · line-height 1</div></div></div>
+          <div class="type-row"><span class="label">Lede · Saira 400</span><div><p class="lede">Engineering leader with 8+ years guiding teams and architecting scalable systems.</p><div class="spec">.lede · 19–22px · line-height 1.45 · --ink</div></div></div>
+          <div class="type-row"><span class="label">Body · Saira 400</span><div><p class="prose">By day I build data-heavy web applications and lead the people who build them. After hours I chase whatever’s interesting.</p><div class="spec">p · 16px · line-height 1.6 · --soft · measure ≤ 720px</div></div></div>
+          <div class="type-row"><span class="label">Eyebrow · JetBrains Mono</span><div><span class="eyebrow">Sector 2 — personal projects</span><div class="spec">.eyebrow · 11px · tracking 0.2em · uppercase · --accent</div></div></div>
+          <div class="type-row"><span class="label">Label</span><div><span class="label">Cam 01 · 187 mph · gear 6</span><div class="spec">.label · 11px · tracking 0.16em · --muted</div></div></div>
+          <div class="type-row"><span class="label">Code</span><div><code>renderer.compileAsync(scene, camera)</code><div class="spec">code · JetBrains Mono · --panel surface</div></div></div>
+          <p class="prose" style="margin-top: var(--s-5);"><span class="good">Do</span> keep headlines to two lines and let them break where the sense breaks.&nbsp; <span class="bad">Don’t</span> use the display face below 22px, or the mono face above 13px — each has one job.</p>
+        </div>
+
+        <div id="space">
+          <div class="section-head"><span class="eyebrow">04</span><h2>Space &amp; layout.</h2></div>
+          <div class="scale" aria-hidden="true"><i style="height: 4px"></i><i style="height: 8px"></i><i style="height: 12px"></i><i style="height: 16px"></i><i style="height: 24px"></i><i style="height: 32px"></i><i style="height: 48px"></i><i style="height: 64px"></i><i style="height: 96px"></i></div>
+          <div class="spec" style="margin-top: 8px;">--s-1 … --s-9 · 4 8 12 16 24 32 48 64 96</div>
+          <div class="rule" style="margin-top: var(--s-5);"><b>Columns</b><p><code>--col</code> 1040px for sections and grids; <code>--col-narrow</code> 720px for reading. Gutter 48px desktop, 20px phone.</p></div>
+          <div class="rule"><b>Sections</b><p>64px vertical padding, a 1px <code>--line</code> between them. Every section opens with eyebrow + h2 (<code>.section-head</code>). Detail pages are dense on purpose — the home page is where space is spent.</p></div>
+          <div class="rule"><b>Corners</b><p>None. Square edges everywhere — buttons, cards, images, tags. The only curves on the site are the track.</p></div>
+          <div class="rule"><b>Borders over shadows</b><p>Surfaces are separated by 1px hairlines and a slightly lighter fill, never drop shadows.</p></div>
+        </div>
+
+        <div id="voice">
+          <div class="section-head"><span class="eyebrow">05</span><h2>Voice.</h2></div>
+          <div class="rule"><b>Headlines</b><p>Short, declarative, a little dry. “Built on my own time.” “Where I’ve raced.” Full stops on headlines are fine; exclamation marks are not.</p></div>
+          <div class="rule"><b>Eyebrows</b><p>Position + subject: <code>SECTOR 2 — PERSONAL PROJECTS</code>, <code>PROJECT 001 — BUILD · NOV 2021</code>, <code>PIT WALL — ABOUT &amp; RÉSUMÉ</code>. Em dash, all caps, no trailing punctuation.</p></div>
+          <div class="rule"><b>Body</b><p>First person, plain, concrete. Say what it is, why it exists, what you learned. One joke per page, maximum.</p></div>
+          <div class="rule"><b>Calls to action</b><p>Verb first, arrow last: “Read the story →”, “Open the terminal →”. Never “Click here”.</p></div>
+        </div>
+
+        <div id="components">
+          <div class="section-head"><span class="eyebrow">06</span><h2>Components.</h2></div>
+
+          <span class="label">Buttons</span>
+          <div class="demo" style="margin-top: var(--s-3);">
+            <div style="display: flex; gap: var(--s-3); flex-wrap: wrap;"><a class="btn btn-primary" href="#">Open the terminal →</a><a class="btn" href="#">LinkedIn</a><a class="cta" href="#">Read the story →</a></div>
+            <div class="spec">.btn-primary once per page at most · .btn for secondary · .cta inline at the end of a block</div>
+          </div>
+
+          <span class="label" style="display: block; margin-top: var(--s-6);">Tags</span>
+          <div class="demo" style="margin-top: var(--s-3);"><div class="tags"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">three.js</span></div></div>
+
+          <span class="label" style="display: block; margin-top: var(--s-6);">Facts</span>
+          <div class="demo" style="margin-top: var(--s-3);"><dl class="facts"><div><dt>When</dt><dd>November 2021</dd></div><div><dt>Stack</dt><dd>HTML · CSS · JavaScript</dd></div><div><dt>Site</dt><dd><a href="#">austin-coffman.github.io/terminal-in-css →</a></dd></div></dl></div>
+
+          <span class="label" style="display: block; margin-top: var(--s-6);">Cards</span>
+          <div class="demo" style="margin-top: var(--s-3);">
+            <div class="grid-3">
+              <a class="card" href="#"><img src="assets/images/terminal/terminal-0.jpg" alt=""><span class="num">001 · CSS · JS</span><h3>Terminal</h3><p>A browser terminal built to learn CSS animation and vanilla JavaScript.</p><span class="cta">Read the story →</span></a>
+              <div class="card"><span class="num">02</span><h3>Databases</h3><p>Elegant, performant relational design. Entity Framework, PostgreSQL and MSSQL.</p></div>
+              <a class="card" href="#"><span class="ph">[PROJECT IMAGE]</span><span class="num">002 · [STACK]</span><h3>[Next project]</h3><p>[ONE-LINE DESCRIPTION]</p></a>
+            </div>
+            <div class="spec">a.card is a whole-card link with a .cta; div.card is static. Image first, then num, h3, p.</div>
+          </div>
+
+          <span class="label" style="display: block; margin-top: var(--s-6);">Post rows</span>
+          <div class="demo" style="margin-top: var(--s-3);"><ul class="posts"><li><a href="#"><small>2026-03</small><span><strong>[Interactive piece title]</strong><em>[One-line summary]</em></span><b>PLAY</b></a></li><li><a href="#"><small>2026-01</small><span><strong>[Write-up title]</strong><em>[One-line summary]</em></span><b class="ghost">READ</b></a></li></ul></div>
+
+          <span class="label" style="display: block; margin-top: var(--s-6);">Timeline</span>
+          <div class="demo" style="margin-top: var(--s-3);"><ol class="timeline"><li><div class="when"><time>Jun 2025 — Present</time><span class="org">Emergent Software · Indianapolis, IN</span></div><div class="what"><h3>Senior Software Engineer</h3><ul><li>Architecting new applications and features.</li><li>Azure infrastructure and CI/CD design.</li></ul></div></li></ol></div>
+
+          <span class="label" style="display: block; margin-top: var(--s-6);">Stats</span>
+          <div class="demo" style="margin-top: var(--s-3);"><div class="stats"><div class="stat"><b>8<i>+</i></b><span>years .NET</span></div><div class="stat"><b>3</b><span>awards</span></div><div class="stat"><b>754<i>m</i></b><span>lap</span></div><div class="stat"><b>115</b><span>fps</span></div></div><div class="spec">Real numbers only. The accented unit (i) is optional.</div></div>
+
+          <span class="label" style="display: block; margin-top: var(--s-6);">Pager</span>
+          <div class="demo" style="margin-top: var(--s-3);"><nav class="pager"><a href="#"><span class="label">← Back</span><strong>All projects</strong></a><a href="#"><span class="label">Next →</span><strong>[Next project]</strong></a></nav></div>
+        </div>
+
+        <div id="anatomy">
+          <div class="section-head"><span class="eyebrow">07</span><h2>Page anatomy.</h2></div>
+          <div class="anatomy">
+            <div class="card"><span class="num">Home · index.html</span><h3>The lap</h3><pre>nav (frosted)
+hero            ← scene fully visible
+breather        ← scene visible
+block: about    ← own backdrop, fades right
+breather
+block: projects  ← featured + the log
+breather
+block: contact (finish)
+hud + fade      ← telemetry, Track, map</pre></div>
+            <div class="card"><span class="num">Detail · about.html, projects/*.html, projects/index.html</span><h3>The page</h3><pre>nav (frosted)
+page-head       ← eyebrow, h1, lede, meta
+[hero figure]   ← projects only
+section …       ← 64px rhythm, hairlines
+section: pager  ← projects only
+footer          ← checker, links, credits
+no scene, no hud; grain + grid ghost</pre></div>
+          </div>
+          <p class="prose" style="margin-top: var(--s-5);">The two shells share the nav, footer, tokens and every component. A visitor should be able to tell they are on the same site with the scene switched off.</p>
+        </div>
+
+        <div id="motion">
+          <div class="section-head"><span class="eyebrow">08</span><h2>Motion.</h2></div>
+          <div class="rule"><b>Scroll is throttle</b><p>On the home page scrolling in either direction drives the car forward. Position follows with a critically damped spring (0.55s). Nothing else is scroll-linked.</p></div>
+          <div class="rule"><b>Eased navigation</b><p>In-page links ride to their target (0.5–2.4s by distance, ease-in-out). A wheel or key from the visitor cancels the ride.</p></div>
+          <div class="rule"><b>Head stays still</b><p>The camera aims through the windscreen in the car’s own frame; corner glance ≈ 6°, bob 3mm, roll under 1°. No parallax on content.</p></div>
+          <div class="rule"><b>Detail pages</b><p>No animation beyond hover colour (150ms). Motion is what the home page is for.</p></div>
+          <div class="rule"><b>Reduced motion</b><p><code>prefers-reduced-motion</code>: direct 1:1 tracking, no bob, no roll, no transitions.</p></div>
+        </div>
+
+        <div id="assets">
+          <div class="section-head"><span class="eyebrow">09</span><h2>Assets &amp; licences.</h2></div>
+          <div class="rule"><b>Car</b><p>“2024 Porsche 992 GT3 R” by Dave Love — CC BY 4.0. Credited in the footer. Livery is the model’s own; sponsor boards on the track are hidden at render time.</p></div>
+          <div class="rule"><b>Track</b><p>“Drift Race Track Free” by Nicholas-3D — CC BY-ND 4.0. Used unmodified (render flags only); the traced driving line is our own file. No re-encoding or stripping.</p></div>
+          <div class="rule"><b>Never</b><p>Game captures (Forza, Assetto), NC-licensed models, third-party logos we did not license, stock footage without a commercial licence.</p></div>
+          <div class="rule"><b>Images</b><p>Project images live in <code>assets/images/&lt;slug&gt;/&lt;slug&gt;-N.jpg</code>; models in <code>assets/models/</code>; <code>-0</code> is the card thumbnail, 16:10.</p></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="checker"></div>
+    <div class="footer-row">
+      <a class="brand" href="index.html" style="font-family: var(--display); font-size: 22px; text-transform: uppercase; color: var(--ink);">Austin Coffman</a>
+      <div class="links"><a href="projects/">Projects</a><a href="about.html">About</a><a href="projects/terminal.html">Terminal</a></div>
+    </div>
+    <div class="fine">Internal page — not linked from the site.</div>
+  </div>
+</footer>
+
+</body>
+</html>
