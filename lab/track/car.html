@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Car showroom — asset check</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  body { margin: 0; background: #0b0c10; color: #c9c4b8; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+  canvas { display: block; width: 100vw; height: 100vh; }
+  .bar { position: fixed; left: 20px; top: 20px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .bar button, .bar label { background: rgba(7,8,11,0.7); border: 1px solid rgba(255,255,255,0.12); color: #c9c4b8; padding: 7px 10px; font: inherit; cursor: pointer; }
+  .bar button.on { color: #ffb627; border-color: #ffb627; }
+  .info { position: fixed; left: 20px; bottom: 20px; opacity: 0.8; }
+</style>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/" } }
+</script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="bar">
+  <button data-src="procedural" class="on">Procedural GT3</button>
+  <button data-src="./models/gt3.glb">models/gt3.glb</button>
+  <button data-src="./models/2024_porsche_992_gt3_r/scene.gltf">GT3 R (Sketchfab)</button>
+  <button id="wire">Wireframe</button>
+  <button id="spin">Turntable</button>
+  <label>Paint <input id="paint" type="color" value="#1d4fc4" style="vertical-align: middle; width: 28px; height: 20px; border: 0; background: none;"></label>
+</div>
+<div class="info" id="info">loading…</div>
+<script type="module">
+  import * as THREE from 'three';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+  import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+  import { buildProceduralGT3, loadCarModel } from './car.js?v=4';
+
+  const canvas = document.getElementById('c');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 0.9;
+  renderer.shadowMap.enabled = true;
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0b0c10);
+  scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+
+  const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+  camera.position.set(6.5, 2.2, 6.5);
+  const controls = new OrbitControls(camera, canvas);
+  controls.target.set(0, 0.6, 0);
+  controls.enableDamping = true;
+
+  const key = new THREE.DirectionalLight(0xffffff, 2.2);
+  key.position.set(5, 8, 4); key.castShadow = true; key.shadow.mapSize.set(2048, 2048);
+  key.shadow.camera.left = key.shadow.camera.bottom = -4; key.shadow.camera.right = key.shadow.camera.top = 4;
+  scene.add(key, new THREE.HemisphereLight(0xffffff, 0x222222, 0.4));
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(9, 64), new THREE.MeshStandardMaterial({ color: 0x15171c, roughness: 0.6, metalness: 0.1 }));
+  floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true;
+  scene.add(floor);
+  scene.add(new THREE.GridHelper(12, 24, 0x2a2e3a, 0x1c1f28));
+
+  let car = null, spin = false, wire = false;
+  const info = document.getElementById('info');
+  async function show(src) {
+    if (car) scene.remove(car);
+    try {
+      car = src === 'procedural' ? buildProceduralGT3(paintHex()) : await loadCarModel(src, { paint: paintHex() });
+      scene.add(car);
+      const box = new THREE.Box3().setFromObject(car), s = box.getSize(new THREE.Vector3());
+      info.textContent = `${car.userData.source} · L ${s.z.toFixed(2)} W ${s.x.toFixed(2)} H ${s.y.toFixed(2)} m · wheels ${car.userData.wheels.length}${car.userData.triangles ? ' · ' + car.userData.triangles.toLocaleString() + ' tris' : ''}`;
+      applyWire();
+    } catch (e) { info.textContent = `could not load ${src}: ${e.message}`; }
+  }
+  const paintHex = () => parseInt(document.getElementById('paint').value.slice(1), 16);
+  function applyWire() { car && car.traverse((o) => { if (o.isMesh) { const ms = Array.isArray(o.material) ? o.material : [o.material]; ms.forEach((m) => { if (m) m.wireframe = wire; }); } }); }
+
+  document.querySelectorAll('[data-src]').forEach((b) => b.addEventListener('click', () => {
+    document.querySelectorAll('[data-src]').forEach((x) => x.classList.remove('on')); b.classList.add('on'); show(b.dataset.src);
+  }));
+  document.getElementById('wire').addEventListener('click', (e) => { wire = !wire; e.target.classList.toggle('on', wire); applyWire(); });
+  document.getElementById('spin').addEventListener('click', (e) => { spin = !spin; e.target.classList.toggle('on', spin); });
+  document.getElementById('paint').addEventListener('input', () => { car && car.userData.paintMat.color.set(paintHex()); });
+
+  function frame() {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    if (canvas.width !== w * renderer.getPixelRatio() | 0) { renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+    if (car && spin) car.rotation.y += 0.004;
+    if (car) for (const wh of car.userData.wheels) wh.rotation.x += 0.05;
+    controls.update();
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  show('procedural');
+  frame();
+</script>
+</body>
+</html>

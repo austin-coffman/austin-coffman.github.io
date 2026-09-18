@@ -1,0 +1,11 @@
+Model Information:
+* title:	2024 Porsche 992 GT3 R
+* source:	https://sketchfab.com/3d-models/2024-porsche-992-gt3-r-b76c9b2ae2d548c3869426eac4ab8a19
+* author:	Dave Love SketchFab (https://sketchfab.com/Tyler_Dave)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "2024 Porsche 992 GT3 R" (https://sketchfab.com/3d-models/2024-porsche-992-gt3-r-b76c9b2ae2d548c3869426eac4ab8a19) by Dave Love SketchFab (https://sketchfab.com/Tyler_Dave) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
