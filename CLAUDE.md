@@ -23,6 +23,7 @@ three.js is loaded from jsdelivr through an import map in each page that needs i
 - `assets/css/site.css` — the design system: tokens, base type, nav, footer, components, detail-page shell. `assets/css/home.css` imports it and adds home-page-only rules (scene layers, HUD, Track panel, section backdrops).
 - `assets/js/scene.js` — the world: spline, sky/sun/weather, rain, light poles, cameras (helmet / hood / chase ride inside the player car), cars, the loading gate (`scene.ready`). `createTrackScene(canvas, { track, onProgress })`.
 - `assets/js/car.js` — `loadCarModel(url)` normalises any GLB/glTF car to one contract (forward +Z, hub-pivoted wheels, steering wheel, paint/livery, glow materials); `buildProceduralGT3()` is the fallback. `setCarPaint(car, hex|null)`.
+- `assets/js/project.js` — loaded by every `projects/<slug>.html`: makes the browser Back button return to the project log unless the reader came from it.
 - `assets/js/track.js` — `loadTrackModel(url)`: render flags only, never edits geometry or textures.
 - `assets/models/` — `2024_porsche_992_gt3_r/` (CC BY 4.0), `drift_race_track_free/` (CC BY-ND 4.0 — must ship unmodified; no re-encoding, stripping or compression), `drift_track.path.json` (our traced driving line for the ring, 117 waypoints). Both are credited in the home footer; keep the credits if the models stay.
 - `assets/images/` — `headshot.jpeg`, favicon/touch icon, and `<slug>/<slug>-N.jpg` per project (`-0` is the card thumbnail, 16:10).
@@ -30,7 +31,7 @@ three.js is loaded from jsdelivr through an import map in each page that needs i
 
 ## Conventions
 
-- **Nav and footer are duplicated per page** (`index.html`, `about.html`, `design.html`, `projects/*.html`). Nav is Projects · About · Contact; About and Contact point at the home page sections (`index.html#about`, `index.html#contact`), Projects at `projects/`. Change all copies together.
+- **Nav and footer are duplicated per page** (`index.html`, `about.html`, `design.html`, `projects/*.html`). Nav is Projects · About · Contact; Projects goes to `projects/`, About to `about.html`, Contact to the home page section (`index.html#contact`). Change all copies together.
 - **Adding a project**: images under `assets/images/<slug>/`; copy `projects/terminal.html` to `projects/<slug>.html` (eyebrow `PROJECT NNN — BUILD · MON YYYY`, meta, story sectors, "Try it", pager); add a row to the log in `projects/index.html` (`<li data-kind="play|read|watch">`) and, if recent, to the home log; add a featured card on the home page and `projects/index.html` if it is showcase-worthy.
 - **Voice**: interest, not hustle — the site is about things built because they were interesting, never “nights and weekends” or “after hours”.
 - **Design rules live in `design.html`** — one amber accent, mono eyebrows, condensed display type, square corners, hairlines not shadows, no invented facts (unknowns stay as visible `[BRACKETS]`). Read it before restyling anything.
