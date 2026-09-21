@@ -8,8 +8,10 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-import { buildProceduralGT3, loadCarModel, setCarPaint } from './car.js';
-import { loadTrackModel } from './track.js';
+import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
+import { FilmPass } from 'three/addons/postprocessing/FilmPass.js';
+import { buildProceduralGT3, loadCarModel, setCarPaint } from './car.js?v=6';
+import { loadTrackModel } from './track.js?v=2';
 
 // Drop a model here and it replaces the procedural car. First URL that exists wins:
 // a single GLB, or Sketchfab's extracted zip (models/gt3/scene.gltf + scene.bin + textures/).
@@ -373,6 +375,10 @@ export function createTrackScene(canvas, options = {}) {
     carAhead = a; playerCar = p;
     scene.add(carAhead, playerCar);
     playerCar.add(cockpitLight);
+    (playerCar.userData.mirrors || []).forEach((m, i) => {
+      const render = m.onBeforeRender;
+      m.onBeforeRender = function (...a) { if ((state.frame + i) % 2 === 0) render.apply(this, a); };
+    });
     state.carsReady = true;
     setCameraMode(state.cameraMode);
     setTime(state.hour);
@@ -383,7 +389,7 @@ export function createTrackScene(canvas, options = {}) {
     if (url) {
       try {
         const [a, p] = await Promise.all([
-          loadCarModel(url, { rotateY: CAR_MODEL.rotateY, paint: PAINT_AHEAD, onProgress: onProgress('cars') }),
+          loadCarModel(url, { rotateY: CAR_MODEL.rotateY, paint: PAINT_AHEAD, mirrors: false, onProgress: onProgress('cars') }),
           loadCarModel(url, { rotateY: CAR_MODEL.rotateY, paint: PAINT_PLAYER }),
         ]);
         placeCars(a, p);
@@ -493,22 +499,26 @@ export function createTrackScene(canvas, options = {}) {
   scene.add(rain);
 
   // --- post ---
-  let composer = null, bloom = null;
+  let composer = null, bloom = null, film = null;
+  const basePixelRatio = renderer.getPixelRatio();
   if (!isMobile) {
     composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
     bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.25, 0.35, 0.95);
     composer.addPass(bloom);
+    composer.addPass(new SMAAPass(1, 1));        // edge anti-aliasing (MSAA doesn't survive the composer)
+    film = new FilmPass(0.22, false);            // fine grain, colour kept
+    composer.addPass(film);
     composer.addPass(new OutputPass());
   }
 
   // ---------- state ----------
   const state = {
-    hour: 21.5, rain: 0.85, progress: 0, cameraMode: 'helmet',
-    uSmooth: 0, uPrev: 0, uVel: 0, speedMps: 0, steer: 0, t: 0, carsReady: false,
+    hour: 16, rain: 0.15, progress: 0, cameraMode: 'helmet',
+    uSmooth: 0, uPrev: 0, uVel: 0, speedMps: 0, steer: 0, t: 0, frame: 0, carsReady: false, rivalLateral: 0.7,
     // car-local camera offsets [x, y, z, lookDrop] (forward +Z, +X = driver's left on this LHD model);
     // lookDrop lowers the aim point (metres at the look-ahead distance) so the dash and wheel stay in frame. Tweakable at runtime.
-    camOffsets: { helmet: [0.3, 0.9, -0.15, 0.55], hood: [0, 0.92, 1.05, 0.2], chase: [0, 2.6, -8.5, 0] },
+    camOffsets: { helmet: [0.3, 0.92, -0.32, 0.5], hood: [0, 0.92, 1.05, 0.2], chase: [0, 2.6, -8.5, 0] },
   };
   const listeners = { frame: [] };
 
@@ -589,9 +599,20 @@ export function createTrackScene(canvas, options = {}) {
     if (!state.carsReady) { rig.visible = false; return; }
     rig.visible = mode !== 'chase' && !realCar();
     playerCar.visible = mode === 'chase' || realCar();
+    // mirrors cost a scene render each; only pay for them from inside the car
+    for (const m of playerCar.userData.mirrors || []) m.visible = mode !== 'chase';
   }
 
   // distance along the circuit in laps; unbounded, the curve wraps
+  // 0–1: film grain amount (0 = off)
+  function setGrain(v) {
+    if (film) film.uniforms.intensity.value = THREE.MathUtils.clamp(v, 0, 1) * 0.6;
+  }
+  // 0–1: render softness — lowers the internal resolution, the composer upscales it
+  function setSoft(v) {
+    renderer.setPixelRatio(basePixelRatio * (1 - THREE.MathUtils.clamp(v, 0, 1) * 0.55));
+  }
+
   function setProgress(p) {
     state.progress = Math.max(0, p);
   }
@@ -599,7 +620,7 @@ export function createTrackScene(canvas, options = {}) {
   function onFrame(fn) { listeners.frame.push(fn); }
 
   // ---------- per-frame ----------
-  const mouse = { x: 0, y: 0 };
+  const mouse = { x: 0, y: 0 }, glance = { x: 0, y: 0 }; // raw pointer → eased glance
   window.addEventListener('pointermove', (e) => {
     mouse.x = (e.clientX / window.innerWidth - 0.5) * 2;
     mouse.y = (e.clientY / window.innerHeight - 0.5) * 2;
@@ -623,7 +644,7 @@ export function createTrackScene(canvas, options = {}) {
 
   function frame() {
     const dt = Math.min(clock.getDelta(), 0.05);
-    state.t += dt;
+    state.t += dt; state.frame++;
     resize();
 
     // scroll → track position, damped; velocity → speed
@@ -642,15 +663,16 @@ export function createTrackScene(canvas, options = {}) {
     const instMps = Math.min(84, Math.abs(du) * trackLength / Math.max(dt, 1e-3)); // cap ≈ 190 mph
     state.speedMps += (instMps - state.speedMps) * Math.min(1, dt * (instMps > state.speedMps ? 2.2 : 1.1));
     const u = ((state.uSmooth % 1) + 1) % 1;
+    const metres = Math.abs(du) * trackLength; // distance covered this frame
 
-    // steering from curvature
+    // steering from curvature — eased by distance (2.5 m) with a slow time floor, so it keeps up at any pace
     const k = (curvatureAt(curve, (u + 0.996) % 1, 0.006) + curvatureAt(curve, u, 0.006) + curvatureAt(curve, (u + 0.004) % 1, 0.006)) / 3;
-    state.steer += (THREE.MathUtils.clamp(k * 0.35, -1, 1) - state.steer) * Math.min(1, dt * 2.5);
+    state.steer += (THREE.MathUtils.clamp(k * 0.35, -1, 1) - state.steer) * Math.min(1, metres / 2.5 + dt * 1.5);
 
-    // player car on the spline (its pose defines every camera)
+    // player car on the spline (its pose defines every camera); heading catches up within ~1.5 m of travel
     curve.getPointAt(u, tmpP); curve.getTangentAt(u, tmpT);
     if (heading.lengthSq() === 0) heading.copy(tmpT);
-    heading.lerp(tmpT, Math.min(1, dt * 4)).normalize();
+    heading.lerp(tmpT, Math.min(1, metres / 1.5 + dt * 2)).normalize();
     tmpT.copy(heading);
     tmpS.crossVectors(tmpT, UP).normalize();
     const speedN = THREE.MathUtils.clamp(state.speedMps / 70, 0, 1);
@@ -661,6 +683,8 @@ export function createTrackScene(canvas, options = {}) {
     if (playerCar) { playerCar.position.copy(carPose.position); playerCar.quaternion.copy(carPose.quaternion); playerCar.updateMatrixWorld(true); }
     const real = realCar();
 
+    glance.x += (mouse.x - glance.x) * Math.min(1, dt * 5);
+    glance.y += (mouse.y - glance.y) * Math.min(1, dt * 5);
     // camera: car-local offsets (forward +Z, +X = driver's left on this LHD model)
     const mode = state.cameraMode;
     let lookAhead = 14;
@@ -675,8 +699,8 @@ export function createTrackScene(canvas, options = {}) {
     // inside of the corner and lowered by lookDrop. Always ahead of the driver, so the head never
     // swings round; mouse influence is a slight glance, nothing more.
     lookTarget.set(
-      camLocal.x + state.steer * 2.2 + mouse.x * 0.5,
-      camLocal.y - (off[3] || 0) - mouse.y * 0.25,
+      camLocal.x + state.steer * 2.2 + glance.x * 2.0,   // ≈ ±8° at the look-ahead distance
+      camLocal.y - (off[3] || 0) - glance.y * 1.0,       // ≈ ±4°
       camLocal.z + lookAhead,
     ).applyMatrix4(carPose.matrixWorld);
     camera.lookAt(lookTarget);
@@ -687,11 +711,18 @@ export function createTrackScene(canvas, options = {}) {
     rig.userData.wheel.rotation.z = state.steer * 1.4;
     if (playerCar && playerCar.userData.steeringWheel) playerCar.userData.steeringWheel.rotation.z = state.steer * 1.4;
 
-    // car ahead: a fixed gap up the road, wheels spin with speed
+    // the rival: close racing without theatre. Everything is a function of distance driven, so it
+    // sits still when you do. Gap breathes between ~7 m and ~17 m over a few hundred metres and
+    // closes up in the corners (it brakes later than you); its line is a racing line — a little
+    // toward the inside of each bend — never a dodge out of your way, and never behind you.
     if (carAhead) {
-      const ua = (u + 34 / trackLength) % 1;
+      const dist = state.uSmooth * trackLength;
+      const gap = 12 + 5 * Math.sin((dist / 260) * Math.PI * 2) - 4 * Math.min(1, Math.abs(state.steer));
+      const lineTarget = 0.7 + state.steer * 1.6;                   // inside of the corner
+      state.rivalLateral += (lineTarget - state.rivalLateral) * Math.min(1, metres / 8);
+      const ua = (u + gap / trackLength) % 1;
       curve.getPointAt(ua, tmpP); curve.getTangentAt(ua, tmpT);
-      carAhead.position.copy(tmpP).addScaledVector(new THREE.Vector3().crossVectors(tmpT, UP).normalize(), 1.2 * Math.sin(state.t * 0.4));
+      carAhead.position.copy(tmpP).addScaledVector(new THREE.Vector3().crossVectors(tmpT, UP).normalize(), state.rivalLateral);
       carAhead.lookAt(carAhead.position.clone().add(tmpT));
       const spin = (state.speedMps / 0.36) * dt;
       for (const w of carAhead.userData.wheels) w.rotation.x += spin;
@@ -741,5 +772,5 @@ export function createTrackScene(canvas, options = {}) {
   setCameraMode('helmet');
   requestAnimationFrame(frame);
 
-  return { ready, setTime, setRain, setPaint, setCarAheadPaint, setCameraMode, setProgress, onFrame, trackOutline, trackPoint2D, trackLength, state, get cars() { return { ahead: carAhead, player: playerCar }; }, _debug: { scene, renderer, get composer() { return composer; }, sunLight, camera } };
+  return { ready, setTime, setRain, setGrain, setSoft, setPaint, setCarAheadPaint, setCameraMode, setProgress, onFrame, trackOutline, trackPoint2D, trackLength, state, get cars() { return { ahead: carAhead, player: playerCar }; }, _debug: { scene, renderer, get composer() { return composer; }, sunLight, camera } };
 }

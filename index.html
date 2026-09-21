@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/css/home.css">
+<link rel="stylesheet" href="assets/css/home.css?v=2">
 <script type="importmap">
 {
   "imports": {
@@ -58,12 +58,14 @@
       Track
     </button>
     <div class="garage-panel" id="garage-panel" hidden>
-      <label>Time <output id="hour-out">21:30</output>
-        <input id="hour" type="range" min="0" max="24" step="0.1" value="21.5"></label>
-      <label>Rain <output id="rain-out">85%</output>
-        <input id="rain" type="range" min="0" max="1" step="0.05" value="0.85"></label>
-      <label>Camera
-        <select id="cam"><option value="helmet">Helmet</option><option value="hood">Hood</option><option value="chase">Chase</option></select></label>
+      <label>Time <output id="hour-out">16:00</output>
+        <input id="hour" type="range" min="0" max="24" step="0.1" value="16"></label>
+      <label>Rain <output id="rain-out">15%</output>
+        <input id="rain" type="range" min="0" max="1" step="0.05" value="0.15"></label>
+      <label>Grain <output id="grain-out">65%</output>
+        <input id="grain" type="range" min="0" max="1" step="0.05" value="0.65"></label>
+      <label>Soft <output id="soft-out">10%</output>
+        <input id="soft" type="range" min="0" max="1" step="0.05" value="0.1"></label>
       <label>Paint
         <span class="swatches" id="paint">
           <button class="livery" data-c="livery" aria-label="livery" title="Race livery">#91</button>
@@ -109,8 +111,8 @@
       <div class="two">
         <div class="prose">
           <p class="lede">I’m Austin — a software engineer who builds data-heavy web apps by day and chases whatever’s interesting after hours: animation, hardware, race telemetry, the odd browser toy.</p>
-          <p>This site is a running log of that after-hours work. It’s deliberately not a résumé: the tech stack, soft skills and CV live on their own page so this lap can stay about the things I actually made.</p>
-          <a class="cta" href="about.html">About, résumé &amp; tools →</a>
+          <p>This site is a running log of that after-hours work. It’s deliberately not a resume: the tech stack, soft skills and CV live on their own page so this lap can stay about the things I actually made.</p>
+          <a class="cta" href="about.html">About, resume &amp; tools →</a>
         </div>
         <dl class="facts">
           <div><dt>Now</dt><dd>[WHAT YOU ARE WORKING ON]</dd></div>
@@ -164,7 +166,7 @@
       <span class="eyebrow">FINISH LINE</span>
       <h2>Let’s talk.</h2>
       <a class="mail" href="mailto:austincartercoffman@gmail.com">austincartercoffman@gmail.com</a>
-      <div class="links"><a href="about.html">Résumé &amp; tools</a><a href="https://github.com/austin-coffman">GitHub</a><a href="https://www.linkedin.com/in/austin-coffman-82b4a495/">LinkedIn</a></div>
+      <div class="links"><a href="about.html">Resume &amp; tools</a><a href="https://github.com/austin-coffman">GitHub</a><a href="https://www.linkedin.com/in/austin-coffman-82b4a495/">LinkedIn</a></div>
       <span class="fine">© 2026 Austin Coffman · Scene built in three.js. Car: <a href="https://sketchfab.com/3d-models/2024-porsche-992-gt3-r-b76c9b2ae2d548c3869426eac4ab8a19">“2024 Porsche 992 GT3 R”</a> by <a href="https://sketchfab.com/Tyler_Dave">Dave Love</a>, <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, livery removed. Track: <a href="https://sketchfab.com/3d-models/drift-race-track-free-b4108132c93f4736957d97e274fbd11e">“Drift Race Track Free”</a> by <a href="https://sketchfab.com/Nicholas01">Nicholas-3D</a>, <a href="http://creativecommons.org/licenses/by-nd/4.0/">CC BY-ND 4.0</a>, used unmodified.</span>
     </div>
   </section>
@@ -172,7 +174,7 @@
 </main>
 
 <script type="module">
-  import { createTrackScene } from './assets/js/scene.js?v=23';
+  import { createTrackScene } from './assets/js/scene.js?v=35';
 
   const $ = (id) => document.getElementById(id);
   // A real track: a path traced in track.html plus the model it belongs to. Missing → procedural circuit.
@@ -191,11 +193,11 @@
   scene.ready.then(() => { $('loading').classList.add('done'); });
 
   // --- scroll → distance driven. Any scrolling, up or down, moves the car forward; the circuit is a
-  //     closed loop so it simply keeps lapping. One full page of scroll ≈ one lap.
+  //     closed loop so it simply keeps lapping. About 2.2 pages of scroll ≈ one lap.
   let lastY = window.scrollY, odometer = 0; // in laps
   const readScroll = () => {
     const pxPerLap = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-    odometer += Math.abs(window.scrollY - lastY) / pxPerLap;
+    odometer += Math.abs(window.scrollY - lastY) / (pxPerLap * 2.2);
     lastY = window.scrollY;
     scene.setProgress(odometer);
   };
@@ -270,7 +272,10 @@
   let hourTimer = 0;
   hour.addEventListener('input', () => { showHour(+hour.value); clearTimeout(hourTimer); hourTimer = setTimeout(() => scene.setTime(+hour.value), 60); });
   rainIn.addEventListener('input', () => { rainOut.textContent = `${Math.round(rainIn.value * 100)}%`; scene.setRain(+rainIn.value); });
-  $('cam').addEventListener('change', (e) => scene.setCameraMode(e.target.value));
+  const pct = (el, out, fn) => el.addEventListener('input', () => { out.textContent = `${Math.round(el.value * 100)}%`; fn(+el.value); });
+  pct($('grain'), $('grain-out'), scene.setGrain);
+  pct($('soft'), $('soft-out'), scene.setSoft);
+  scene.ready.then(() => { scene.setGrain(+$('grain').value); scene.setSoft(+$('soft').value); });
   $('paint').addEventListener('click', (e) => { const c = e.target.dataset.c; if (c) scene.setPaint(c === 'livery' ? null : c); });
   const presets = { golden: [18.8, 0], noon: [12.5, 0], night: [22, 0], storm: [21.5, 0.85] };
   document.querySelector('.presets').addEventListener('click', (e) => {

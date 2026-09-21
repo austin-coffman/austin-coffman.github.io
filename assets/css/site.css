@@ -150,16 +150,34 @@ a.card:hover .cta { color: var(--accent-hover); }
 .posts a:hover strong { color: var(--accent); }
 @media (max-width: 768px) { .posts a { grid-template-columns: 1fr auto; } .posts small { grid-column: 1 / -1; } }
 
-/* timeline (experience) */
-.timeline { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
-.timeline li { display: grid; grid-template-columns: 200px 1fr; gap: var(--s-6); padding: var(--s-5) 0; border-bottom: 1px solid var(--line); }
-.timeline .when { display: flex; flex-direction: column; gap: 6px; }
-.timeline .when time { font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; }
-.timeline .when .org { font-size: 14px; color: var(--muted); line-height: 1.4; }
-.timeline .what h3 { margin-bottom: var(--s-2); }
-.timeline .what ul { margin: 0; padding-left: 1.1em; color: var(--soft); font-size: 15px; }
-.timeline .what li { margin-top: var(--s-1); }
-@media (max-width: 768px) { .timeline li { grid-template-columns: 1fr; gap: var(--s-3); } }
+/* timeline (experience): a vertical rail with a year gutter. Employers are the big nodes; each
+   role (promotion) is a small node under its employer with its own dates. Bullets stay compact. */
+.tl { list-style: none; margin: 0; padding: var(--s-2) 0 0 88px; position: relative; }
+.tl::before { content: ''; position: absolute; left: 63px; top: 0; bottom: 0; width: 2px; background: var(--line-strong); }
+.tl-org { position: relative; padding-bottom: var(--s-6); }
+.tl-org:last-child { padding-bottom: 0; }
+.tl-org::before { content: ''; position: absolute; left: -33px; top: 4px; width: 10px; height: 10px; background: var(--bg); border: 3px solid var(--accent); }
+.tl-org > header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px var(--s-3); margin-bottom: var(--s-3); }
+.tl-org > header b { font-family: var(--display); font-size: 28px; font-weight: 700; line-height: 1; text-transform: uppercase; color: var(--ink); }
+.tl-org > header .meta { font-size: 13px; color: var(--muted); }
+.tl-org > header .span { margin-left: auto; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; color: var(--accent); text-transform: uppercase; }
+.tl-org > ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s-4); }
+.tl-role { position: relative; }
+.tl-role::before { content: ''; position: absolute; left: -29px; top: 7px; width: 8px; height: 8px; background: var(--line-strong); }
+.tl-role.current::before { background: var(--accent); }
+.tl-role::after { content: attr(data-year); position: absolute; right: calc(100% + 34px); top: 1px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; color: var(--muted); }
+.tl-role h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px var(--s-3); font-size: 20px; margin-bottom: 4px; }
+.tl-role h3 time { font-family: var(--mono); font-size: 11px; font-weight: 400; letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; }
+.tl-role ul { margin: 0; padding-left: 1.05em; color: var(--soft); font-size: 13.5px; line-height: 1.45; }
+.tl-role li { margin-top: 2px; }
+@media (max-width: 768px) {
+  .tl { padding-left: 32px; }
+  .tl::before { left: 7px; }
+  .tl-org::before { left: -33px; }
+  .tl-role::before { left: -29px; }
+  .tl-role::after { display: none; }
+  .tl-org > header .span { margin-left: 0; width: 100%; }
+}
 
 /* stat strip (telemetry-style numbers) */
 .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s-4); }
@@ -205,5 +223,19 @@ figcaption { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; 
 .page-head .meta dt { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
 .page-head .meta dd { margin: 0; font-size: 15px; color: var(--ink); }
 @media (max-width: 768px) { .page-head { padding-top: 128px; } }
+
+/* detail pages run denser than the home page: smaller display sizes, 48px sections, tighter lists */
+.page-detail h1 { font-size: clamp(48px, 6.5vw, 88px); }
+.page-detail h2 { font-size: clamp(34px, 4vw, 52px); }
+.page-detail .page-head { padding: 116px 0 var(--s-6); }
+.page-detail .page-head .lede { font-size: clamp(17px, 1.4vw, 20px); }
+.page-detail .section { padding: var(--s-7) 0; }
+.page-detail .section-head { margin-bottom: var(--s-5); gap: var(--s-2); }
+.page-detail .split { gap: var(--s-7); }
+.page-detail .card h3 { font-size: 24px; }
+.page-detail .card p { font-size: 13.5px; }
+.page-detail .grid-3 { gap: var(--s-4); }
+.page-detail .footer { padding: var(--s-6) 0 var(--s-5); }
+@media (max-width: 768px) { .page-detail .page-head { padding-top: 104px; } }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

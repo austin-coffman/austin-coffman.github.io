@@ -17,7 +17,7 @@ three.js is loaded from jsdelivr through an import map in each page that needs i
 ## Structure
 
 - `index.html` — home. Sections: `hero`, `about`, `projects` (featured cards + "the log"), `contact`, separated by empty `.breather` gaps where the scene shows through. Inline module script wires scrolling, HUD, the Track settings panel, eased in-page navigation, and the loading curtain.
-- `about.html` — About & Résumé (experience timeline, awards, technologies, soft skills, education, contact).
+- `about.html` — About & Resume (experience timeline, awards, technologies, soft skills, education, contact).
 - `projects/index.html` — the full project log with a Play / Read / Watch filter; `projects/<slug>.html` — one page per project (`terminal.html` is the template). A project page is the blog post; there is no separate blog.
 - `design.html` — the design guide (internal, not linked). Renders every component from `site.css`; keep it truthful when changing styles.
 - `assets/css/site.css` — the design system: tokens, base type, nav, footer, components, detail-page shell. `assets/css/home.css` imports it and adds home-page-only rules (scene layers, HUD, Track panel, section backdrops).
@@ -33,6 +33,6 @@ three.js is loaded from jsdelivr through an import map in each page that needs i
 - **Nav and footer are duplicated per page** (`index.html`, `about.html`, `design.html`, `projects/*.html`). Nav is Projects · About · Contact; About and Contact point at the home page sections (`index.html#about`, `index.html#contact`), Projects at `projects/`. Change all copies together.
 - **Adding a project**: images under `assets/images/<slug>/`; copy `projects/terminal.html` to `projects/<slug>.html` (eyebrow `PROJECT NNN — BUILD · MON YYYY`, meta, story sectors, "Try it", pager); add a row to the log in `projects/index.html` (`<li data-kind="play|read|watch">`) and, if recent, to the home log; add a featured card on the home page and `projects/index.html` if it is showcase-worthy.
 - **Design rules live in `design.html`** — one amber accent, mono eyebrows, condensed display type, square corners, hairlines not shadows, no invented facts (unknowns stay as visible `[BRACKETS]`). Read it before restyling anything.
-- **Home page scroll** drives the car by distance in either direction (odometer), damped with a critically-damped spring; the camera aims in the car's own frame so it never looks backward. In-page links ride to their target and any user input cancels the ride. Defaults: 21:30, rain 85%, helmet cam.
+- **Home page scroll** drives the car by distance in either direction (odometer), damped with a critically-damped spring; the camera aims in the car's own frame so it never looks backward. In-page links ride to their target and any user input cancels the ride. Defaults: 16:00, rain 15%, grain 65%, soft 10%, helmet cam (the only camera).
 - **Cache-busting**: `index.html` imports `scene.js?v=N`; bump N when changing `scene.js` (browsers cache the module aggressively during local dev).
 - **Licences**: no game captures, no NC-licensed models, no third-party logos we did not license. Sponsor boards in the track model are hidden at render time (`hideMatch` in `track.js`).

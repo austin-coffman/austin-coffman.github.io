@@ -7,7 +7,7 @@
 <link rel="icon" href="assets/images/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/css/site.css">
+<link rel="stylesheet" href="assets/css/site.css?v=2">
 <style>
   .guide-nav { position: sticky; top: 96px; display: flex; flex-direction: column; gap: 6px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
   .guide-nav a { color: var(--muted); }
@@ -118,7 +118,7 @@
           <div class="scale" aria-hidden="true"><i style="height: 4px"></i><i style="height: 8px"></i><i style="height: 12px"></i><i style="height: 16px"></i><i style="height: 24px"></i><i style="height: 32px"></i><i style="height: 48px"></i><i style="height: 64px"></i><i style="height: 96px"></i></div>
           <div class="spec" style="margin-top: 8px;">--s-1 … --s-9 · 4 8 12 16 24 32 48 64 96</div>
           <div class="rule" style="margin-top: var(--s-5);"><b>Columns</b><p><code>--col</code> 1040px for sections and grids; <code>--col-narrow</code> 720px for reading. Gutter 48px desktop, 20px phone.</p></div>
-          <div class="rule"><b>Sections</b><p>64px vertical padding, a 1px <code>--line</code> between them. Every section opens with eyebrow + h2 (<code>.section-head</code>). Detail pages are dense on purpose — the home page is where space is spent.</p></div>
+          <div class="rule"><b>Sections</b><p>64px vertical padding on the home page, 48px on detail pages, a 1px <code>--line</code> between sections. Every section opens with eyebrow + h2 (<code>.section-head</code>). Detail pages also step the display sizes down (h1 ≤ 88px, h2 ≤ 52px) — they are dense on purpose; the home page is where space is spent.</p></div>
           <div class="rule"><b>Corners</b><p>None. Square edges everywhere — buttons, cards, images, tags. The only curves on the site are the track.</p></div>
           <div class="rule"><b>Borders over shadows</b><p>Surfaces are separated by 1px hairlines and a slightly lighter fill, never drop shadows.</p></div>
         </div>
@@ -160,7 +160,7 @@
           <div class="demo" style="margin-top: var(--s-3);"><ul class="posts"><li><a href="#"><small>2026-03</small><span><strong>[Interactive piece title]</strong><em>[One-line summary]</em></span><b>PLAY</b></a></li><li><a href="#"><small>2026-01</small><span><strong>[Write-up title]</strong><em>[One-line summary]</em></span><b class="ghost">READ</b></a></li></ul></div>
 
           <span class="label" style="display: block; margin-top: var(--s-6);">Timeline</span>
-          <div class="demo" style="margin-top: var(--s-3);"><ol class="timeline"><li><div class="when"><time>Jun 2025 — Present</time><span class="org">Emergent Software · Indianapolis, IN</span></div><div class="what"><h3>Senior Software Engineer</h3><ul><li>Architecting new applications and features.</li><li>Azure infrastructure and CI/CD design.</li></ul></div></li></ol></div>
+          <div class="demo" style="margin-top: var(--s-3);"><ol class="tl"><li class="tl-org"><header><b>Resultant</b><span class="meta">Technology consulting · Indianapolis, IN</span><span class="span">2020 — 2025</span></header><ol><li class="tl-role" data-year="2024"><h3>Software Engineering Manager <time>Feb 2024 — Jun 2025</time></h3><ul><li>Managed and mentored five engineers.</li><li>Set department direction on tooling, process and careers.</li></ul></li><li class="tl-role" data-year="2022"><h3>Senior Software Engineer <time>Feb 2022 — Feb 2024</time></h3><ul><li>Solution architect on new client projects.</li></ul></li></ol></li></ol></div>
 
           <span class="label" style="display: block; margin-top: var(--s-6);">Stats</span>
           <div class="demo" style="margin-top: var(--s-3);"><div class="stats"><div class="stat"><b>8<i>+</i></b><span>years .NET</span></div><div class="stat"><b>3</b><span>awards</span></div><div class="stat"><b>754<i>m</i></b><span>lap</span></div><div class="stat"><b>115</b><span>fps</span></div></div><div class="spec">Real numbers only. The accented unit (i) is optional.</div></div>
@@ -184,7 +184,7 @@ hud + fade      ← telemetry, Track, map</pre></div>
             <div class="card"><span class="num">Detail · about.html, projects/*.html, projects/index.html</span><h3>The page</h3><pre>nav (frosted)
 page-head       ← eyebrow, h1, lede, meta
 [hero figure]   ← projects only
-section …       ← 64px rhythm, hairlines
+section …       ← 48px rhythm, hairlines
 section: pager  ← projects only
 footer          ← checker, links, credits
 no scene, no hud; grain + grid ghost</pre></div>

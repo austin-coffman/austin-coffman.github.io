@@ -10,6 +10,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { Reflector } from 'three/addons/objects/Reflector.js';
 
 // 992 GT3 RS, metres
 const L = 4.57, W = 1.90, WHEELBASE = 2.457, TRACK = 1.62;
@@ -25,6 +26,34 @@ export function carMaterials(paint = 0x1d4fc4) {
     head: new THREE.MeshStandardMaterial({ color: 0x9aa3ad, emissive: 0xfff4dc, emissiveIntensity: 0, roughness: 0.2, metalness: 0.4 }),
     tail: new THREE.MeshStandardMaterial({ color: 0x3a0606, emissive: 0xff2a1e, emissiveIntensity: 0.8, roughness: 0.3 }),
   };
+}
+
+// Fit a plane to a mesh's vertices (world space): centre, two in-plane axes, normal, and half-extents.
+// Power iteration on the covariance matrix — two dominant directions span the plane, their cross is the normal.
+function planeFit(mesh) {
+  const p = mesh.geometry.attributes.position, m = mesh.matrixWorld, n = p.count;
+  const pts = new Float32Array(n * 3), v = new THREE.Vector3(), c = new THREE.Vector3();
+  for (let i = 0; i < n; i++) { v.fromBufferAttribute(p, i).applyMatrix4(m); pts[i * 3] = v.x; pts[i * 3 + 1] = v.y; pts[i * 3 + 2] = v.z; c.add(v); }
+  c.multiplyScalar(1 / n);
+  const C = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  for (let i = 0; i < n; i++) {
+    const x = pts[i * 3] - c.x, y = pts[i * 3 + 1] - c.y, z = pts[i * 3 + 2] - c.z;
+    C[0] += x * x; C[1] += x * y; C[2] += x * z; C[4] += y * y; C[5] += y * z; C[8] += z * z;
+  }
+  C[3] = C[1]; C[6] = C[2]; C[7] = C[5];
+  const mul = (M, u) => new THREE.Vector3(M[0] * u.x + M[1] * u.y + M[2] * u.z, M[3] * u.x + M[4] * u.y + M[5] * u.z, M[6] * u.x + M[7] * u.y + M[8] * u.z);
+  const power = (M, seed) => { let u = seed.clone().normalize(); for (let k = 0; k < 40; k++) u = mul(M, u).normalize(); return u; };
+  const e1 = power(C, new THREE.Vector3(0.71, 0.33, 0.62));
+  const l1 = mul(C, e1).dot(e1);
+  const D = C.slice();
+  const ex = [e1.x, e1.y, e1.z];
+  for (let r = 0; r < 3; r++) for (let s = 0; s < 3; s++) D[r * 3 + s] -= l1 * ex[r] * ex[s];
+  let e2 = power(D, new THREE.Vector3(-0.4, 0.8, 0.45));
+  e2.sub(e1.clone().multiplyScalar(e2.dot(e1))).normalize();
+  const normal = new THREE.Vector3().crossVectors(e1, e2).normalize();
+  let a = 0, b = 0, t = 0;
+  for (let i = 0; i < n; i++) { v.set(pts[i * 3] - c.x, pts[i * 3 + 1] - c.y, pts[i * 3 + 2] - c.z); a = Math.max(a, Math.abs(v.dot(e1))); b = Math.max(b, Math.abs(v.dot(e2))); t = Math.max(t, Math.abs(v.dot(normal))); }
+  return { center: c, e1, e2, normal, halfW: a, halfH: b, halfT: t };
 }
 
 // Extrude a THREE.Shape drawn in the (z, y) side plane across the car's width (x), centred on x = 0.
@@ -203,6 +232,10 @@ export async function loadCarModel(url, opts = {}) {
     solidPaint = false,                        // true: drop a baked livery texture and run one clean colour
     steerMatch = /steer/i,                     // steering wheel meshes → re-pivoted so they can turn
     glowMatch = /display|led|racelogic|electronics/i, // screens and LEDs that should light up at night
+    mirrorMatch = /mirror/i,                   // mirror glass → replaced with live planar reflectors
+    mirrors = true,
+    mirrorTilt = { interior: -14, side: -4 },  // degrees about the glass's horizontal axis; negative = look down
+    eye = new THREE.Vector3(0.3, 0.95, -0.1),  // driver's eye, car space: decides which way mirrors face
     onProgress = undefined,
   } = opts;
   const loader = new GLTFLoader();
@@ -267,16 +300,60 @@ export async function loadCarModel(url, opts = {}) {
   // Wheels rarely pivot at their own hub (game exports keep the car origin), so spinning them would
   // orbit the car. Re-parent each under a pivot placed at its bounding-box centre; spin the pivot.
   model.updateMatrixWorld(true);
-  // steering wheel: group its meshes under one pivot at their centre so it can rotate about the column
+  // steering wheel: the rim is a flat disc, so a plane fit gives its centre and the column axis exactly.
+  // The pivot's local Z is that axis; scene code sets pivot.rotation.z = steer angle.
   const steerMeshes = [];
   model.traverse((o) => { if (o.isMesh) { const ms = Array.isArray(o.material) ? o.material : [o.material]; if (steerMatch.test(o.name || '') || ms.some((m) => steerMatch.test(m?.name || ''))) steerMeshes.push(o); } });
   let steeringWheel = null;
   if (steerMeshes.length) {
-    const b = new THREE.Box3(); steerMeshes.forEach((m) => b.expandByObject(m));
+    // the wheel face is the flattest sizeable part; the hub/column is deep and would tilt the axis
+    const flat = (f) => (f.halfW * f.halfH) / Math.max(f.halfT, 0.005);
+    const rim = steerMeshes.map((m) => ({ m, f: planeFit(m) })).sort((a, b) => flat(b.f) - flat(a.f))[0];
+    // pivot +Z points at the driver, so a positive rotation.z is anticlockwise from the seat = a left turn
+    if (rim.f.normal.z > 0) { rim.f.normal.negate(); rim.f.e2.negate(); }
     steeringWheel = new THREE.Group(); steeringWheel.name = 'pivot:steering';
-    steeringWheel.position.copy(b.getCenter(new THREE.Vector3()));
+    steeringWheel.position.copy(rim.f.center);
+    steeringWheel.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(rim.f.e1, rim.f.e2, rim.f.normal));
     wrap.add(steeringWheel);
-    steerMeshes.forEach((m) => steeringWheel.attach(m));
+    // everything that sits on the wheel turns with it: the named steer parts near the face, plus any
+    // mesh whose vertices all lie within the wheel's radius (decals, crest, knob labels) — the column stays
+    const radius = Math.max(rim.f.halfW, rim.f.halfH) * 1.15;
+    const onWheel = (m) => {
+      const pos = m.geometry.attributes.position, mw = m.matrixWorld, v = new THREE.Vector3();
+      let inside = 0;
+      for (let i = 0; i < pos.count; i++) if (v.fromBufferAttribute(pos, i).applyMatrix4(mw).distanceTo(rim.f.center) < radius) inside++;
+      return inside / pos.count > 0.95;
+    };
+    const attach = [];
+    model.traverse((o) => { if (o.isMesh && (steerMeshes.includes(o) ? new THREE.Box3().setFromObject(o).getCenter(new THREE.Vector3()).distanceTo(rim.f.center) < 0.16 : onWheel(o))) attach.push(o); });
+    attach.forEach((m) => steeringWheel.attach(m));
+  }
+
+  // mirrors: each glass surface becomes a planar reflector facing the driver's eye
+  const mirrorObjs = [];
+  if (mirrors) {
+    const glass = [];
+    model.traverse((o) => { if (o.isMesh) { const ms = Array.isArray(o.material) ? o.material : [o.material]; if (ms.some((m) => mirrorMatch.test(m?.name || ''))) glass.push(o); } });
+    for (const g of glass) {
+      const f = planeFit(g);
+      if (f.halfW < 0.02 || f.halfH < 0.02) continue;
+      if (f.normal.dot(eye.clone().sub(f.center)) < 0) { f.normal.negate(); f.e2.negate(); }
+      // aim: rotate the glass about its horizontal axis so the reflection covers the road behind, not the roof
+      const interior = Math.abs(f.center.x) < 0.35;
+      const tilt = THREE.MathUtils.degToRad(interior ? mirrorTilt.interior : mirrorTilt.side);
+      const horiz = (Math.abs(f.e1.y) < Math.abs(f.e2.y) ? f.e1 : f.e2).clone().normalize(); // the in-plane axis closest to level
+      // the axis direction is arbitrary, so try both senses and keep the one that lowers the normal
+      const qa = new THREE.Quaternion().setFromAxisAngle(horiz, tilt), qb = new THREE.Quaternion().setFromAxisAngle(horiz, -tilt);
+      const q = f.normal.clone().applyQuaternion(qa).y < f.normal.clone().applyQuaternion(qb).y ? qa : qb;
+      f.normal.applyQuaternion(q); f.e1.applyQuaternion(q); f.e2.applyQuaternion(q);
+      const r = new Reflector(new THREE.PlaneGeometry(f.halfW * 1.9, f.halfH * 1.9), { textureWidth: 512, textureHeight: 256, clipBias: 0.003, color: 0xb8bcc4 });
+      r.name = 'mirror:' + (g.name || 'glass');
+      r.position.copy(f.center).addScaledVector(f.normal, 0.003);
+      r.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(f.e1, f.e2, f.normal));
+      wrap.add(r);
+      g.visible = false;
+      mirrorObjs.push(r);
+    }
   }
   const pivots = wheels.map((w) => {
     const c = new THREE.Box3().setFromObject(w).getCenter(new THREE.Vector3());
@@ -288,7 +365,7 @@ export async function loadCarModel(url, opts = {}) {
     return pivot;
   });
   const fallback = carMaterials(paint);
-  wrap.userData = { wheels: pivots, steeringWheel, liveryMap, glowMats: [...glowMats], paintMat: paintMat || fallback.paint, headMat: headMat || fallback.head, tailMat: tailMat || fallback.tail, source: url, triangles: countTriangles(model) };
+  wrap.userData = { wheels: pivots, steeringWheel, mirrors: mirrorObjs, liveryMap, glowMats: [...glowMats], paintMat: paintMat || fallback.paint, headMat: headMat || fallback.head, tailMat: tailMat || fallback.tail, source: url, triangles: countTriangles(model) };
   return wrap;
 }
 
