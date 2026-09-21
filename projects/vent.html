@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vent — Austin Coffman</title>
+<meta name="description" content="Vehicle Expense Normalization Tool — every part, mod, fill-up, loan payment and dollar for the cars in your garage, with the analytics to make sense of it.">
+<link rel="icon" href="../assets/images/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/css/site.css?v=2">
+<style>
+  /* project pages: a hero figure, then a narrow reading column with full-width figures between */
+  .hero-figure { margin-top: var(--s-6); }
+  .hero-figure img { aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+  .hero-figure .ph { aspect-ratio: 16 / 9; width: 100%; background: var(--panel); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: center; padding: var(--s-4); }
+  .story { display: flex; flex-direction: column; gap: var(--s-7); }
+  .story h2 { font-size: clamp(32px, 3.6vw, 44px); margin-bottom: var(--s-4); }
+  .story .full { width: min(100%, var(--col)); margin-left: 50%; transform: translateX(-50%); }
+  .callout { border-left: 2px solid var(--accent); padding: var(--s-3) var(--s-5); background: var(--panel); font-family: var(--display); font-size: 24px; text-transform: uppercase; line-height: 1.1; color: var(--ink); }
+  .try { display: flex; align-items: center; justify-content: space-between; gap: var(--s-5); padding: var(--s-6); background: var(--panel); border: 1px solid var(--line); flex-wrap: wrap; }
+  .try h3 { font-size: 34px; }
+  .try p { color: var(--soft); font-size: 15px; margin-top: 6px; }
+</style>
+</head>
+<body class="page-detail">
+
+<header class="nav">
+  <a class="brand" href="../index.html">Austin Coffman</a>
+  <nav>
+    <a href="./" class="current">Projects</a>
+    <a href="../index.html#about" class="muted">About</a>
+    <a href="../index.html#contact" class="muted">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <section class="page-head">
+    <div class="wrap">
+      <span class="eyebrow">Project 002 — build · Jul 2023</span>
+      <h1>Vent.</h1>
+      <p class="lede">Vehicle Expense Normalization Tool. A garage for people who track every part, mod and dollar: service history, fill-ups, registration, loans — and the cost-of-ownership analytics that turn the spreadsheet into an answer.</p>
+      <dl class="meta">
+        <div><dt>When</dt><dd>July 2023 — ongoing</dd></div>
+        <div><dt>Stack</dt><dd>Next.js · TypeScript · Supabase · MUI · Turborepo</dd></div>
+        <div><dt>Status</dt><dd>In progress — community phase</dd></div>
+        <div><dt>Site</dt><dd>[LIVE URL — vent-three.vercel.app is a different app]</dd></div>
+      </dl>
+      <figure class="hero-figure"><div class="ph" style="aspect-ratio: 16 / 9;">[PROJECT IMAGE — a screenshot of the garage or a vehicle dashboard]</div></figure>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap-narrow story">
+      <div>
+        <span class="eyebrow">Sector 1 — why</span>
+        <h2>The spreadsheet, replaced.</h2>
+        <div class="prose">
+          <p>It started as tabs in a spreadsheet — Overview, Expense, Loan, Engine Rebuild — for one car. The DIY enthusiast wants the full financial and mechanical story; the newcomer wants to know what the work is actually saving them. Vent is the tool that holds that story properly.</p>
+          <p>[WHICH CAR STARTED IT — and the number that made you want the spreadsheet gone.]</p>
+        </div>
+      </div>
+
+      <div>
+        <span class="eyebrow">Sector 2 — how</span>
+        <h2>Built like a product, on purpose.</h2>
+        <div class="prose">
+          <p>Vent is run with personas, themes, epics and a phased roadmap in the repo. Phase 1 restructured the codebase into a Turborepo monorepo — a Next.js web app, an Expo scaffold for iOS, and a shared <code>@vent/core</code> data layer — and redesigned the IA: left sidebar, a Forza-style garage grid you can drag to reorder, a vehicle dashboard with a stat strip and a service timeline.</p>
+          <p>Phase 2 shipped the core: a two-step VIN onboarding flow with NHTSA lookup, service events with line items and photos, per-vehicle analytics. Phase 3 added gas fill-ups, registration, loan tracking (cash vs. financed, APR, term, payment schedules) and a unified vehicle history, then a dedicated analytics page — total cost of ownership, $/month and $/mile per category, with drilldowns. Phase 4 is the community layer: a public build page per vehicle, an Explore feed, comments, a forum with full-text search, notifications; a marketplace and garage-level analytics are next. Phase 5 is the native iOS app on the same core.</p>
+          <p>Under it: Supabase for Postgres and auth with row-level security everywhere, public reads through security-definer RPCs, a <code>DynamicForm</code> that turns a Zod schema and a list of sections into a react-hook-form UI, MUI for the components, Recharts for the analytics.</p>
+        </div>
+      </div>
+
+      <div>
+        <span class="eyebrow">Sector 3 — what stuck</span>
+        <h2>Lessons.</h2>
+        <div class="prose">
+          <ul><li>A phased roadmap with an explicit UX gate kept the community features from landing on an inconsistent product.</li><li>Sharing a data layer between web and mobile is cheap to set up early and expensive to retrofit.</li><li>[SOMETHING YOU’D DO DIFFERENTLY]</li></ul>
+        </div>
+        <div class="callout" style="margin-top: var(--s-5);">“Every part, every mod, every dollar — and what it adds up to.”</div>
+      </div>
+
+      <div class="try">
+        <div>
+          <h3>Try it.</h3>
+          <p>[WHERE TO TRY IT — is there a public build page or a demo garage?]</p>
+        </div>
+        <a class="btn btn-primary" href="#">Open Vent →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <nav class="pager" aria-label="More projects">
+        <a href="./"><span class="label">← Back</span><strong>All projects</strong></a>
+        <a href="terminal.html"><span class="label">Next →</span><strong>Terminal in CSS</strong></a>
+      </nav>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="checker"></div>
+    <div class="footer-row">
+      <a class="brand" href="../index.html" style="font-family: var(--display); font-size: 22px; text-transform: uppercase; color: var(--ink);">Austin Coffman</a>
+      <div class="links"><a href="../index.html#projects">Projects</a><a href="../about.html">About</a><a href="mailto:austincartercoffman@gmail.com">Email</a></div>
+    </div>
+    <div class="fine">© 2026 Austin Coffman.</div>
+  </div>
+</footer>
+
+</body>
+</html>

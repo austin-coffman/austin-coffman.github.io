@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Terminal in CSS — Austin Coffman</title>
-<meta name="description" content="A browser terminal built to get properly comfortable with CSS animation and vanilla JavaScript.">
+<title>Rep Zero — Austin Coffman</title>
+<meta name="description" content="A free, offline-first weight-lifting tracker that runs as an installed iPhone PWA. No accounts, no server — every set stays on the device.">
 <link rel="icon" href="../assets/images/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -37,18 +37,18 @@
 <main>
   <section class="page-head">
     <div class="wrap">
-      <span class="eyebrow">Project 001 — build · Nov 2021</span>
-      <h1>Terminal in CSS.</h1>
-      <p class="lede">A browser terminal that talks back. A quick side project to get properly comfortable with CSS animation and vanilla JavaScript — no framework, no build step.</p>
+      <span class="eyebrow">Project 005 — build · Sep 2026</span>
+      <h1>Rep Zero.</h1>
+      <p class="lede">A free, offline-first weight-lifting tracker that runs as an installed iPhone PWA. No accounts, no server, no network calls — every set you log stays in your device’s IndexedDB.</p>
       <dl class="meta">
-        <div><dt>When</dt><dd>November 2021</dd></div>
-        <div><dt>Stack</dt><dd>HTML · CSS · JavaScript</dd></div>
+        <div><dt>When</dt><dd>September 2026</dd></div>
+        <div><dt>Stack</dt><dd>Vite · React · TypeScript · Dexie · PWA</dd></div>
         <div><dt>Status</dt><dd>Live</dd></div>
-        <div><dt>Site</dt><dd><a href="https://austin-coffman.github.io/terminal-in-css">austin-coffman.github.io/terminal-in-css →</a></dd></div>
+        <div><dt>Site</dt><dd><a href="https://rep-zero.vercel.app">rep-zero.vercel.app →</a></dd></div>
       </dl>
       <figure class="hero-figure">
-        <img src="../assets/images/terminal/terminal-0.jpg" alt="The terminal after a few commands: a fake directory listing and a prompt">
-        <figcaption>The prompt, mid-conversation.</figcaption>
+        <img src="../assets/images/rep-zero/rep-zero-0.jpg" alt="Rep Zero’s landing page: “Log a set in one tap” beside a phone mid-workout">
+        <figcaption>Named for where every set starts: the bar loaded and nothing logged yet.</figcaption>
       </figure>
     </div>
   </section>
@@ -57,50 +57,39 @@
     <div class="wrap-narrow story">
       <div>
         <span class="eyebrow">Sector 1 — why</span>
-        <h2>The itch.</h2>
+        <h2>Log a set in one tap.</h2>
         <div class="prose">
-          <p>Most of my day-job work lives behind an API. I wanted something small and visible where the entire point was the front end: how things move, how they respond, how it feels to type into it. A terminal is a perfect excuse — it’s all text, timing, and state.</p>
-          <p>[WHY A TERMINAL SPECIFICALLY — the thing you were curious about, or the reference you were chasing.]</p>
+          <p>Build your own plans, tear them up mid-workout when the rack is taken, and watch the numbers actually move. No account, no subscription, no server — and it works with no signal, because a gym basement is exactly where the signal isn’t.</p>
+          <p>[WHY YOU BUILT YOUR OWN — what the trackers you tried got wrong.]</p>
         </div>
       </div>
 
       <div>
         <span class="eyebrow">Sector 2 — how</span>
-        <h2>Built from the cursor up.</h2>
+        <h2>A phone app with no App Store.</h2>
         <div class="prose">
-          <p>The blinking cursor, the typewriter reveal and the window chrome are pure CSS animation; the command loop, history and responses are vanilla JavaScript. No dependencies — it was the whole point to feel each piece.</p>
-          <p>[TWO OR THREE SPECIFICS: the trickiest animation, how commands are parsed, what the “easter egg” commands are.]</p>
+          <p>Rep Zero is a Vite + React PWA. The service worker (vite-plugin-pwa) makes it installable and offline; Dexie wraps IndexedDB so every set, plan and history row lives on the device. The install gate appears whenever the app isn’t running standalone — in a browser you can look around first, but the bypass is session-only by design.</p>
+          <p>Five tabs — Today, Plans, Library, History, Progress — plus Settings, and an active workout that takes over the whole screen. The keypad sheet is the only numeric entry path: a set can never be logged without both a weight and a rep count, so bodyweight lifts take an explicit <code>0</code> rather than a blank.</p>
+          <p>The build is a folder of static files — landing page at <code>/</code>, app at <code>/app/</code> — with the manifest served on both so Add to Home Screen works from either. HTTPS is the one hard requirement: without it the service worker won’t register and the app can’t be installed. There is no cloud copy, so <em>Export all data (JSON)</em> in Settings is the only backup.</p>
+          <p>Built on the Nocturne design system: one CSS file holds every token, and no colour, radius or shadow is written outside it.</p>
         </div>
-        <pre class="code" style="margin-top: var(--s-5);">$ ls -l
-drwxr-xr-x   2 acoffman staff   Jan 05 2017  Desktop
--rw-r--r--   1 acoffman staff   Jul 31 2020  webhooks
-$ [YOUR FAVOURITE COMMAND]</pre>
       </div>
-
-      <figure class="full">
-        <img src="../assets/images/terminal/terminal-1.jpg" alt="Second screenshot of the terminal">
-        <figcaption>[CAPTION — what this screen shows]</figcaption>
-      </figure>
 
       <div>
         <span class="eyebrow">Sector 3 — what stuck</span>
         <h2>Lessons.</h2>
         <div class="prose">
-          <ul>
-            <li>[LESSON ONE — e.g. what CSS animation is good at, and where JS had to take over]</li>
-            <li>[LESSON TWO]</li>
-            <li>[SOMETHING YOU’D DO DIFFERENTLY]</li>
-          </ul>
+          <ul><li>Offline-first is a product decision before it is a technical one — “no server” removes accounts, billing, sync and outages in one move.</li><li>iOS can evict storage for apps left unused; if there is no cloud, the export button is not a feature, it is the backup.</li><li>[SOMETHING YOU’D DO DIFFERENTLY]</li></ul>
         </div>
-        <div class="callout" style="margin-top: var(--s-5);">“[ONE-LINE TAKEAWAY]”</div>
+        <div class="callout" style="margin-top: var(--s-5);">“No account, no subscription, no server.”</div>
       </div>
 
       <div class="try">
         <div>
           <h3>Try it.</h3>
-          <p>It runs in the browser — type <code>help</code> to start.</p>
+          <p>Open it in Safari, Share → Add to Home Screen, then open Rep Zero from there. Or just look around in the browser.</p>
         </div>
-        <a class="btn btn-primary" href="https://austin-coffman.github.io/terminal-in-css">Open the terminal →</a>
+        <a class="btn btn-primary" href="https://rep-zero.vercel.app">Open Rep Zero →</a>
       </div>
     </div>
   </section>
@@ -109,7 +98,7 @@ $ [YOUR FAVOURITE COMMAND]</pre>
     <div class="wrap">
       <nav class="pager" aria-label="More projects">
         <a href="./"><span class="label">← Back</span><strong>All projects</strong></a>
-        <a href="chain.html"><span class="label">Next →</span><strong>Chain</strong></a>
+        <a href="spare.html"><span class="label">Next →</span><strong>Spare</strong></a>
       </nav>
     </div>
   </section>
