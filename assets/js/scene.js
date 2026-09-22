@@ -712,13 +712,16 @@ export function createTrackScene(canvas, options = {}) {
     if (playerCar && playerCar.userData.steeringWheel) playerCar.userData.steeringWheel.rotation.z = state.steer * 1.4;
 
     // the rival: close racing without theatre. Everything is a function of distance driven, so it
-    // sits still when you do. Gap breathes between ~7 m and ~17 m over a few hundred metres and
-    // closes up in the corners (it brakes later than you); its line is a racing line — a little
-    // toward the inside of each bend — never a dodge out of your way, and never behind you.
+    // sits still when you do. Gap breathes between ~14 m and ~24 m over a few hundred metres and
+    // closes up in the corners (it brakes later than you), but never inside three car lengths:
+    // the gap is measured along the spline, and a tight bend cuts the chord, so a small number
+    // here puts its tail in your windscreen. Its line is a racing line — a little toward the
+    // inside of each bend — never a dodge out of your way, and never behind you.
     if (carAhead) {
       const dist = state.uSmooth * trackLength;
-      const gap = 12 + 5 * Math.sin((dist / 260) * Math.PI * 2) - 4 * Math.min(1, Math.abs(state.steer));
-      const lineTarget = 0.7 + state.steer * 1.6;                   // inside of the corner
+      const breathe = 19 + 5 * Math.sin((dist / 260) * Math.PI * 2) - 4 * Math.min(1, Math.abs(state.steer));
+      const gap = Math.max(14, breathe);
+      const lineTarget = 0.7 + state.steer * 1.1;                   // inside of the corner
       state.rivalLateral += (lineTarget - state.rivalLateral) * Math.min(1, metres / 8);
       const ua = (u + gap / trackLength) % 1;
       curve.getPointAt(ua, tmpP); curve.getTangentAt(ua, tmpT);
