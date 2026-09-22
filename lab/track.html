@@ -192,6 +192,7 @@
         return p.clone().addScaledVector(n, w / 2);
       });
       c = smoothClosed(c, passes);
+      if (reversed) c.reverse();
       window.__ringWidth = avgWidth(inner, outer);
       centre = c;
       const len = pathLength([...c, c[0]]);
@@ -225,7 +226,7 @@
   rebuild();
   function frame() {
     const w = canvas.clientWidth, h = canvas.clientHeight;
-    if (canvas.width !== (w * renderer.getPixelRatio()) | 0) {
+    if (canvas.width !== ((w * renderer.getPixelRatio()) | 0)) {
       renderer.setSize(w, h, false);
       persp.aspect = w / h; persp.updateProjectionMatrix();
       const a = w / h; ortho.left = -R * a; ortho.right = R * a; ortho.top = R; ortho.bottom = -R; ortho.updateProjectionMatrix();

@@ -84,7 +84,7 @@
 
   function frame() {
     const w = canvas.clientWidth, h = canvas.clientHeight;
-    if (canvas.width !== w * renderer.getPixelRatio() | 0) { renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+    if (canvas.width !== ((w * renderer.getPixelRatio()) | 0)) { renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
     if (car && spin) car.rotation.y += 0.004;
     if (car) for (const wh of car.userData.wheels) wh.rotation.x += 0.05;
     controls.update();

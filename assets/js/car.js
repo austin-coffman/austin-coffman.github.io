@@ -238,11 +238,13 @@ export async function loadCarModel(url, opts = {}) {
     eye = new THREE.Vector3(0.3, 0.95, -0.1),  // driver's eye, car space: decides which way mirrors face
     onProgress = undefined,
   } = opts;
-  const loader = new GLTFLoader();
-  const draco = new DRACOLoader();
+  const manager = new THREE.LoadingManager();
+  manager.onProgress = (item, loaded, total) => onProgress && onProgress({ stage: 'items', loaded, total });
+  const loader = new GLTFLoader(manager);
+  const draco = new DRACOLoader(manager);
   draco.setDecoderPath(DRACO_PATH);
   loader.setDRACOLoader(draco);
-  const gltf = await loader.loadAsync(url, onProgress);
+  const gltf = await loader.loadAsync(url, (e) => onProgress && onProgress({ stage: 'file', loaded: e.loaded, total: e.lengthComputable ? e.total : 0 }));
   const model = gltf.scene;
 
   // 1. scale + orient: longest horizontal axis becomes Z, length becomes `length`
@@ -289,6 +291,9 @@ export async function loadCarModel(url, opts = {}) {
     if (area > biggestArea) { biggestArea = area; biggest = o; }
   });
   if (!paintMat && biggest) paintMat = Array.isArray(biggest.material) ? biggest.material[0] : biggest.material;
+  // lamps: exports often name the material but ship no emissive colour, so intensity alone would light nothing
+  if (headMat && headMat.emissive && headMat.emissive.getHex() === 0) headMat.emissive.set(0xfff4dc);
+  if (tailMat && tailMat.emissive && tailMat.emissive.getHex() === 0) tailMat.emissive.set(0xff2a1e);
   const liveryMap = paintMat ? paintMat.map : null;
   if (paintMat) {
     if (solidPaint && paintMat.map) { paintMat.map = null; paintMat.needsUpdate = true; }

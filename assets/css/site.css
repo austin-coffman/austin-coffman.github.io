@@ -135,7 +135,7 @@ a.card:hover .cta { color: var(--accent-hover); }
 .card h3 { font-size: 28px; }
 .card p { font-size: 14px; line-height: 1.55; color: var(--soft); }
 .card .cta { margin-top: auto; padding-top: var(--s-3); color: var(--accent); }
-.card img, .card .ph { aspect-ratio: 16 / 10; object-fit: cover; width: 100%; margin: calc(var(--s-5) * -1) calc(var(--s-5) * -1) var(--s-2); width: calc(100% + var(--s-5) * 2); max-width: none; }
+.card img, .card .ph { aspect-ratio: 16 / 10; object-fit: cover; width: 100%; margin: calc(var(--s-4) * -1) calc(var(--s-5) * -1) var(--s-2); width: calc(100% + var(--s-5) * 2); max-width: none; }
 .card .ph { background: #14171f; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 11px; color: var(--muted); }
 
 /* post rows (playground feed) */

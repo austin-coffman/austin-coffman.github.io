@@ -15,11 +15,13 @@ const DRACO_PATH = 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs
  */
 export async function loadTrackModel(url, opts = {}) {
   const { roadMatch = /asphalt|road/i, groundMatch = /ground|terrain/i, noShadow = /leaf|leaves|foliage|tree/i, hideMatch = /banner/i, onProgress = undefined } = opts;
-  const loader = new GLTFLoader();
-  const draco = new DRACOLoader();
+  const manager = new THREE.LoadingManager();
+  manager.onProgress = (item, loaded, total) => onProgress && onProgress({ stage: 'items', loaded, total });
+  const loader = new GLTFLoader(manager);
+  const draco = new DRACOLoader(manager);
   draco.setDecoderPath(DRACO_PATH);
   loader.setDRACOLoader(draco);
-  const gltf = await loader.loadAsync(url, onProgress);
+  const gltf = await loader.loadAsync(url, (e) => onProgress && onProgress({ stage: 'file', loaded: e.loaded, total: e.lengthComputable ? e.total : 0 }));
   const root = gltf.scene;
   root.name = 'track:' + url;
 

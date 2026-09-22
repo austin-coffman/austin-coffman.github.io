@@ -10,8 +10,8 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
 import { FilmPass } from 'three/addons/postprocessing/FilmPass.js';
-import { buildProceduralGT3, loadCarModel, setCarPaint } from './car.js?v=6';
-import { loadTrackModel } from './track.js?v=2';
+import { buildProceduralGT3, loadCarModel, setCarPaint } from './car.js?v=7';
+import { loadTrackModel } from './track.js?v=3';
 
 // Drop a model here and it replaces the procedural car. First URL that exists wins:
 // a single GLB, or Sketchfab's extracted zip (models/gt3/scene.gltf + scene.bin + textures/).
@@ -356,7 +356,14 @@ export function createTrackScene(canvas, options = {}) {
   // fallen back to the procedural GT3); `ready` resolves once everything is in and shaders are warm.
   const progress = { track: 0, cars: 0 };
   const report = () => options.onProgress && options.onProgress({ ...progress });
-  const onProgress = (key) => (e) => { if (e && e.lengthComputable) progress[key] = e.loaded / e.total; else if (e && e.loaded) progress[key] = Math.min(0.95, e.loaded / 4e7); report(); };
+  // The .gltf JSON is a sliver of the download (the .bin and textures follow, counted as items by the
+  // loader's manager), so the file stage owns the first fifth of the bar and items the rest. Item totals
+  // grow as the parser discovers dependencies, so never step backwards; only a finished load reaches 1.
+  const onProgress = (key) => ({ stage, loaded, total }) => {
+    const frac = total ? loaded / total : Math.min(0.95, loaded / 4e7);
+    const v = stage === 'file' ? 0.2 * frac : 0.2 + 0.8 * frac;
+    progress[key] = Math.max(progress[key], Math.min(0.99, v)); report();
+  };
 
   const trackLoad = (trackOpt && trackOpt.model)
     ? loadTrackModel(trackOpt.model, { onProgress: onProgress('track') }).then(({ root, asphaltMat, triangles }) => {
