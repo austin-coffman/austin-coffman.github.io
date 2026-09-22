@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chain — Austin Coffman</title>
+<meta name="description" content="A daily word game. Link words end to start until every letter on the board is used. Next.js, seeded puzzles, no backend.">
+<link rel="icon" href="../assets/images/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/css/site.css?v=3">
+<script src="../assets/js/project.js" defer></script>
+<style>
+  /* project pages: a hero figure, then a narrow reading column with full-width figures between */
+  .hero-figure { margin-top: var(--s-6); }
+  .hero-figure img { aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+  .hero-figure .ph { aspect-ratio: 16 / 9; width: 100%; background: var(--panel); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: center; padding: var(--s-4); }
+  .story { display: flex; flex-direction: column; gap: var(--s-7); }
+  .story h2 { font-size: clamp(32px, 3.6vw, 44px); margin-bottom: var(--s-4); }
+  .story .full { width: min(100%, var(--col)); margin-left: 50%; transform: translateX(-50%); }
+  .callout { border-left: 2px solid var(--accent); padding: var(--s-3) var(--s-5); background: var(--panel); font-family: var(--display); font-size: 24px; text-transform: uppercase; line-height: 1.1; color: var(--ink); }
+  .try { display: flex; align-items: center; justify-content: space-between; gap: var(--s-5); padding: var(--s-6); background: var(--panel); border: 1px solid var(--line); flex-wrap: wrap; }
+  .try h3 { font-size: 34px; }
+  .try p { color: var(--soft); font-size: 15px; margin-top: 6px; }
+</style>
+</head>
+<body class="page-detail">
+
+<header class="nav">
+  <a class="brand" href="../index.html">Austin Coffman</a>
+  <nav>
+    <a href="./" class="current">Projects</a>
+    <a href="../about.html" class="muted">About</a>
+    <a href="../index.html#contact" class="muted">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <section class="page-head">
+    <div class="wrap">
+      <span class="eyebrow">Project 004 — build · Jul 2026</span>
+      <h1>Chain.</h1>
+      <p class="lede">A daily word game. Everyone gets the same chains. You clear one by spelling a run of words, each starting on the last letter of the one before, until every letter on the board is used.</p>
+      <dl class="meta">
+        <div><dt>When</dt><dd>July 2026</dd></div>
+        <div><dt>Stack</dt><dd>Next.js · React · TypeScript · Vitest</dd></div>
+        <div><dt>Status</dt><dd>Live</dd></div>
+        <div><dt>Site</dt><dd><a href="https://playthechaingame.com">playthechaingame.com →</a></dd></div>
+      </dl>
+      <figure class="hero-figure">
+        <img src="../assets/images/chain/chain-0.jpg" alt="Chain’s opening walkthrough: a pile of letters and the rule — every word starts where the last one ended">
+        <figcaption>The walkthrough a new player sees first.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap-narrow story">
+      <div>
+        <span class="eyebrow">Sector 1 — why</span>
+        <h2>The rules.</h2>
+        <div class="prose">
+          <p>Chain N words using every letter, and each word has to begin where the last one ended. The pivot letter is free; you only spend letters from the pool to finish a word. The chain is cleared when the pool is empty and every word is in the dictionary.</p>
+          <p>You can’t fail. A chain waits all day and you can reset it as often as you want. Each one you finish makes the next a bit bigger (more words, longer words), and it ramps faster past the “pro” level. There are stamps to collect, a daily streak, and an emoji grid to share.</p>
+          <p>I wanted something like Wordle: one puzzle a day, the same for everyone, done in a few minutes. Word chains were the version of that I hadn’t seen anyone make.</p>
+        </div>
+      </div>
+
+      <div>
+        <span class="eyebrow">Sector 2 — how</span>
+        <h2>How everyone gets the same puzzle.</h2>
+        <div class="prose">
+          <p>The client works out the UTC day number. That plus the index of the chain you’re on seeds a Mulberry32 PRNG, and the generator lays real words down end to start, then hands you a shuffled bag of exactly the letters those words need. Same day, same seed, same chains for everyone, and every chain is solvable by construction.</p>
+          <p>The whole dictionary ships in the client bundle, so puzzles generate instantly and offline. It’s every 4 to 8 letter word in ENABLE, about 79,000 of them minus a blocklist, front-coded down to 95 KB. Answers come from a much smaller common list of around 6,300 words, so a chain is always solvable with words you’d know, even though the game accepts far more.</p>
+          <p>Stats, streak, collection, calendar and the chain you’re on all live in <code>localStorage</code>. No accounts, no backend, no environment variables. The game logic is pure functions over a seed, covered by Vitest, and the app deploys to Vercel as-is.</p>
+        </div>
+        <pre class="code" style="margin-top: var(--s-5);">day  = floor(Date.now() / 86_400_000)
+seed = seedFor(day, chainIndex)      // Mulberry32
+lvl  = genLevel(seed, cfgSize(chainIndex))
+// → words laid head-to-tail, then their letters, shuffled</pre>
+      </div>
+
+      <div>
+        <span class="eyebrow">Sector 3 — what stuck</span>
+        <h2>Lessons.</h2>
+        <div class="prose">
+          <ul><li>A word game that rejects a word you know feels broken. Every time I tried a smaller word list, someone hit a word just outside it.</li><li>Seeded puzzles mean there is nothing to sync. Everyone can compute the same day, so a whole layer of infrastructure never has to exist.</li><li>Marketing it. I have been using AI to run the social media side and that has been its own learning curve.</li></ul>
+        </div>
+        <div class="callout" style="margin-top: var(--s-5);">“Same day, same seed, same chains.”</div>
+      </div>
+
+      <div class="try">
+        <div>
+          <h3>Play today’s chains.</h3>
+          <p>Free, in the browser, no account. There’s a practice chain if you want to learn the rules first.</p>
+        </div>
+        <a class="btn btn-primary" href="https://playthechaingame.com">Open Chain →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <nav class="pager" aria-label="More projects">
+        <a href="./"><span class="label">← Back</span><strong>All projects</strong></a>
+        <a href="rep-zero.html"><span class="label">Next →</span><strong>Rep Zero</strong></a>
+      </nav>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="checker"></div>
+    <div class="footer-row">
+      <a class="brand" href="../index.html" style="font-family: var(--display); font-size: 22px; text-transform: uppercase; color: var(--ink);">Austin Coffman</a>
+      <div class="links"><a href="../index.html#projects">Projects</a><a href="../about.html">About</a><a href="mailto:austincartercoffman@gmail.com">Email</a></div>
+    </div>
+    <div class="fine">© 2026 Austin Coffman.</div>
+  </div>
+</footer>
+
+</body>
+</html>

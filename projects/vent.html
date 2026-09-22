@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vent — Austin Coffman</title>
+<meta name="description" content="Vehicle Expense Normalization Tool. Parts, mods, fill-ups and loan payments for every car in your garage, with cost-of-ownership analytics.">
+<link rel="icon" href="../assets/images/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/css/site.css?v=3">
+<script src="../assets/js/project.js" defer></script>
+<style>
+  /* project pages: a hero figure, then a narrow reading column with full-width figures between */
+  .hero-figure { margin-top: var(--s-6); }
+  .hero-figure img { aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+  .hero-figure .ph { aspect-ratio: 16 / 9; width: 100%; background: var(--panel); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: center; padding: var(--s-4); }
+  .story { display: flex; flex-direction: column; gap: var(--s-7); }
+  .story h2 { font-size: clamp(32px, 3.6vw, 44px); margin-bottom: var(--s-4); }
+  .story .full { width: min(100%, var(--col)); margin-left: 50%; transform: translateX(-50%); }
+  .callout { border-left: 2px solid var(--accent); padding: var(--s-3) var(--s-5); background: var(--panel); font-family: var(--display); font-size: 24px; text-transform: uppercase; line-height: 1.1; color: var(--ink); }
+  .try { display: flex; align-items: center; justify-content: space-between; gap: var(--s-5); padding: var(--s-6); background: var(--panel); border: 1px solid var(--line); flex-wrap: wrap; }
+  .try h3 { font-size: 34px; }
+  .try p { color: var(--soft); font-size: 15px; margin-top: 6px; }
+</style>
+</head>
+<body class="page-detail">
+
+<header class="nav">
+  <a class="brand" href="../index.html">Austin Coffman</a>
+  <nav>
+    <a href="./" class="current">Projects</a>
+    <a href="../about.html" class="muted">About</a>
+    <a href="../index.html#contact" class="muted">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <section class="page-head">
+    <div class="wrap">
+      <span class="eyebrow">Project 002 — build · Jul 2023</span>
+      <h1>Vent.</h1>
+      <p class="lede">Vehicle Expense Normalization Tool. A garage for people who track every part, mod and dollar: service history, fill-ups, registration, loans, and cost-of-ownership analytics on top of all of it.</p>
+      <dl class="meta">
+        <div><dt>When</dt><dd>July 2023 — ongoing</dd></div>
+        <div><dt>Stack</dt><dd>Next.js · TypeScript · Supabase · MUI · Turborepo</dd></div>
+        <div><dt>Status</dt><dd>Live</dd></div>
+        <div><dt>Site</dt><dd><a href="https://vent-tool.vercel.app">vent-tool.vercel.app →</a></dd></div>
+      </dl>
+      <figure class="hero-figure">
+        <img src="../assets/images/vent/vent-0.jpg" alt="Vent’s landing page: keep your vehicle running longer, for less">
+        <figcaption>The landing page.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap-narrow story">
+      <div>
+        <span class="eyebrow">Sector 1 — why</span>
+        <h2>It started as a spreadsheet.</h2>
+        <div class="prose">
+          <p>Tabs in a spreadsheet for one car: Overview, Expense, Loan, Engine Rebuild. Someone who does their own work wants the full financial and mechanical history. Someone newer to it wants to know what doing the work themselves is actually saving. Vent is meant to answer both without the spreadsheet.</p>
+          <p>I have tracked a lot of my cars in Excel over the years. At some point I was tired of looking at Excel.</p>
+        </div>
+      </div>
+
+      <div>
+        <span class="eyebrow">Sector 2 — how</span>
+        <h2>How it’s built.</h2>
+        <div class="prose">
+          <p>The repo has personas, themes, epics and a phased roadmap, and the work follows it. Phase 1 restructured the code into a Turborepo monorepo (a Next.js web app, an Expo scaffold for iOS, and a shared <code>@vent/core</code> data layer) and redesigned the layout: left sidebar, a Forza-style garage grid you can drag to reorder, and a vehicle dashboard with a stat strip and a service timeline.</p>
+          <p>Phase 2 was the core: two-step VIN onboarding with NHTSA lookup, service events with line items and photos, per-vehicle analytics. Phase 3 added fill-ups, registration, loan tracking (cash or financed, APR, term, payment schedule), a combined vehicle history, and an analytics page with total cost of ownership and $/month and $/mile per category. Phase 4 is the community side: a public build page per vehicle, an Explore feed, comments, a forum with full-text search, notifications. A marketplace and garage-level analytics come after that. Phase 5 is the native iOS app on the same core.</p>
+          <p>Underneath, Supabase handles Postgres and auth with row-level security on everything, and public reads go through security-definer RPCs. A <code>DynamicForm</code> component turns a Zod schema and a list of sections into a react-hook-form UI. MUI for components, Recharts for the analytics.</p>
+        </div>
+      </div>
+
+      <div>
+        <span class="eyebrow">Sector 3 — what stuck</span>
+        <h2>Lessons.</h2>
+        <div class="prose">
+          <ul><li>Putting a UX gate in the roadmap before the community phase meant those features landed on a consistent product instead of a half-redesigned one.</li><li>Sharing a data layer between web and mobile was easy to set up early. It would have been a pain to add later.</li></ul>
+        </div>
+        <div class="callout" style="margin-top: var(--s-5);">“Every part, every mod, every dollar.”</div>
+      </div>
+
+      <div class="try">
+        <div>
+          <h3>Try it.</h3>
+          <p>Free to start. Add a vehicle by VIN and most of the details fill in from the lookup.</p>
+        </div>
+        <a class="btn btn-primary" href="https://vent-tool.vercel.app">Open Vent →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <nav class="pager" aria-label="More projects">
+        <a href="./"><span class="label">← Back</span><strong>All projects</strong></a>
+        <a href="terminal.html"><span class="label">Next →</span><strong>Terminal in CSS</strong></a>
+      </nav>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="checker"></div>
+    <div class="footer-row">
+      <a class="brand" href="../index.html" style="font-family: var(--display); font-size: 22px; text-transform: uppercase; color: var(--ink);">Austin Coffman</a>
+      <div class="links"><a href="../index.html#projects">Projects</a><a href="../about.html">About</a><a href="mailto:austincartercoffman@gmail.com">Email</a></div>
+    </div>
+    <div class="fine">© 2026 Austin Coffman.</div>
+  </div>
+</footer>
+
+</body>
+</html>

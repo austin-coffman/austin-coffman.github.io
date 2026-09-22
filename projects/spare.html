@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spare — Austin Coffman</title>
+<meta name="description" content="A spending tracker with no bank sync. Type in each purchase and see where the leftover money goes.">
+<link rel="icon" href="../assets/images/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/css/site.css?v=3">
+<script src="../assets/js/project.js" defer></script>
+<style>
+  /* project pages: a hero figure, then a narrow reading column with full-width figures between */
+  .hero-figure { margin-top: var(--s-6); }
+  .hero-figure img { aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+  .hero-figure .ph { aspect-ratio: 16 / 9; width: 100%; background: var(--panel); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: center; padding: var(--s-4); }
+  .story { display: flex; flex-direction: column; gap: var(--s-7); }
+  .story h2 { font-size: clamp(32px, 3.6vw, 44px); margin-bottom: var(--s-4); }
+  .story .full { width: min(100%, var(--col)); margin-left: 50%; transform: translateX(-50%); }
+  .callout { border-left: 2px solid var(--accent); padding: var(--s-3) var(--s-5); background: var(--panel); font-family: var(--display); font-size: 24px; text-transform: uppercase; line-height: 1.1; color: var(--ink); }
+  .try { display: flex; align-items: center; justify-content: space-between; gap: var(--s-5); padding: var(--s-6); background: var(--panel); border: 1px solid var(--line); flex-wrap: wrap; }
+  .try h3 { font-size: 34px; }
+  .try p { color: var(--soft); font-size: 15px; margin-top: 6px; }
+</style>
+</head>
+<body class="page-detail">
+
+<header class="nav">
+  <a class="brand" href="../index.html">Austin Coffman</a>
+  <nav>
+    <a href="./" class="current">Projects</a>
+    <a href="../about.html" class="muted">About</a>
+    <a href="../index.html#contact" class="muted">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <section class="page-head">
+    <div class="wrap">
+      <span class="eyebrow">Project 003 — build · Nov 2025</span>
+      <h1>Spare.</h1>
+      <p class="lede">A tracker for the money left over after bills and savings. You type in each purchase, and Spare shows where that money actually goes.</p>
+      <dl class="meta">
+        <div><dt>When</dt><dd>November 2025</dd></div>
+        <div><dt>Stack</dt><dd>Next.js · React · Supabase · Stripe · Tailwind</dd></div>
+        <div><dt>Status</dt><dd>Live</dd></div>
+        <div><dt>Site</dt><dd><a href="https://discretionary-spending.vercel.app">discretionary-spending.vercel.app →</a></dd></div>
+      </dl>
+      <figure class="hero-figure">
+        <img src="../assets/images/spare/spare-0.jpg" alt="Spare’s landing page: “Stop wondering where your money goes”">
+        <figcaption>The landing page.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap-narrow story">
+      <div>
+        <span class="eyebrow">Sector 1 — why</span>
+        <h2>Who it’s for.</h2>
+        <div class="prose">
+          <p>Someone who already knows how to budget. They pay their bills on time, they aren’t in trouble, they just can’t account for where the leftover money goes. They don’t need a lesson, they need to see the number.</p>
+          <p>The main use is standing at a counter, phone in hand, logging what you just bought. Reviewing the month and adjusting the goal happen later and less often.</p>
+          <p>We were planning to buy a house and I had the numbers in an Excel workbook. I wanted something my wife and I could both use from our phones instead of a spreadsheet only one of us understood.</p>
+        </div>
+      </div>
+
+      <div>
+        <span class="eyebrow">Sector 2 — how</span>
+        <h2>Why there’s no bank sync.</h2>
+        <div class="prose">
+          <p>Spare has no bank connection and I don’t plan to add one. Typing the purchase in is the part that makes you notice it. Import would skip that. Each purchase also records whether it was a want or a need and how it felt, because spotting patterns in that is the whole point.</p>
+          <p>Setup is income after tax, bills (one figure or itemised) and a savings goal. The discretionary budget is <code>income − bills − savings goal</code>. Day to day you add purchases: amount, category, want or need, a note, the date. Then there’s a dashboard, category breakdown, trends, a calendar and a ledger for the month, plus recurring charges for the things that come back.</p>
+          <p>Next.js App Router, Supabase for auth and Postgres with row-level security per user, shadcn/ui on Tailwind, Recharts for the charts, and Stripe for a free tier and a $1.99/month Pro. It ships a web manifest so it can sit on an iPhone home screen. It’s designed for the phone first; desktop works but is second.</p>
+        </div>
+      </div>
+
+      <div>
+        <span class="eyebrow">Sector 3 — what stuck</span>
+        <h2>Lessons.</h2>
+        <div class="prose">
+          <ul><li>Leaving out bank sync is what makes the app work. Sometimes the missing feature is the product.</li><li>Purchase dates are plain <code>YYYY-MM-DD</code> strings, never a <code>Date</code>. Timezones only cause problems when the question is what you bought on Tuesday.</li><li>Possibly a different component library. shadcn/ui is fine, but I would try something else next time.</li></ul>
+        </div>
+        <div class="callout" style="margin-top: var(--s-5);">“Just the money you actually have to spend.”</div>
+      </div>
+
+      <div class="try">
+        <div>
+          <h3>Try it.</h3>
+          <p>Free tier: 50 purchases a month, 5 categories, 3 months of history. Pro unlocks the rest.</p>
+        </div>
+        <a class="btn btn-primary" href="https://discretionary-spending.vercel.app">Open Spare →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <nav class="pager" aria-label="More projects">
+        <a href="./"><span class="label">← Back</span><strong>All projects</strong></a>
+        <a href="vent.html"><span class="label">Next →</span><strong>Vent</strong></a>
+      </nav>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="checker"></div>
+    <div class="footer-row">
+      <a class="brand" href="../index.html" style="font-family: var(--display); font-size: 22px; text-transform: uppercase; color: var(--ink);">Austin Coffman</a>
+      <div class="links"><a href="../index.html#projects">Projects</a><a href="../about.html">About</a><a href="mailto:austincartercoffman@gmail.com">Email</a></div>
+    </div>
+    <div class="fine">© 2026 Austin Coffman.</div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Track lab — centreline extraction</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  body { margin: 0; background: #0b0c10; color: #c9c4b8; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.08em; }
+  canvas { display: block; width: 100vw; height: 100vh; }
+  .bar { position: fixed; left: 20px; top: 20px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .bar button, .bar label { background: rgba(7,8,11,0.75); border: 1px solid rgba(255,255,255,0.12); color: #c9c4b8; padding: 7px 10px; font: inherit; cursor: pointer; text-transform: uppercase; }
+  .bar button.on { color: #ffb627; border-color: #ffb627; }
+  .bar input[type=range] { width: 120px; vertical-align: middle; accent-color: #ffb627; }
+  .info { position: fixed; left: 20px; bottom: 20px; right: 20px; white-space: pre-wrap; opacity: 0.85; max-height: 30vh; overflow: auto; }
+  .legend { position: fixed; right: 20px; top: 20px; display: flex; flex-direction: column; gap: 4px; text-transform: uppercase; }
+  .legend i { display: inline-block; width: 18px; height: 3px; margin-right: 8px; vertical-align: middle; }
+</style>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/" } }
+</script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="bar">
+  <button id="top" class="on">Top</button>
+  <button id="persp">Perspective</button>
+  <button id="wire">Road wireframe</button>
+  <label>Spacing <input id="spacing" type="range" min="2" max="12" step="1" value="6"> <span id="spacing-out">6 m</span></label>
+  <label>Smooth <input id="smooth" type="range" min="0" max="8" step="1" value="3"> <span id="smooth-out">3</span></label>
+  <label>Mode <select id="mode"><option value="ring">Ring (offset inner edge)</option><option value="pair">Pair outer↔inner</option></select></label>
+  <label>Ring width <input id="width" type="range" min="6" max="30" step="1" value="14"> <span id="width-out">14 m</span></label>
+  <button id="flip">Reverse direction</button>
+  <button id="copy">Copy waypoints JSON</button>
+  <button id="save">Download path.json</button>
+</div>
+<div class="legend">
+  <span><i style="background:#ff3b30"></i>outer boundary</span>
+  <span><i style="background:#3dd68c"></i>inner boundary</span>
+  <span><i style="background:#ffb627"></i>centreline</span>
+  <span><i style="background:#7fa6ff"></i>start / direction</span>
+</div>
+<div class="info" id="info">loading…</div>
+<script type="module">
+  import * as THREE from 'three';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+  import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+  const MODEL = '../assets/models/drift_race_track_free/scene.gltf';
+  const ROAD_NAME = /road/i;
+
+  const canvas = document.getElementById('c');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 0.9;
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0b0c10);
+  scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x334433, 0.6));
+  const sun = new THREE.DirectionalLight(0xffffff, 2); sun.position.set(200, 300, 100); scene.add(sun);
+
+  const persp = new THREE.PerspectiveCamera(45, 1, 0.5, 5000);
+  const ortho = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 5000);
+  let camera = ortho;
+  const controls = new OrbitControls(camera, canvas);
+  controls.enableDamping = true;
+  const info = document.getElementById('info');
+  const log = (s) => { info.textContent = s; console.log(s); };
+
+  // ---------- geometry helpers ----------
+  function worldPositions(mesh) {
+    const g = mesh.geometry, p = g.attributes.position, m = mesh.matrixWorld;
+    const out = new Float32Array(p.count * 3); const v = new THREE.Vector3();
+    for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i).applyMatrix4(m); out[i * 3] = v.x; out[i * 3 + 1] = v.y; out[i * 3 + 2] = v.z; }
+    return out;
+  }
+  // merge duplicate vertices by position (seams), return remapped index list
+  function weld(pos, index) {
+    const map = new Map(), remap = new Int32Array(pos.length / 3), uniq = [];
+    for (let i = 0; i < pos.length / 3; i++) {
+      const k = `${Math.round(pos[i * 3] * 100)}|${Math.round(pos[i * 3 + 1] * 100)}|${Math.round(pos[i * 3 + 2] * 100)}`;
+      let j = map.get(k);
+      if (j === undefined) { j = uniq.length; map.set(k, j); uniq.push([pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]]); }
+      remap[i] = j;
+    }
+    const idx = index ? Array.from(index.array, (i) => remap[i]) : Array.from(remap);
+    return { uniq, idx };
+  }
+  function boundaryLoops(uniq, idx) {
+    const edges = new Map();
+    const key = (a, b) => (a < b ? a * 1e7 + b : b * 1e7 + a);
+    for (let t = 0; t < idx.length; t += 3) {
+      const tri = [idx[t], idx[t + 1], idx[t + 2]];
+      for (let e = 0; e < 3; e++) { const a = tri[e], b = tri[(e + 1) % 3]; if (a === b) continue; const k = key(a, b); edges.set(k, (edges.get(k) || 0) + 1); }
+    }
+    const adj = new Map();
+    for (const [k, n] of edges) {
+      if (n !== 1) continue;
+      const a = Math.floor(k / 1e7), b = k % 1e7;
+      (adj.get(a) || adj.set(a, []).get(a)).push(b);
+      (adj.get(b) || adj.set(b, []).get(b)).push(a);
+    }
+    const seen = new Set(), loops = [];
+    for (const start of adj.keys()) {
+      if (seen.has(start)) continue;
+      const loop = [start]; seen.add(start);
+      let prev = -1, cur = start;
+      while (true) {
+        const nb = (adj.get(cur) || []).filter((n) => n !== prev && !seen.has(n));
+        if (!nb.length) break;
+        prev = cur; cur = nb[0]; seen.add(cur); loop.push(cur);
+      }
+      loops.push(loop.map((i) => new THREE.Vector3(...uniq[i])));
+    }
+    loops.sort((a, b) => pathLength(b) - pathLength(a));
+    return loops;
+  }
+  const pathLength = (pts) => { let l = 0; for (let i = 1; i < pts.length; i++) l += pts[i].distanceTo(pts[i - 1]); return l; };
+  function resample(pts, spacing, closed = true) {
+    const src = closed ? [...pts, pts[0]] : pts;
+    const out = [pts[0].clone()]; let acc = 0;
+    for (let i = 1; i < src.length; i++) {
+      const a = src[i - 1], b = src[i], d = a.distanceTo(b);
+      let t = spacing - acc;
+      while (t <= d) { out.push(a.clone().lerp(b, t / d)); t += spacing; }
+      acc = (acc + d) % spacing;
+    }
+    return out;
+  }
+  function nearestOn(pts, p) {
+    let best = null, bd = Infinity;
+    for (const q of pts) { const d = q.distanceToSquared(p); if (d < bd) { bd = d; best = q; } }
+    return best;
+  }
+  function smoothClosed(pts, passes) {
+    let cur = pts;
+    for (let k = 0; k < passes; k++) {
+      cur = cur.map((p, i) => { const a = cur[(i - 1 + cur.length) % cur.length], b = cur[(i + 1) % cur.length]; return new THREE.Vector3().addVectors(a, b).multiplyScalar(0.25).addScaledVector(p, 0.5); });
+    }
+    return cur;
+  }
+  function signedArea(pts) { let a = 0; for (let i = 0; i < pts.length; i++) { const p = pts[i], q = pts[(i + 1) % pts.length]; a += p.x * q.z - q.x * p.z; } return a / 2; }
+
+  // ---------- load ----------
+  let road = null, loops = [], centre = [], reversed = false;
+  const lines = new THREE.Group(); scene.add(lines);
+  const loader = new GLTFLoader();
+  const gltf = await loader.loadAsync(MODEL);
+  const model = gltf.scene;
+  scene.add(model);
+  model.updateMatrixWorld(true);
+  model.traverse((o) => { if (o.isMesh && ROAD_NAME.test(o.parent?.name || o.name)) road = road || o; });
+  const box = new THREE.Box3().setFromObject(model), size = box.getSize(new THREE.Vector3()), ctr = box.getCenter(new THREE.Vector3());
+  if (!road) { log('no road mesh found'); throw new Error('no road'); }
+
+  // camera framing
+  const R = Math.max(size.x, size.z) * 0.6;
+  ortho.left = -R; ortho.right = R; ortho.top = R; ortho.bottom = -R;
+  ortho.position.set(ctr.x, 600, ctr.z); ortho.lookAt(ctr.x, 0, ctr.z);
+  persp.position.set(ctr.x + 200, 160, ctr.z + 260);
+  controls.target.copy(ctr);
+
+  function rebuild() {
+    lines.clear();
+    const pos = worldPositions(road);
+    const { uniq, idx } = weld(pos, road.geometry.index);
+    loops = boundaryLoops(uniq, idx);
+    const spacing = +document.getElementById('spacing').value, passes = +document.getElementById('smooth').value;
+    let msg = `road "${road.parent?.name}" · ${(idx.length / 3).toLocaleString()} tris · ${uniq.length.toLocaleString()} welded verts · model ${size.x.toFixed(0)} × ${size.z.toFixed(0)} m\n`;
+    msg += `boundary loops: ${loops.length} → ${loops.map((l) => Math.round(pathLength(l)) + ' m').join(', ')}\n`;
+    const colors = [0xff3b30, 0x3dd68c, 0x7fa6ff, 0xff7fd6, 0xffffff];
+    loops.forEach((l, i) => lines.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([...l, l[0]].map((p) => p.clone().setY(p.y + 0.3))), new THREE.LineBasicMaterial({ color: colors[i % colors.length] }))));
+    const mode = document.getElementById('mode').value;
+    if (mode === 'ring' && loops.length >= 2) {
+      // Walk the ring's inner edge (loop 1) and push each point outward by half the road width.
+      // The outer loop is only used to measure the local width, clamped so junctions can't pull the line off the ring.
+      const inner = resample(loops[1], spacing), outer = resample(loops[0], 1.5);
+      const maxW = +document.getElementById('width').value;
+      // outward side is fixed by the loop's winding, so concave notches don't flip it
+      const side = signedArea(inner) > 0 ? 1 : -1;
+      const probe = inner[0], pt = inner[1].clone().sub(inner[inner.length - 1]).setY(0).normalize();
+      const pn = new THREE.Vector3(-pt.z, 0, pt.x).multiplyScalar(side);
+      const flip = pn.dot(nearestOn(outer, probe).clone().sub(probe).setY(0)) < 0 ? -1 : 1;
+      let c = inner.map((p, i) => {
+        const a = inner[(i - 1 + inner.length) % inner.length], b = inner[(i + 1) % inner.length];
+        const t = b.clone().sub(a).setY(0).normalize();
+        const n = new THREE.Vector3(-t.z, 0, t.x).multiplyScalar(side * flip);
+        const w = Math.min(maxW, Math.max(6, p.distanceTo(nearestOn(outer, p))));
+        return p.clone().addScaledVector(n, w / 2);
+      });
+      c = smoothClosed(c, passes);
+      if (reversed) c.reverse();
+      window.__ringWidth = avgWidth(inner, outer);
+      centre = c;
+      const len = pathLength([...c, c[0]]);
+      msg += `centreline: ${c.length} waypoints · ${Math.round(len)} m lap · road width ≈ ${(pathLength(loops[0]) - pathLength(loops[1])) / (2 * Math.PI) > 0 ? '' : ''}${avgWidth(outer, inner).toFixed(1)} m\n`;
+      lines.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([...c, c[0]].map((p) => p.clone().setY(p.y + 0.5))), new THREE.LineBasicMaterial({ color: 0xffb627 })));
+      const start = c[0], dir = c[1].clone().sub(c[0]).normalize();
+      lines.add(new THREE.ArrowHelper(dir, start.clone().setY(start.y + 1), 25, 0x7fa6ff, 8, 5));
+    } else {
+      msg += 'need two boundary loops (inner + outer) for automatic centreline — inspect the loops above.\n';
+      centre = [];
+    }
+    log(msg);
+  }
+  function avgWidth(outer, inner) { let s = 0; for (const p of outer) s += p.distanceTo(nearestOn(inner, p)); return s / outer.length; }
+
+  const wps = () => centre.map((p) => [+p.x.toFixed(2), +p.y.toFixed(2), +p.z.toFixed(2)]);
+  const pathJSON = () => JSON.stringify({ model: MODEL, up: 'y', units: 'm', closed: true, waypoints: wps() });
+  document.getElementById('copy').addEventListener('click', async () => { await navigator.clipboard.writeText(pathJSON()); log('copied ' + centre.length + ' waypoints'); });
+  document.getElementById('save').addEventListener('click', () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([pathJSON()], { type: 'application/json' })); a.download = 'path.json'; a.click(); });
+  document.getElementById('flip').addEventListener('click', () => { reversed = !reversed; rebuild(); });
+  document.getElementById('mode').addEventListener('change', rebuild);
+  document.getElementById('width').addEventListener('input', (e) => { document.getElementById('width-out').textContent = e.target.value + ' m'; rebuild(); });
+  document.getElementById('spacing').addEventListener('input', (e) => { document.getElementById('spacing-out').textContent = e.target.value + ' m'; rebuild(); });
+  document.getElementById('smooth').addEventListener('input', (e) => { document.getElementById('smooth-out').textContent = e.target.value; rebuild(); });
+  document.getElementById('top').addEventListener('click', () => { camera = ortho; controls.object = ortho; controls.target.copy(ctr); setOn('top'); });
+  document.getElementById('persp').addEventListener('click', () => { camera = persp; controls.object = persp; controls.target.copy(ctr); setOn('persp'); });
+  document.getElementById('wire').addEventListener('click', (e) => { road.material.wireframe = !road.material.wireframe; e.target.classList.toggle('on', road.material.wireframe); });
+  function setOn(id) { for (const b of ['top', 'persp']) document.getElementById(b).classList.toggle('on', b === id); }
+  window.__lab = { get centre() { return centre; }, get loops() { return loops; }, road, model, pathJSON };
+
+  rebuild();
+  function frame() {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    if (canvas.width !== ((w * renderer.getPixelRatio()) | 0)) {
+      renderer.setSize(w, h, false);
+      persp.aspect = w / h; persp.updateProjectionMatrix();
+      const a = w / h; ortho.left = -R * a; ortho.right = R * a; ortho.top = R; ortho.bottom = -R; ortho.updateProjectionMatrix();
+    }
+    controls.update();
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  frame();
+</script>
+</body>
+</html>

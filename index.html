@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en" class="no-scene">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Austin Coffman — software engineer</title>
+<meta name="description" content="Austin Coffman is a software engineer in Indianapolis. Games, tools and experiments he built because he wanted them to exist, with the story behind each one.">
+<link rel="icon" href="assets/images/favicon.ico">
+<link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/css/home.css?v=5">
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
+<script>
+  // The page starts in its plain "no-scene" state (that is also what <noscript> readers get). Scripts run,
+  // so hand it to the scene — and take it back if the scene can't happen: no WebGL, no import-map support
+  // (the module never runs), three.js unreachable, or anything thrown before the first frame is ready.
+  (function () {
+    var html = document.documentElement;
+    html.classList.remove('no-scene');
+    window.__noScene = function (why) {
+      if (html.classList.contains('no-scene')) return;
+      console.warn('[track] no scene:', why);
+      html.classList.add('no-scene');
+    };
+    try {
+      var c = document.createElement('canvas');
+      if (!(c.getContext('webgl2') || c.getContext('webgl'))) __noScene('WebGL unavailable');
+    } catch (e) { __noScene(e); }
+    if (!(window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('importmap'))) __noScene('import maps unsupported');
+    window.addEventListener('error', function (e) { if (!window.__sceneReady) __noScene(e.message || e); });
+    window.addEventListener('unhandledrejection', function (e) { if (!window.__sceneReady) __noScene(e.reason); });
+  })();
+</script>
+</head>
+<body>
+
+<canvas id="scene" aria-hidden="true"></canvas>
+<div class="grade" aria-hidden="true"></div>
+<div class="loading" id="loading"><span class="rec"></span> <span id="loading-text">loading the track…</span><span class="loading-bar"><i id="loading-fill"></i></span><a class="loading-skip" id="loading-skip" href="#" hidden>skip the load →</a></div>
+
+<!-- fixed chrome -->
+<header class="nav">
+  <a class="brand" href="index.html">Austin Coffman</a>
+  <nav>
+    <a href="projects/">Projects</a>
+    <a href="about.html" class="muted">About</a>
+    <a href="#contact" class="muted">Contact</a>
+  </nav>
+</header>
+
+<!-- compact telemetry strip (the fade band behind it keeps content from running under the HUD) -->
+<div class="hud-fade" aria-hidden="true"></div>
+<div class="hud" aria-live="off">
+  <div class="hud-left">
+  <div class="tele">
+    <span class="rec"></span>
+    <span class="lbl">CAM 01</span>
+    <span class="sep"></span>
+    <span class="val" id="speed">0</span><span class="lbl">MPH</span>
+    <span class="sep"></span>
+    <span class="val accent" id="gear">N</span><span class="lbl">GEAR</span>
+    <span class="sep"></span>
+    <span class="segs" id="rpm"></span>
+    <span class="sep"></span>
+    <span class="lbl">S<b id="sector">1</b></span>
+  </div>
+  <!-- track settings: a quiet pill that opens a small panel above it -->
+  <div class="garage" id="garage">
+    <button class="garage-toggle" id="garage-toggle" aria-expanded="false" aria-controls="garage-panel">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+      Track
+    </button>
+    <div class="garage-panel" id="garage-panel" hidden>
+      <label>Time <output id="hour-out">16:00</output>
+        <input id="hour" type="range" min="0" max="24" step="0.1" value="16"></label>
+      <label>Rain <output id="rain-out">15%</output>
+        <input id="rain" type="range" min="0" max="1" step="0.05" value="0.15"></label>
+      <label>Grain <output id="grain-out">65%</output>
+        <input id="grain" type="range" min="0" max="1" step="0.05" value="0.65"></label>
+      <label>Soft <output id="soft-out">10%</output>
+        <input id="soft" type="range" min="0" max="1" step="0.05" value="0.1"></label>
+      <label>Paint
+        <span class="swatches" id="paint">
+          <button class="livery" data-c="livery" aria-label="livery" title="Race livery">#91</button>
+          <button style="--c:#2b6cff" data-c="#2b6cff" aria-label="blue"></button>
+          <button style="--c:#e4342f" data-c="#e4342f" aria-label="red"></button>
+          <button style="--c:#f2b33d" data-c="#f2b33d" aria-label="yellow"></button>
+          <button style="--c:#e8e6df" data-c="#e8e6df" aria-label="white"></button>
+          <button style="--c:#1a1c22" data-c="#1a1c22" aria-label="black"></button>
+        </span></label>
+      <div class="presets">
+        <button data-preset="golden">Golden</button>
+        <button data-preset="noon">Noon</button>
+        <button data-preset="night">Night</button>
+        <button data-preset="storm">Storm</button>
+      </div>
+    </div>
+  </div>
+  </div>
+  <svg id="minimap" viewBox="0 0 120 120" width="84" height="84" aria-hidden="true">
+    <polyline id="map-outline" fill="none" stroke="#2A2F3E" stroke-width="7" stroke-linejoin="round"></polyline>
+    <polyline id="map-outline2" fill="none" stroke="#7C829A" stroke-width="2.5" stroke-linejoin="round"></polyline>
+    <circle id="map-dot" r="5" fill="#FFB627"></circle>
+  </svg>
+</div>
+
+
+<!-- the page: one lap -->
+<main class="page">
+
+  <section class="hero">
+    <span class="eyebrow">LAP 1 — PERSONAL WORK</span>
+    <h1>Built after<br>the checkered flag.</h1>
+    <p>Software engineer. These are the things I build because I wanted them to exist. <span class="scene-only">Scroll to take a lap.</span></p>
+    <span class="scroll-cue">SCROLL TO DRIVE ↓</span>
+  </section>
+
+  <div class="breather"></div>
+
+  <section class="block" id="about">
+    <div class="col">
+      <span class="eyebrow">SECTOR 1 — THE DRIVER</span>
+      <h2>Coffee, cars, computers.</h2>
+      <div class="two">
+        <div class="prose">
+          <p class="lede">I’m Austin, a software engineer in Indianapolis. When something bugs me enough I build a tool for it. That’s where a word game, a garage ledger and a lifting log came from.</p>
+          <p>This site is the log of those things. It isn’t a resume. The tech stack and CV have their own page, so this one can just be about what I made.</p>
+          <a class="cta" href="about.html">About, resume &amp; tools →</a>
+        </div>
+        <dl class="facts">
+          <div><dt>Now</dt><dd>Multi-agentic engineering</dd></div>
+          <div><dt>Based</dt><dd>Indianapolis, IN</dd></div>
+          <div><dt>Daily driver</dt><dd>2011 BMW E82</dd></div>
+          <div><dt>Race car</dt><dd>2005 Pontiac GTO</dd></div>
+          <div><dt>Coffee</dt><dd>Nitro cold brew</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <div class="breather"></div>
+
+  <section class="block" id="projects">
+    <div class="col">
+      <span class="eyebrow">SECTOR 2 — PROJECTS</span>
+      <h2>Built because it was interesting.</h2>
+      <p class="lede narrow">Each one gets the same write-up: what it is, why I built it, what I learned, and a link to try it.</p>
+      <a class="feature" href="projects/chain.html">
+        <img src="assets/images/chain/chain-0.jpg" alt="Chain’s opening walkthrough: a pile of letters and the one rule">
+        <div class="feature-text">
+          <small>004 · JUL 2026 · NEXT.JS · TYPESCRIPT</small>
+          <strong>Chain</strong>
+          <p>A daily word game. Link words end to start until you’ve used every letter on the board. Everyone gets the same puzzles and there is no server.</p>
+          <span class="cta">Read the story →</span>
+        </div>
+      </a>
+      <div class="grid">
+        <a class="card" href="projects/rep-zero.html"><img src="assets/images/rep-zero/rep-zero-0.jpg" alt="Rep Zero landing page"><small>005 · SEP 2026 · REACT · PWA</small><strong>Rep Zero</strong><p>A lifting tracker you install from Safari. Works with no signal, keeps everything on the phone.</p></a>
+        <a class="card" href="projects/spare.html"><img src="assets/images/spare/spare-0.jpg" alt="Spare landing page"><small>003 · NOV 2025 · NEXT.JS · SUPABASE</small><strong>Spare</strong><p>A spending tracker with no bank sync. You type each purchase in, and note how it felt.</p></a>
+        <a class="card" href="projects/vent.html"><img src="assets/images/vent/vent-0.jpg" alt="Vent landing page"><small>002 · JUL 2023 · NEXT.JS · SUPABASE</small><strong>Vent</strong><p>Parts, mods, fill-ups and loan payments for every car in your garage, and what they add up to.</p></a>
+      </div>
+      <div class="log-head">
+        <span class="eyebrow">The log</span>
+        <span class="label">Everything, newest first</span>
+      </div>
+      <ul class="posts">
+        <li><a href="projects/rep-zero.html"><small>2026-09</small><span><strong>Rep Zero</strong><em>Lifting tracker as an iPhone PWA. Every set stays on the phone.</em></span><b>PLAY</b></a></li>
+        <li><a href="projects/chain.html"><small>2026-07</small><span><strong>Chain</strong><em>Daily word game. Seeded puzzles, no backend.</em></span><b>PLAY</b></a></li>
+        <li><a href="projects/spare.html"><small>2025-11</small><span><strong>Spare</strong><em>Type in what you spend and see where it goes.</em></span><b>PLAY</b></a></li>
+        <li><a href="projects/vent.html"><small>2023-07</small><span><strong>Vent</strong><em>Vehicle expense tracking and analytics. Still growing.</em></span><b>PLAY</b></a></li>
+        <li><a href="projects/terminal.html"><small>2021-11</small><span><strong>Terminal in CSS</strong><em>A fake terminal that plays a script. CSS keyframes and a little jQuery.</em></span><b>PLAY</b></a></li>
+      </ul>
+      <a class="cta" href="projects/">All projects →</a>
+    </div>
+  </section>
+
+  <div class="breather"></div>
+
+  <section class="block finish" id="contact">
+    <div class="col">
+      <div class="checker"></div>
+      <span class="eyebrow">FINISH LINE</span>
+      <h2>Let’s talk.</h2>
+      <a class="mail" href="mailto:austincartercoffman@gmail.com">austincartercoffman@gmail.com</a>
+      <div class="links"><a href="about.html">Resume &amp; tools</a><a href="https://github.com/austin-coffman">GitHub</a><a href="https://www.linkedin.com/in/austin-coffman-82b4a495/">LinkedIn</a></div>
+      <span class="fine">© 2026 Austin Coffman · Scene built in three.js. Car: <a href="https://sketchfab.com/3d-models/2024-porsche-992-gt3-r-b76c9b2ae2d548c3869426eac4ab8a19">“2024 Porsche 992 GT3 R”</a> by <a href="https://sketchfab.com/Tyler_Dave">Dave Love</a>, <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, repainted (original livery selectable). Track: <a href="https://sketchfab.com/3d-models/drift-race-track-free-b4108132c93f4736957d97e274fbd11e">“Drift Race Track Free”</a> by <a href="https://sketchfab.com/Nicholas01">Nicholas-3D</a>, <a href="http://creativecommons.org/licenses/by-nd/4.0/">CC BY-ND 4.0</a>, used unmodified.</span>
+    </div>
+  </section>
+
+</main>
+
+<script type="module" onerror="__noScene('scene module failed to load')">
+  import { createTrackScene } from './assets/js/scene.js?v=37';
+
+  const $ = (id) => document.getElementById(id);
+  // A real track: a path traced in track.html plus the model it belongs to. Missing → procedural circuit.
+  let track = null;
+  try { const r = await fetch('./assets/models/drift_track.path.json'); if (r.ok) track = await r.json(); } catch (e) { /* procedural */ }
+  const loadingText = $('loading-text'), loadingFill = $('loading-fill');
+  const scene = createTrackScene($('scene'), {
+    track,
+    onProgress: ({ track: t, cars: c }) => {
+      loadingFill.style.transform = `scaleX(${((t + c) / 2).toFixed(3)})`;
+      loadingText.textContent = t < 1 ? 'loading the track…' : c < 1 ? 'loading the car…' : 'warming up…';
+    },
+  });
+  window.__track = scene; // debugging handle
+  // curtain stays down until every asset is in and shaders are compiled; a failure hands the page back (see <head>)
+  scene.ready.then(() => { window.__sceneReady = true; $('loading').classList.add('done'); }, (e) => __noScene(e));
+  // slow is not broken: after a few seconds offer a way through. The scene keeps loading and fills in behind.
+  const skip = $('loading-skip');
+  setTimeout(() => { if (!window.__sceneReady) skip.hidden = false; }, 6000);
+  skip.addEventListener('click', (e) => { e.preventDefault(); $('loading').classList.add('done'); });
+
+  // --- scroll → distance driven. Any scrolling, up or down, moves the car forward; the circuit is a
+  //     closed loop so it simply keeps lapping. About 2.2 pages of scroll ≈ one lap.
+  let lastY = window.scrollY, odometer = 0; // in laps
+  const readScroll = () => {
+    const pxPerLap = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    odometer += Math.abs(window.scrollY - lastY) / (pxPerLap * 2.2);
+    lastY = window.scrollY;
+    scene.setProgress(odometer);
+  };
+  window.addEventListener('scroll', readScroll, { passive: true });
+  window.addEventListener('resize', () => { lastY = window.scrollY; });
+  readScroll();
+
+  // --- in-page links: drive there instead of snapping. Duration scales with distance; a wheel/touch
+  //     from the user cancels the ride so they are never fought for control.
+  let ride = null;
+  const cancelRide = () => { if (ride) { cancelAnimationFrame(ride.raf); ride = null; } };
+  const rideTo = (targetY) => {
+    cancelRide();
+    const from = window.scrollY, to = Math.max(0, Math.min(targetY, document.documentElement.scrollHeight - window.innerHeight));
+    const dist = Math.abs(to - from);
+    if (dist < 2) return;
+    const dur = Math.min(2400, 500 + dist * 0.45);
+    const t0 = performance.now();
+    const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+    const step = (now) => {
+      const t = Math.min(1, (now - t0) / dur);
+      window.scrollTo(0, from + (to - from) * ease(t));
+      if (t < 1) ride.raf = requestAnimationFrame(step); else ride = null;
+    };
+    ride = { raf: requestAnimationFrame(step) };
+  };
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const el = document.getElementById(a.getAttribute('href').slice(1));
+    if (!el) return;
+    e.preventDefault();
+    const navH = document.querySelector('.nav').offsetHeight;
+    rideTo(window.scrollY + el.getBoundingClientRect().top - navH * 0.6);
+    history.replaceState(null, '', a.getAttribute('href'));
+  });
+  for (const ev of ['wheel', 'touchstart', 'keydown']) window.addEventListener(ev, cancelRide, { passive: true });
+
+  // --- HUD ---
+  const rpm = $('rpm');
+  for (let i = 0; i < 10; i++) rpm.appendChild(document.createElement('i'));
+  const segs = [...rpm.children];
+  const pl = scene.trackOutline().points.map(p => p.join(',')).join(' ');
+  $('map-outline').setAttribute('points', pl);
+  $('map-outline2').setAttribute('points', pl);
+
+  scene.onFrame(({ u, speedMps }) => {
+    const mph = speedMps * 2.237;
+    $('speed').textContent = Math.round(mph);
+    $('gear').textContent = mph < 2 ? 'N' : Math.min(6, 1 + Math.floor(mph / 32));
+    const lit = mph < 2 ? 1 : Math.round(10 * (0.35 + ((mph % 32) / 32) * 0.6));
+    segs.forEach((s, i) => { s.className = i < lit ? (i >= 8 ? 'red' : i >= 6 ? 'amber' : 'on') : ''; });
+    $('sector').textContent = u < 0.28 ? '1' : u < 0.56 ? '2' : u < 0.84 ? '3' : 'F';
+    const [x, y] = scene.trackPoint2D(u);
+    $('map-dot').setAttribute('cx', x); $('map-dot').setAttribute('cy', y);
+  });
+
+  // --- garage ---
+  const toggle = $('garage-toggle'), panel = $('garage-panel');
+  toggle.addEventListener('click', () => {
+    const open = panel.hidden;
+    panel.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+    $('garage').classList.toggle('open', open);
+  });
+  document.addEventListener('click', (e) => {
+    if (!panel.hidden && !$('garage').contains(e.target)) { panel.hidden = true; toggle.setAttribute('aria-expanded', 'false'); $('garage').classList.remove('open'); }
+  });
+
+  const hour = $('hour'), hourOut = $('hour-out'), rainIn = $('rain'), rainOut = $('rain-out');
+  const showHour = (h) => { const hh = Math.floor(h), mm = Math.round((h - hh) * 60); hourOut.textContent = `${String(hh % 24).padStart(2, '0')}:${String(mm).padStart(2, '0')}`; };
+  let hourTimer = 0;
+  hour.addEventListener('input', () => { showHour(+hour.value); clearTimeout(hourTimer); hourTimer = setTimeout(() => scene.setTime(+hour.value), 60); });
+  rainIn.addEventListener('input', () => { rainOut.textContent = `${Math.round(rainIn.value * 100)}%`; scene.setRain(+rainIn.value); });
+  const pct = (el, out, fn) => el.addEventListener('input', () => { out.textContent = `${Math.round(el.value * 100)}%`; fn(+el.value); });
+  pct($('grain'), $('grain-out'), scene.setGrain);
+  pct($('soft'), $('soft-out'), scene.setSoft);
+  scene.ready.then(() => { scene.setGrain(+$('grain').value); scene.setSoft(+$('soft').value); });
+  $('paint').addEventListener('click', (e) => { const c = e.target.dataset.c; if (c) scene.setPaint(c === 'livery' ? null : c); });
+  const presets = { golden: [18.8, 0], noon: [12.5, 0], night: [22, 0], storm: [21.5, 0.85] };
+  document.querySelector('.presets').addEventListener('click', (e) => {
+    const p = presets[e.target.dataset.preset]; if (!p) return;
+    hour.value = p[0]; showHour(p[0]); scene.setTime(p[0]);
+    rainIn.value = p[1]; rainOut.textContent = `${Math.round(p[1] * 100)}%`; scene.setRain(p[1]);
+  });
+</script>
+</body>
+</html>

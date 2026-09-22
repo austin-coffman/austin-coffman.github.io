@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About & Resume — Austin Coffman</title>
+<meta name="description" content="Austin Coffman — software engineer and engineering leader. Experience, technologies, and the people side of building software.">
+<link rel="icon" href="assets/images/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="assets/css/site.css?v=3">
+<style>
+  .portrait { width: 100%; max-width: 300px; aspect-ratio: 4 / 5; object-fit: cover; filter: grayscale(100%) contrast(1.05); border: 1px solid var(--line); }
+  .portrait-cap { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.06em; margin-top: var(--s-3); }
+  .aphorisms { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .aphorisms li { padding: var(--s-2) 0; border-bottom: 1px solid var(--line); font-family: var(--display); font-size: 22px; text-transform: uppercase; line-height: 1.05; color: var(--soft); }
+  .aphorisms li::before { content: '“'; color: var(--accent); margin-right: 6px; }
+  .awards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-5); }
+  @media (max-width: 900px) { .awards { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body class="page-detail">
+
+<header class="nav">
+  <a class="brand" href="index.html">Austin Coffman</a>
+  <nav>
+    <a href="projects/">Projects</a>
+    <a href="about.html" class="current">About</a>
+    <a href="index.html#contact" class="muted">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <section class="page-head">
+    <div class="wrap">
+      <span class="eyebrow">Pit wall — about &amp; resume</span>
+      <h1>People are the point.<br>Software is how I show it.</h1>
+      <p class="lede">Engineering leader with 10+ years guiding teams and architecting scalable systems — hands-on when it counts, strategic when it matters. Firm believer that software starts and ends with people.</p>
+      <dl class="meta">
+        <div><dt>Currently</dt><dd>Senior Software Architect, Emergent Software</dd></div>
+        <div><dt>Based</dt><dd>Indianapolis, IN</dd></div>
+        <div><dt>Contact</dt><dd><a href="mailto:austincartercoffman@gmail.com">austincartercoffman@gmail.com</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap split">
+      <div>
+        <div class="section-head">
+          <span class="eyebrow">Sector 1 — the driver</span>
+          <h2>Coffee, cars, computers.</h2>
+        </div>
+        <div class="prose">
+          <p>I build data-heavy web applications and lead the people who build them. Outside of that I mess with whatever has my attention: animation, hardware, race telemetry. Most of it ends up on this site.</p>
+          <p>I started in motorsport electronics, which is where the telemetry habit comes from. Every system should tell you what it’s doing, and every number on the dash should mean something. I still think about software that way.</p>
+          <p>A few aphorisms I keep coming back to:</p>
+        </div>
+        <ul class="aphorisms" style="margin-top: var(--s-4);">
+          <li>Nothing is more permanent than a temporary fix.</li>
+          <li>I don’t need to be a chef to know when the food tastes bad.</li>
+          <li>All code is bad, but not all code adds value.</li>
+          <li>There are two hard problems in computer science: cache invalidation, naming things, and off-by-one errors.</li>
+        </ul>
+      </div>
+      <div>
+        <img class="portrait" src="assets/images/headshot.jpeg" alt="Austin Coffman">
+        <div class="portrait-cap">Fig. 1 — the author, probably caffeinated</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="experience">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Sector 2 — experience</span>
+        <h2>Where I’ve raced.</h2>
+      </div>
+      <ol class="tl">
+        <li class="tl-org">
+          <header><b>Emergent Software</b><span class="meta">Technology consulting · Indianapolis, IN</span><span class="span">2025 — now</span></header>
+          <ol>
+            <li class="tl-role current" data-year="2026">
+              <h3>Senior Software Architect <time>Mar 2026 — Present</time></h3>
+              <ul>
+                <li>Own the architecture of client solutions end to end: cloud-native design on Azure, data modelling, integration patterns, infrastructure and CI/CD.</li>
+                <li>Lead delivery teams through build and release; set technical direction and review what ships.</li>
+                <li>Partner directly with clients to turn business problems into scoped, estimated solutions, and stay accountable for delivering them.</li>
+              </ul>
+            </li>
+            <li class="tl-role" data-year="2025">
+              <h3>Senior Software Engineer <time>Jun 2025 — Mar 2026</time></h3>
+              <ul>
+                <li>Architected new applications and features; gathered technical requirements, selected technology, modelled data, designed Azure infrastructure and CI/CD.</li>
+                <li>Worked with clients to shape solutions to their business needs and estimated the effort to deliver.</li>
+                <li>Deepened Microsoft-ecosystem expertise while giving clients the best solution, not the default one.</li>
+              </ul>
+            </li>
+          </ol>
+        </li>
+        <li class="tl-org">
+          <header><b>Resultant</b><span class="meta">Technology consulting · Indianapolis, IN · 5 yrs 6 mos</span><span class="span">2020 — 2025</span></header>
+          <ol>
+            <li class="tl-role" data-year="2024">
+              <h3>Software Engineering Manager <time>Feb 2024 — Jun 2025</time></h3>
+              <ul>
+                <li>Managed and mentored five engineers, junior to staff; built a culture of continuous improvement.</li>
+                <li>Set direction for a 30+ person engineering department — tooling, process, values, career pathways; hired six engineers and two interns in 2024.</li>
+                <li>Technical Solution Owner: system architecture, cross-functional collaboration, technology advice.</li>
+              </ul>
+            </li>
+            <li class="tl-role" data-year="2022">
+              <h3>Senior Software Engineer <time>Feb 2022 — Feb 2024</time></h3>
+              <ul>
+                <li>Solution architect on new client projects — recommendations, outcomes, timelines, expectations.</li>
+                <li>Cloud deployments across Azure, AWS and GCP; CI/CD pipelines for varied deployment constraints.</li>
+                <li>Built an in-house GraphQL query builder for relational querying, reporting, comparisons and exports; refactored legacy systems for large data-load gains.</li>
+                <li>Mentored junior engineers through code review and knowledge-sharing sessions.</li>
+              </ul>
+            </li>
+            <li class="tl-role" data-year="2020">
+              <h3>Software Engineer <time>Jan 2020 — Feb 2022</time></h3>
+              <ul>
+                <li>Built and optimised RESTful APIs in .NET — multiple databases, background processing, auth, data transformation; Entity Framework, LINQ, Identity.</li>
+                <li>Architected high-performance relational databases; WebSockets for real-time in-app notifications.</li>
+              </ul>
+            </li>
+          </ol>
+        </li>
+        <li class="tl-org">
+          <header><b>Cosworth Electronics</b><span class="meta">Motorsport electronics · Indianapolis, IN · 2 yrs 7 mos</span><span class="span">2017 — 2019</span></header>
+          <ol>
+            <li class="tl-role" data-year="2017">
+              <h3>Software Engineer <time>Jun 2017 — Dec 2019</time></h3>
+              <ul>
+                <li>Managed the <strong>Live on Air</strong> WiMAX 3G telemetry system for the IndyCar Series — data-analysis and hardware-configuration tools.</li>
+                <li>Maintained multiple .NET Framework products and their documentation in a source-controlled (TFS) environment.</li>
+                <li>Technical resource to executive customers and senior engineers.</li>
+              </ul>
+            </li>
+          </ol>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="awards">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Podiums</span>
+        <h2>Awards.</h2>
+      </div>
+      <div class="awards">
+        <div class="card">
+          <span class="num">Resultant · 2023</span>
+          <h3>Ed-Fi Innovator of the Year</h3>
+          <p>Lead developer for Indiana’s Graduates Prepared to Succeed (GPS) application — statewide education data made usable for educators, learners, and parents.</p>
+        </div>
+        <div class="card">
+          <span class="num">Resultant · 2020</span>
+          <h3>Industry Innovator Award</h3>
+          <p>Lead backend developer for AMARO, a microelectronics supply-chain risk tool for the U.S. Navy that cut the critical risk-assessment process by 40%.</p>
+        </div>
+        <div class="card">
+          <span class="num">Cosworth Electronics · 2019</span>
+          <h3>Commendation</h3>
+          <p>For the complete production of an IndyCar telemetry system built on vehicle-to-everything (V2X) technology.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="stack">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Sector 3 — the toolbox</span>
+        <h2>Technologies.</h2>
+      </div>
+      <div class="grid-3">
+        <div class="card"><span class="num">01</span><h3>.NET</h3><p>10+ years building APIs that are easy to understand and use — maintainable, unit-testable, documented, and built on best practice.</p></div>
+        <div class="card"><span class="num">02</span><h3>Databases</h3><p>Elegant, performant relational design. Entity Framework, code-first migrations, PostgreSQL and MSSQL; NoSQL with Redis and MongoDB.</p></div>
+        <div class="card"><span class="num">03</span><h3>TypeScript</h3><p>Functional front-ends across many frameworks, React and Next.js included. Also: event loop go brrr.</p></div>
+        <div class="card"><span class="num">04</span><h3>Docker</h3><p>Containerised apps and services, docker-compose, registries, and Kubernetes implementations.</p></div>
+        <div class="card"><span class="num">05</span><h3>Cloud</h3><p>AWS, Azure, and GCP — compute, storage, networking and beyond. Plenty of Azure Entra integration.</p></div>
+        <div class="card"><span class="num">06</span><h3>Agentic Engineering</h3><p>Multi-agent workflows, fine-tuning models, building models in Azure Foundry.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="soft-skills">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Sector 4 — the people part</span>
+        <h2>Soft skills.</h2>
+        <p class="lede">Technical expertise without soft skills is a pizza without sauce.</p>
+      </div>
+      <div class="grid-3">
+        <div class="card"><h3>Empathy</h3><p>People need solutions created by people. Understanding others deeply is how you deliver <em>the</em> solution, not <em>a</em> solution.</p></div>
+        <div class="card"><h3>Collaboration</h3><p>Cross-functional teams are the most collaborative environment there is, and every perspective in the room is a unique one.</p></div>
+        <div class="card"><h3>Fearless problem solving</h3><p>Willing to take on the challenges others turn away from, with confidence.</p></div>
+        <div class="card"><h3>Approachability</h3><p>People have different levels of knowledge; topics deserve to be discussed at whatever level lands.</p></div>
+        <div class="card"><h3>Time management</h3><p>You can’t bake a 30-minute cake in 5 minutes — but first you have to know the cake takes 30 minutes.</p></div>
+        <div class="card"><h3>Open minded</h3><p>If I were always right I’d be retired already. Always willing to take on new ideas and concepts.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="education">
+    <div class="wrap split">
+      <div>
+        <div class="section-head">
+          <span class="eyebrow">Education</span>
+          <h2>Indiana State.</h2>
+        </div>
+        <dl class="facts">
+          <div><dt>Degree</dt><dd>B.S. in Computer Science</dd></div>
+          <div><dt>When</dt><dd>Aug 2013 — May 2017</dd></div>
+          <div><dt>Where</dt><dd>Indiana State University, Indiana</dd></div>
+        </dl>
+      </div>
+      <div>
+        <div class="section-head">
+          <span class="eyebrow">Finish line</span>
+          <h2>Let’s talk.</h2>
+        </div>
+        <p class="prose">Hiring, collaborating, or just want to argue about off-by-one errors — email is best.</p>
+        <div style="display: flex; gap: var(--s-3); flex-wrap: wrap; margin-top: var(--s-5);">
+          <a class="btn btn-primary" href="mailto:austincartercoffman@gmail.com">Email me</a>
+          <a class="btn" href="https://www.linkedin.com/in/austin-coffman-82b4a495/">LinkedIn</a>
+          <a class="btn" href="https://github.com/austin-coffman">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="checker"></div>
+    <div class="footer-row">
+      <a class="brand" href="index.html" style="font-family: var(--display); font-size: 22px; text-transform: uppercase; color: var(--ink);">Austin Coffman</a>
+      <div class="links"><a href="projects/">Projects</a><a href="about.html">About</a><a href="mailto:austincartercoffman@gmail.com">Email</a></div>
+    </div>
+    <div class="fine">© 2026 Austin Coffman.</div>
+  </div>
+</footer>
+
+</body>
+</html>
