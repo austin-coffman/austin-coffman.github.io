@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Chain — Austin Coffman</title>
-<meta name="description" content="A daily word game: link words head-to-tail until every letter on the board is used. Next.js, seeded puzzles, no backend.">
+<meta name="description" content="A daily word game. Link words end to start until every letter on the board is used. Next.js, seeded puzzles, no backend.">
 <link rel="icon" href="../assets/images/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -40,7 +40,7 @@
     <div class="wrap">
       <span class="eyebrow">Project 004 — build · Jul 2026</span>
       <h1>Chain.</h1>
-      <p class="lede">A daily word game. Everyone gets the same set of chains; you clear one by using every letter on the board across a run of words, each starting on the letter the last one ended on.</p>
+      <p class="lede">A daily word game. Everyone gets the same chains. You clear one by spelling a run of words, each starting on the last letter of the one before, until every letter on the board is used.</p>
       <dl class="meta">
         <div><dt>When</dt><dd>July 2026</dd></div>
         <div><dt>Stack</dt><dd>Next.js · React · TypeScript · Vitest</dd></div>
@@ -49,7 +49,7 @@
       </dl>
       <figure class="hero-figure">
         <img src="../assets/images/chain/chain-0.jpg" alt="Chain’s opening walkthrough: a pile of letters and the rule — every word starts where the last one ended">
-        <figcaption>The first thing a new player sees: the whole game in one example.</figcaption>
+        <figcaption>The walkthrough a new player sees first.</figcaption>
       </figure>
     </div>
   </section>
@@ -58,21 +58,21 @@
     <div class="wrap-narrow story">
       <div>
         <span class="eyebrow">Sector 1 — why</span>
-        <h2>One rule, all day.</h2>
+        <h2>The rules.</h2>
         <div class="prose">
-          <p>The pitch fits on a napkin: <em>chain N words using every letter · each word begins where the last one ended</em>. The pivot letter is free — you only spend letters from the shared pool to finish a word — and a chain is cleared when the pool is empty and every word is a real dictionary word.</p>
-          <p>There is no failing. A chain waits all day; reset and re-route as often as you like. Each one you finish makes the next a little bigger — more words, longer words — and the ramp accelerates once you pass the “pro” level. Stamps for the collection, a daily streak, and an emoji-grid result to share.</p>
-          <p>[WHY A WORD GAME — where the idea came from, and what you were playing at the time.]</p>
+          <p>Chain N words using every letter, and each word has to begin where the last one ended. The pivot letter is free; you only spend letters from the pool to finish a word. The chain is cleared when the pool is empty and every word is in the dictionary.</p>
+          <p>You can’t fail. A chain waits all day and you can reset it as often as you want. Each one you finish makes the next a bit bigger (more words, longer words), and it ramps faster past the “pro” level. There are stamps to collect, a daily streak, and an emoji grid to share.</p>
+          <p>I wanted something like Wordle: one puzzle a day, the same for everyone, done in a few minutes. Word chains were the version of that I hadn’t seen anyone make.</p>
         </div>
       </div>
 
       <div>
         <span class="eyebrow">Sector 2 — how</span>
-        <h2>Same day, same chains, no server.</h2>
+        <h2>How everyone gets the same puzzle.</h2>
         <div class="prose">
-          <p>Every player derives the day from the UTC day-number. That number plus the index of which chain-of-the-day you’re on seeds a Mulberry32 PRNG, and the generator lays real words down head-to-tail, then hands you the shuffled bag of exactly the letters those words need. Same day → same seed → same chains for everyone, and every chain is guaranteed solvable.</p>
-          <p>The whole dictionary ships in the client bundle so puzzles generate instantly and offline: every 4–8 letter word in ENABLE — about 79,000 of them, minus a blocklist — stored front-coded at 95 KB over the wire. Answers are drawn from a much smaller common core (~6,300 words), so a chain is always solvable with words you’d recognise even though the game accepts far more. Widening what’s accepted doesn’t make the game harder; it only makes it less wrong.</p>
-          <p>Progress — stats, streak, collection, calendar and the in-progress chain — lives in <code>localStorage</code>. No accounts, no backend, no environment variables; the game logic is pure and seeded, covered by Vitest, and the app deploys to Vercel as-is.</p>
+          <p>The client works out the UTC day number. That plus the index of the chain you’re on seeds a Mulberry32 PRNG, and the generator lays real words down end to start, then hands you a shuffled bag of exactly the letters those words need. Same day, same seed, same chains for everyone, and every chain is solvable by construction.</p>
+          <p>The whole dictionary ships in the client bundle, so puzzles generate instantly and offline. It’s every 4 to 8 letter word in ENABLE, about 79,000 of them minus a blocklist, front-coded down to 95 KB. Answers come from a much smaller common list of around 6,300 words, so a chain is always solvable with words you’d know, even though the game accepts far more.</p>
+          <p>Stats, streak, collection, calendar and the chain you’re on all live in <code>localStorage</code>. No accounts, no backend, no environment variables. The game logic is pure functions over a seed, covered by Vitest, and the app deploys to Vercel as-is.</p>
         </div>
         <pre class="code" style="margin-top: var(--s-5);">day  = floor(Date.now() / 86_400_000)
 seed = seedFor(day, chainIndex)      // Mulberry32
@@ -84,15 +84,15 @@ lvl  = genLevel(seed, cfgSize(chainIndex))
         <span class="eyebrow">Sector 3 — what stuck</span>
         <h2>Lessons.</h2>
         <div class="prose">
-          <ul><li>A word game that rejects a word you know is broken. Every narrower list had a real player standing just past its edge.</li><li>Deterministic puzzles from a seed remove a whole category of infrastructure — there is nothing to sync when everyone can compute the same day.</li><li>[SOMETHING YOU’D DO DIFFERENTLY]</li></ul>
+          <ul><li>A word game that rejects a word you know feels broken. Every time I tried a smaller word list, someone hit a word just outside it.</li><li>Seeded puzzles mean there is nothing to sync. Everyone can compute the same day, so a whole layer of infrastructure never has to exist.</li><li>Marketing it. I have been using AI to run the social media side and that has been its own learning curve.</li></ul>
         </div>
-        <div class="callout" style="margin-top: var(--s-5);">“Widening what’s accepted doesn’t make it harder. It makes it less wrong.”</div>
+        <div class="callout" style="margin-top: var(--s-5);">“Same day, same seed, same chains.”</div>
       </div>
 
       <div class="try">
         <div>
           <h3>Play today’s chains.</h3>
-          <p>Free, in the browser, no account. There’s a practice chain if you want the rules first.</p>
+          <p>Free, in the browser, no account. There’s a practice chain if you want to learn the rules first.</p>
         </div>
         <a class="btn btn-primary" href="https://playthechaingame.com">Open Chain →</a>
       </div>

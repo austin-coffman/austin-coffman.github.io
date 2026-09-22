@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vent — Austin Coffman</title>
-<meta name="description" content="Vehicle Expense Normalization Tool — every part, mod, fill-up, loan payment and dollar for the cars in your garage, with the analytics to make sense of it.">
+<meta name="description" content="Vehicle Expense Normalization Tool. Parts, mods, fill-ups and loan payments for every car in your garage, with cost-of-ownership analytics.">
 <link rel="icon" href="../assets/images/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -40,7 +40,7 @@
     <div class="wrap">
       <span class="eyebrow">Project 002 — build · Jul 2023</span>
       <h1>Vent.</h1>
-      <p class="lede">Vehicle Expense Normalization Tool. A garage for people who track every part, mod and dollar: service history, fill-ups, registration, loans — and the cost-of-ownership analytics that turn the spreadsheet into an answer.</p>
+      <p class="lede">Vehicle Expense Normalization Tool. A garage for people who track every part, mod and dollar: service history, fill-ups, registration, loans, and cost-of-ownership analytics on top of all of it.</p>
       <dl class="meta">
         <div><dt>When</dt><dd>July 2023 — ongoing</dd></div>
         <div><dt>Stack</dt><dd>Next.js · TypeScript · Supabase · MUI · Turborepo</dd></div>
@@ -49,7 +49,7 @@
       </dl>
       <figure class="hero-figure">
         <img src="../assets/images/vent/vent-0.jpg" alt="Vent’s landing page: keep your vehicle running longer, for less">
-        <figcaption>Track maintenance, repairs, parts and costs — so you can do your own work with confidence.</figcaption>
+        <figcaption>The landing page.</figcaption>
       </figure>
     </div>
   </section>
@@ -58,20 +58,20 @@
     <div class="wrap-narrow story">
       <div>
         <span class="eyebrow">Sector 1 — why</span>
-        <h2>The spreadsheet, replaced.</h2>
+        <h2>It started as a spreadsheet.</h2>
         <div class="prose">
-          <p>It started as tabs in a spreadsheet — Overview, Expense, Loan, Engine Rebuild — for one car. The DIY enthusiast wants the full financial and mechanical story; the newcomer wants to know what the work is actually saving them. Vent is the tool that holds that story properly.</p>
-          <p>[WHICH CAR STARTED IT — and the number that made you want the spreadsheet gone.]</p>
+          <p>Tabs in a spreadsheet for one car: Overview, Expense, Loan, Engine Rebuild. Someone who does their own work wants the full financial and mechanical history. Someone newer to it wants to know what doing the work themselves is actually saving. Vent is meant to answer both without the spreadsheet.</p>
+          <p>I have tracked a lot of my cars in Excel over the years. At some point I was tired of looking at Excel.</p>
         </div>
       </div>
 
       <div>
         <span class="eyebrow">Sector 2 — how</span>
-        <h2>Built like a product, on purpose.</h2>
+        <h2>How it’s built.</h2>
         <div class="prose">
-          <p>Vent is run with personas, themes, epics and a phased roadmap in the repo. Phase 1 restructured the codebase into a Turborepo monorepo — a Next.js web app, an Expo scaffold for iOS, and a shared <code>@vent/core</code> data layer — and redesigned the IA: left sidebar, a Forza-style garage grid you can drag to reorder, a vehicle dashboard with a stat strip and a service timeline.</p>
-          <p>Phase 2 shipped the core: a two-step VIN onboarding flow with NHTSA lookup, service events with line items and photos, per-vehicle analytics. Phase 3 added gas fill-ups, registration, loan tracking (cash vs. financed, APR, term, payment schedules) and a unified vehicle history, then a dedicated analytics page — total cost of ownership, $/month and $/mile per category, with drilldowns. Phase 4 is the community layer: a public build page per vehicle, an Explore feed, comments, a forum with full-text search, notifications; a marketplace and garage-level analytics are next. Phase 5 is the native iOS app on the same core.</p>
-          <p>Under it: Supabase for Postgres and auth with row-level security everywhere, public reads through security-definer RPCs, a <code>DynamicForm</code> that turns a Zod schema and a list of sections into a react-hook-form UI, MUI for the components, Recharts for the analytics.</p>
+          <p>The repo has personas, themes, epics and a phased roadmap, and the work follows it. Phase 1 restructured the code into a Turborepo monorepo (a Next.js web app, an Expo scaffold for iOS, and a shared <code>@vent/core</code> data layer) and redesigned the layout: left sidebar, a Forza-style garage grid you can drag to reorder, and a vehicle dashboard with a stat strip and a service timeline.</p>
+          <p>Phase 2 was the core: two-step VIN onboarding with NHTSA lookup, service events with line items and photos, per-vehicle analytics. Phase 3 added fill-ups, registration, loan tracking (cash or financed, APR, term, payment schedule), a combined vehicle history, and an analytics page with total cost of ownership and $/month and $/mile per category. Phase 4 is the community side: a public build page per vehicle, an Explore feed, comments, a forum with full-text search, notifications. A marketplace and garage-level analytics come after that. Phase 5 is the native iOS app on the same core.</p>
+          <p>Underneath, Supabase handles Postgres and auth with row-level security on everything, and public reads go through security-definer RPCs. A <code>DynamicForm</code> component turns a Zod schema and a list of sections into a react-hook-form UI. MUI for components, Recharts for the analytics.</p>
         </div>
       </div>
 
@@ -79,15 +79,15 @@
         <span class="eyebrow">Sector 3 — what stuck</span>
         <h2>Lessons.</h2>
         <div class="prose">
-          <ul><li>A phased roadmap with an explicit UX gate kept the community features from landing on an inconsistent product.</li><li>Sharing a data layer between web and mobile is cheap to set up early and expensive to retrofit.</li><li>[SOMETHING YOU’D DO DIFFERENTLY]</li></ul>
+          <ul><li>Putting a UX gate in the roadmap before the community phase meant those features landed on a consistent product instead of a half-redesigned one.</li><li>Sharing a data layer between web and mobile was easy to set up early. It would have been a pain to add later.</li></ul>
         </div>
-        <div class="callout" style="margin-top: var(--s-5);">“Every part, every mod, every dollar — and what it adds up to.”</div>
+        <div class="callout" style="margin-top: var(--s-5);">“Every part, every mod, every dollar.”</div>
       </div>
 
       <div class="try">
         <div>
           <h3>Try it.</h3>
-          <p>Free to start. Add a vehicle by VIN and the garage fills itself in.</p>
+          <p>Free to start. Add a vehicle by VIN and most of the details fill in from the lookup.</p>
         </div>
         <a class="btn btn-primary" href="https://vent-tool.vercel.app">Open Vent →</a>
       </div>

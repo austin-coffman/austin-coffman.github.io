@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Rep Zero — Austin Coffman</title>
-<meta name="description" content="A free, offline-first weight-lifting tracker that runs as an installed iPhone PWA. No accounts, no server — every set stays on the device.">
+<meta name="description" content="A free lifting tracker that installs on an iPhone as a PWA. No account, no server. Every set stays on the phone.">
 <link rel="icon" href="../assets/images/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -40,7 +40,7 @@
     <div class="wrap">
       <span class="eyebrow">Project 005 — build · Sep 2026</span>
       <h1>Rep Zero.</h1>
-      <p class="lede">A free, offline-first weight-lifting tracker that runs as an installed iPhone PWA. No accounts, no server, no network calls — every set you log stays in your device’s IndexedDB.</p>
+      <p class="lede">A free lifting tracker that installs on an iPhone as a PWA. No account, no server, no network calls. Every set you log stays in the phone’s IndexedDB.</p>
       <dl class="meta">
         <div><dt>When</dt><dd>September 2026</dd></div>
         <div><dt>Stack</dt><dd>Vite · React · TypeScript · Dexie · PWA</dd></div>
@@ -49,7 +49,7 @@
       </dl>
       <figure class="hero-figure">
         <img src="../assets/images/rep-zero/rep-zero-0.jpg" alt="Rep Zero’s landing page: “Log a set in one tap” beside a phone mid-workout">
-        <figcaption>Named for where every set starts: the bar loaded and nothing logged yet.</figcaption>
+        <figcaption>The landing page.</figcaption>
       </figure>
     </div>
   </section>
@@ -60,19 +60,19 @@
         <span class="eyebrow">Sector 1 — why</span>
         <h2>Log a set in one tap.</h2>
         <div class="prose">
-          <p>Build your own plans, tear them up mid-workout when the rack is taken, and watch the numbers actually move. No account, no subscription, no server — and it works with no signal, because a gym basement is exactly where the signal isn’t.</p>
-          <p>[WHY YOU BUILT YOUR OWN — what the trackers you tried got wrong.]</p>
+          <p>Build your own plans, change them mid-workout when the rack is taken, and see the numbers go up over time. It works with no signal, which matters because a lot of gyms are in basements.</p>
+          <p>Mostly I wanted to build a PWA and find out how close to a real app it could feel without going through the App Store. A lifting log was a good test: it has to work in a basement with no signal, and it has to be quick enough to use between sets.</p>
         </div>
       </div>
 
       <div>
         <span class="eyebrow">Sector 2 — how</span>
-        <h2>A phone app with no App Store.</h2>
+        <h2>How it works.</h2>
         <div class="prose">
-          <p>Rep Zero is a Vite + React PWA. The service worker (vite-plugin-pwa) makes it installable and offline; Dexie wraps IndexedDB so every set, plan and history row lives on the device. The install gate appears whenever the app isn’t running standalone — in a browser you can look around first, but the bypass is session-only by design.</p>
-          <p>Five tabs — Today, Plans, Library, History, Progress — plus Settings, and an active workout that takes over the whole screen. The keypad sheet is the only numeric entry path: a set can never be logged without both a weight and a rep count, so bodyweight lifts take an explicit <code>0</code> rather than a blank.</p>
-          <p>The build is a folder of static files — landing page at <code>/</code>, app at <code>/app/</code> — with the manifest served on both so Add to Home Screen works from either. HTTPS is the one hard requirement: without it the service worker won’t register and the app can’t be installed. There is no cloud copy, so <em>Export all data (JSON)</em> in Settings is the only backup.</p>
-          <p>Built on the Nocturne design system: one CSS file holds every token, and no colour, radius or shadow is written outside it.</p>
+          <p>Rep Zero is a Vite and React PWA. The service worker (vite-plugin-pwa) makes it installable and offline, and Dexie wraps IndexedDB so every set, plan and history row lives on the device. If the app isn’t running standalone you get an install prompt. You can skip it and look around in the browser, but the skip only lasts for the session.</p>
+          <p>Five tabs (Today, Plans, Library, History, Progress) plus Settings, and an active workout view that takes over the whole screen. Numbers only go in through the keypad sheet, and a set needs both a weight and a rep count, so bodyweight lifts get an explicit <code>0</code> instead of a blank.</p>
+          <p>The build is a folder of static files: landing page at <code>/</code>, app at <code>/app/</code>, with the manifest served on both so Add to Home Screen works from either. It has to be on HTTPS or the service worker won’t register and the app can’t be installed. There is no cloud copy, so <em>Export all data (JSON)</em> in Settings is the only backup.</p>
+          <p>The styling is one CSS file of tokens (the Nocturne design system). No colour, radius or shadow is written anywhere else.</p>
         </div>
       </div>
 
@@ -80,7 +80,7 @@
         <span class="eyebrow">Sector 3 — what stuck</span>
         <h2>Lessons.</h2>
         <div class="prose">
-          <ul><li>Offline-first is a product decision before it is a technical one — “no server” removes accounts, billing, sync and outages in one move.</li><li>iOS can evict storage for apps left unused; if there is no cloud, the export button is not a feature, it is the backup.</li><li>[SOMETHING YOU’D DO DIFFERENTLY]</li></ul>
+          <ul><li>Going without a server removed accounts, billing, sync and outages all at once. It was a product decision more than a technical one.</li><li>iOS can evict storage for apps you haven’t opened in a while. With no cloud copy, the export button is the backup, so it can’t be an afterthought.</li></ul>
         </div>
         <div class="callout" style="margin-top: var(--s-5);">“No account, no subscription, no server.”</div>
       </div>
@@ -88,7 +88,7 @@
       <div class="try">
         <div>
           <h3>Try it.</h3>
-          <p>Open it in Safari, Share → Add to Home Screen, then open Rep Zero from there. Or just look around in the browser.</p>
+          <p>Open it in Safari, tap Share, then Add to Home Screen, and open Rep Zero from there. Or just look around in the browser.</p>
         </div>
         <a class="btn btn-primary" href="https://rep-zero.vercel.app">Open Rep Zero →</a>
       </div>

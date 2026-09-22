@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Spare — Austin Coffman</title>
-<meta name="description" content="Track discretionary spending, learn habits and save money. Manual entry on purpose, with how each purchase felt.">
+<meta name="description" content="A spending tracker with no bank sync. Type in each purchase and see where the leftover money goes.">
 <link rel="icon" href="../assets/images/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -40,7 +40,7 @@
     <div class="wrap">
       <span class="eyebrow">Project 003 — build · Nov 2025</span>
       <h1>Spare.</h1>
-      <p class="lede">You know how to budget. You pay your bills. But somehow you’re still not saving as much as you’d like. Spare tracks the money left after income, bills and a savings goal — and where it actually goes.</p>
+      <p class="lede">A tracker for the money left over after bills and savings. You type in each purchase, and Spare shows where that money actually goes.</p>
       <dl class="meta">
         <div><dt>When</dt><dd>November 2025</dd></div>
         <div><dt>Stack</dt><dd>Next.js · React · Supabase · Stripe · Tailwind</dd></div>
@@ -49,7 +49,7 @@
       </dl>
       <figure class="hero-figure">
         <img src="../assets/images/spare/spare-0.jpg" alt="Spare’s landing page: “Stop wondering where your money goes”">
-        <figcaption>Plain, second-person, reassuring rather than scolding.</figcaption>
+        <figcaption>The landing page.</figcaption>
       </figure>
     </div>
   </section>
@@ -58,21 +58,21 @@
     <div class="wrap-narrow story">
       <div>
         <span class="eyebrow">Sector 1 — why</span>
-        <h2>Visibility, not a lecture.</h2>
+        <h2>Who it’s for.</h2>
         <div class="prose">
-          <p>The user Spare is for already understands budgeting. They pay their bills on time and aren’t in crisis — they simply can’t account for where the leftover money goes. They don’t want to be taught; they want to see the money that is already theirs to spend.</p>
-          <p>The defining moment is standing at a counter, phone in hand, logging what you just bought. Everything else — reviewing the month, adjusting the goal — happens afterwards and less often.</p>
-          <p>[WHY THIS PROBLEM — the month that made you build it.]</p>
+          <p>Someone who already knows how to budget. They pay their bills on time, they aren’t in trouble, they just can’t account for where the leftover money goes. They don’t need a lesson, they need to see the number.</p>
+          <p>The main use is standing at a counter, phone in hand, logging what you just bought. Reviewing the month and adjusting the goal happen later and less often.</p>
+          <p>We were planning to buy a house and I had the numbers in an Excel workbook. I wanted something my wife and I could both use from our phones instead of a spreadsheet only one of us understood.</p>
         </div>
       </div>
 
       <div>
         <span class="eyebrow">Sector 2 — how</span>
-        <h2>Manual entry is the feature.</h2>
+        <h2>Why there’s no bank sync.</h2>
         <div class="prose">
-          <p>Spare has no bank connection and never will. Typing the purchase in is the act that creates awareness; automatic import would remove the only moment where you actually confront the spend. And every purchase records two more things — was it a want or a need, and how did it feel — because pattern detection over feelings is the reason the app exists.</p>
-          <p>Setup once: income after tax, bills (a single figure or itemised), savings goal. The discretionary budget is derived: <code>income − bills − savings goal</code>. Daily: add a purchase — amount, category, want/need, a note, the date. Periodically: dashboard, category breakdown, trends, calendar and ledger for the month; recurring charges for the things that come back.</p>
-          <p>Next.js App Router with Supabase for auth and Postgres (row-level security per user), shadcn/ui on Tailwind, Recharts for the breakdowns, and Stripe for a free tier and a $1.99/month Pro. It ships a web manifest so it lives on an iPhone home screen — mobile-first, desktop as the fallback, entry speed on a phone ahead of desktop density.</p>
+          <p>Spare has no bank connection and I don’t plan to add one. Typing the purchase in is the part that makes you notice it. Import would skip that. Each purchase also records whether it was a want or a need and how it felt, because spotting patterns in that is the whole point.</p>
+          <p>Setup is income after tax, bills (one figure or itemised) and a savings goal. The discretionary budget is <code>income − bills − savings goal</code>. Day to day you add purchases: amount, category, want or need, a note, the date. Then there’s a dashboard, category breakdown, trends, a calendar and a ledger for the month, plus recurring charges for the things that come back.</p>
+          <p>Next.js App Router, Supabase for auth and Postgres with row-level security per user, shadcn/ui on Tailwind, Recharts for the charts, and Stripe for a free tier and a $1.99/month Pro. It ships a web manifest so it can sit on an iPhone home screen. It’s designed for the phone first; desktop works but is second.</p>
         </div>
       </div>
 
@@ -80,9 +80,9 @@
         <span class="eyebrow">Sector 3 — what stuck</span>
         <h2>Lessons.</h2>
         <div class="prose">
-          <ul><li>Removing a feature can be the product: no bank sync is what makes the logging moment happen.</li><li>Purchase dates are plain <code>YYYY-MM-DD</code> strings, never a <code>Date</code> — timezones have no business in “what did I buy on Tuesday”.</li><li>[SOMETHING YOU’D DO DIFFERENTLY]</li></ul>
+          <ul><li>Leaving out bank sync is what makes the app work. Sometimes the missing feature is the product.</li><li>Purchase dates are plain <code>YYYY-MM-DD</code> strings, never a <code>Date</code>. Timezones only cause problems when the question is what you bought on Tuesday.</li><li>Possibly a different component library. shadcn/ui is fine, but I would try something else next time.</li></ul>
         </div>
-        <div class="callout" style="margin-top: var(--s-5);">“Not another budgeting app. Just the money you actually have to spend.”</div>
+        <div class="callout" style="margin-top: var(--s-5);">“Just the money you actually have to spend.”</div>
       </div>
 
       <div class="try">
