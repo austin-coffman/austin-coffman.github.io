@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-scene">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/css/home.css?v=3">
+<link rel="stylesheet" href="assets/css/home.css?v=4">
 <script type="importmap">
 {
   "imports": {
@@ -18,12 +18,33 @@
   }
 }
 </script>
+<script>
+  // The page starts in its plain "no-scene" state (that is also what <noscript> readers get). Scripts run,
+  // so hand it to the scene — and take it back if the scene can't happen: no WebGL, no import-map support
+  // (the module never runs), three.js unreachable, or anything thrown before the first frame is ready.
+  (function () {
+    var html = document.documentElement;
+    html.classList.remove('no-scene');
+    window.__noScene = function (why) {
+      if (html.classList.contains('no-scene')) return;
+      console.warn('[track] no scene:', why);
+      html.classList.add('no-scene');
+    };
+    try {
+      var c = document.createElement('canvas');
+      if (!(c.getContext('webgl2') || c.getContext('webgl'))) __noScene('WebGL unavailable');
+    } catch (e) { __noScene(e); }
+    if (!(window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('importmap'))) __noScene('import maps unsupported');
+    window.addEventListener('error', function (e) { if (!window.__sceneReady) __noScene(e.message || e); });
+    window.addEventListener('unhandledrejection', function (e) { if (!window.__sceneReady) __noScene(e.reason); });
+  })();
+</script>
 </head>
 <body>
 
 <canvas id="scene" aria-hidden="true"></canvas>
 <div class="grade" aria-hidden="true"></div>
-<div class="loading" id="loading"><span class="rec"></span> <span id="loading-text">loading the track…</span><span class="loading-bar"><i id="loading-fill"></i></span></div>
+<div class="loading" id="loading"><span class="rec"></span> <span id="loading-text">loading the track…</span><span class="loading-bar"><i id="loading-fill"></i></span><a class="loading-skip" id="loading-skip" href="#" hidden>skip the load →</a></div>
 
 <!-- fixed chrome -->
 <header class="nav">
@@ -98,7 +119,7 @@
   <section class="hero">
     <span class="eyebrow">LAP 1 — PERSONAL WORK</span>
     <h1>Built after<br>the checkered flag.</h1>
-    <p>Software engineer. These are the things I build because I wanted them to exist. Scroll to take a lap.</p>
+    <p>Software engineer. These are the things I build because I wanted them to exist. <span class="scene-only">Scroll to take a lap.</span></p>
     <span class="scroll-cue">SCROLL TO DRIVE ↓</span>
   </section>
 
@@ -175,7 +196,7 @@
 
 </main>
 
-<script type="module">
+<script type="module" onerror="__noScene('scene module failed to load')">
   import { createTrackScene } from './assets/js/scene.js?v=36';
 
   const $ = (id) => document.getElementById(id);
@@ -191,8 +212,12 @@
     },
   });
   window.__track = scene; // debugging handle
-  // curtain stays down until every asset is in and shaders are compiled
-  scene.ready.then(() => { $('loading').classList.add('done'); });
+  // curtain stays down until every asset is in and shaders are compiled; a failure hands the page back (see <head>)
+  scene.ready.then(() => { window.__sceneReady = true; $('loading').classList.add('done'); }, (e) => __noScene(e));
+  // slow is not broken: after a few seconds offer a way through. The scene keeps loading and fills in behind.
+  const skip = $('loading-skip');
+  setTimeout(() => { if (!window.__sceneReady) skip.hidden = false; }, 6000);
+  skip.addEventListener('click', (e) => { e.preventDefault(); $('loading').classList.add('done'); });
 
   // --- scroll → distance driven. Any scrolling, up or down, moves the car forward; the circuit is a
   //     closed loop so it simply keeps lapping. About 2.2 pages of scroll ≈ one lap.
