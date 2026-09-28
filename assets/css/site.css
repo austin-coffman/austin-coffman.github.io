@@ -95,7 +95,11 @@ pre.code { padding: var(--s-4) var(--s-5); overflow: auto; line-height: 1.55; fo
 .nav nav a { color: var(--ink); }
 .nav nav a.muted { color: #c9c4b8; }
 .nav nav a.current { color: var(--accent); }
-@media (max-width: 768px) { .nav nav { gap: 16px; font-size: 12px; } }
+@media (max-width: 768px) {
+  .nav nav { gap: 16px; font-size: 12px; }
+  /* thumb-sized hit areas (~44px tall) without moving anything: the padding is taken back by the margin */
+  .nav nav a, .links a { padding-block: 12px; margin-block: -12px; }
+}
 
 .footer { padding: var(--s-7) 0 var(--s-6); border-top: 1px solid var(--line); }
 .footer .checker { width: 100%; max-width: 420px; height: 16px; margin-bottom: var(--s-5); background-color: var(--ink);
@@ -123,7 +127,7 @@ pre.code { padding: var(--s-4) var(--s-5); overflow: auto; line-height: 1.55; fo
 .facts { margin: 0; display: flex; flex-direction: column; border-top: 1px solid var(--line); }
 .facts div { display: grid; grid-template-columns: 140px 1fr; gap: var(--s-4); padding: 14px 0; border-bottom: 1px solid var(--line); }
 .facts dt { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; color: var(--muted); text-transform: uppercase; padding-top: 3px; }
-.facts dd { margin: 0; font-size: 15px; color: var(--ink); }
+.facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; font-size: 15px; color: var(--ink); } /* long URLs wrap on phones */
 .facts dd a { color: var(--accent); }
 @media (max-width: 768px) { .facts div { grid-template-columns: 110px 1fr; } }
 

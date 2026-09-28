@@ -14,7 +14,7 @@ const DRACO_PATH = 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs
  * opts.noShadow    node/material regex for things that should not cast (alpha-blended foliage looks blobby)
  */
 export async function loadTrackModel(url, opts = {}) {
-  const { roadMatch = /asphalt|road/i, groundMatch = /ground|terrain/i, noShadow = /leaf|leaves|foliage|tree/i, hideMatch = /banner/i, onProgress = undefined } = opts;
+  const { roadMatch = /asphalt|road/i, groundMatch = /ground|terrain/i, noShadow = /leaf|leaves|foliage|tree/i, hideMatch = /banner|flags/i, onProgress = undefined } = opts;
   const manager = new THREE.LoadingManager();
   manager.onProgress = (item, loaded, total) => onProgress && onProgress({ stage: 'items', loaded, total });
   const loader = new GLTFLoader(manager);
@@ -27,7 +27,7 @@ export async function loadTrackModel(url, opts = {}) {
 
   let asphaltMat = null, triangles = 0;
   root.traverse((o) => {
-    if (o !== root && hideMatch.test(o.name || '')) o.visible = false; // sponsor boards etc. — render-time only, file untouched
+    if (o !== root && hideMatch.test(o.name || '')) o.visible = false; // sponsor boards and feather flags (Yokohama/Motul art in the Decals atlas) — render-time only, file untouched
     if (!o.isMesh) return;
     const g = o.geometry;
     triangles += g.index ? g.index.count / 3 : g.attributes.position.count / 3;
