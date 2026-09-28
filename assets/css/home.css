@@ -1,4 +1,4 @@
-@import url('site.css?v=3');
+@import url('site.css?v=4');
 
 /* home page (track scene) — page-specific rules; tokens, nav, footer and components come from site.css */
 
@@ -108,17 +108,18 @@ h1, h2 { margin: 0; font-family: var(--display); text-transform: uppercase; }
 .breather span { font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; color: #c9c4b8; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
 
 .block { position: relative; padding: 14vh var(--gutter) 16vh; }
-/* each section carries its own backdrop: solid behind the text column, thinning to the right so the lap stays visible */
+/* each section carries its own backdrop. Content runs the full width, so it stays dark enough to read
+   edge to edge and only eases off a little to the right; the breathers are where the lap shows through */
 .block::before {
   content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
-  background: linear-gradient(90deg, rgba(7,8,11,0.94) 0%, rgba(7,8,11,0.9) 50%, rgba(7,8,11,0.62) 70%, rgba(7,8,11,0.22) 88%, rgba(7,8,11,0.1) 100%);
+  background: linear-gradient(90deg, rgba(7,8,11,0.94) 0%, rgba(7,8,11,0.9) 50%, rgba(7,8,11,0.8) 80%, rgba(7,8,11,0.72) 100%);
   -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 90px, #000 calc(100% - 90px), transparent 100%);
   mask-image: linear-gradient(180deg, transparent 0, #000 90px, #000 calc(100% - 90px), transparent 100%);
 }
 .block.finish::before { background: linear-gradient(90deg, rgba(7,8,11,0.92) 0%, rgba(7,8,11,0.7) 60%, rgba(7,8,11,0.25) 100%); }
-.col { max-width: var(--col); display: flex; flex-direction: column; gap: 26px; }
+.col { display: flex; flex-direction: column; gap: 26px; } /* full width between the gutters */
 .block h2 { font-size: clamp(48px, 6vw, 84px); font-weight: 700; line-height: 0.92; letter-spacing: -0.01em; }
-.block p { margin: 0; font-size: 16px; line-height: 1.65; color: var(--soft); }
+.block p { margin: 0; max-width: 68ch; font-size: 16px; line-height: 1.65; color: var(--soft); } /* grids widen, lines don't */
 .lede { font-size: 21px; line-height: 1.45; color: var(--ink); }
 .lede.narrow { max-width: 620px; }
 
@@ -166,7 +167,7 @@ h1, h2 { margin: 0; font-family: var(--display); text-transform: uppercase; }
 .finish .mail:hover { color: var(--accent); }
 .links { display: flex; gap: 24px; margin-top: 4px; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
 .links a { color: #c9c4b8; }
-.fine { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 32px; }
+.fine { max-width: var(--col); font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 32px; }
 .block.finish { padding-bottom: 22vh; }
 
 @media (max-width: 900px) {
@@ -176,9 +177,12 @@ h1, h2 { margin: 0; font-family: var(--display); text-transform: uppercase; }
 }
 @media (max-width: 768px) {
   :root { --gutter: 20px; }
-  .nav nav { display: none; }
   .hud { bottom: 16px; }
-  .tele .segs, .tele .segs + .sep { display: none; }
+  .tele { white-space: nowrap; }
+  .tele .segs, .tele .segs + .sep, .tele .cam { display: none; }
+  .garage-panel { left: auto; right: 0; } /* the pill sits at the right edge on a phone: open leftward, on screen */
+  .swatches { gap: 6px; }
+  .swatches button { width: 26px; height: 26px; }
   #minimap { display: none; }
   .posts a { grid-template-columns: 1fr auto; }
   .posts small { grid-column: 1 / -1; }

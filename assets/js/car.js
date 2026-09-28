@@ -10,6 +10,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { Reflector } from 'three/addons/objects/Reflector.js';
 
 // 992 GT3 RS, metres
@@ -215,6 +216,29 @@ export function buildProceduralGT3(paint = 0x1d4fc4) {
 
 const DRACO_PATH = 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs/draco/';
 
+// One download and parse per URL. Every car built from it shares geometry and textures (one GPU copy),
+// but gets its own materials so paint, lamps and glow stay per car. Progress reports come from the first caller.
+const gltfCache = new Map();
+function loadGLTF(url, onProgress) {
+  if (!gltfCache.has(url)) {
+    const manager = new THREE.LoadingManager();
+    manager.onProgress = (item, loaded, total) => onProgress && onProgress({ stage: 'items', loaded, total });
+    const loader = new GLTFLoader(manager);
+    const draco = new DRACOLoader(manager);
+    draco.setDecoderPath(DRACO_PATH);
+    loader.setDRACOLoader(draco);
+    loader.setMeshoptDecoder(MeshoptDecoder); // gt3r.glb is meshopt-compressed (see assets/models/README.txt)
+    gltfCache.set(url, loader.loadAsync(url, (e) => onProgress && onProgress({ stage: 'file', loaded: e.loaded, total: e.lengthComputable ? e.total : 0 })));
+  }
+  return gltfCache.get(url);
+}
+function cloneWithOwnMaterials(root) {
+  const copy = root.clone(true), own = new Map();
+  const mine = (m) => { if (m && !own.has(m)) own.set(m, m.clone()); return m && own.get(m); };
+  copy.traverse((o) => { if (o.isMesh) o.material = Array.isArray(o.material) ? o.material.map(mine) : mine(o.material); });
+  return copy;
+}
+
 /**
  * Load a car GLB and normalise it to the contract above.
  * opts.length   real length in metres to scale to (default: 992 GT3 RS)
@@ -238,14 +262,7 @@ export async function loadCarModel(url, opts = {}) {
     eye = new THREE.Vector3(0.3, 0.95, -0.1),  // driver's eye, car space: decides which way mirrors face
     onProgress = undefined,
   } = opts;
-  const manager = new THREE.LoadingManager();
-  manager.onProgress = (item, loaded, total) => onProgress && onProgress({ stage: 'items', loaded, total });
-  const loader = new GLTFLoader(manager);
-  const draco = new DRACOLoader(manager);
-  draco.setDecoderPath(DRACO_PATH);
-  loader.setDRACOLoader(draco);
-  const gltf = await loader.loadAsync(url, (e) => onProgress && onProgress({ stage: 'file', loaded: e.loaded, total: e.lengthComputable ? e.total : 0 }));
-  const model = gltf.scene;
+  const model = cloneWithOwnMaterials((await loadGLTF(url, onProgress)).scene);
 
   // 1. scale + orient: longest horizontal axis becomes Z, length becomes `length`
   model.updateMatrixWorld(true);

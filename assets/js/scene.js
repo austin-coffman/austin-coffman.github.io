@@ -10,13 +10,13 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
 import { FilmPass } from 'three/addons/postprocessing/FilmPass.js';
-import { buildProceduralGT3, loadCarModel, setCarPaint } from './car.js?v=7';
-import { loadTrackModel } from './track.js?v=3';
+import { buildProceduralGT3, loadCarModel, setCarPaint } from './car.js?v=9';
+import { loadTrackModel } from './track.js?v=4';
 
-// Drop a model here and it replaces the procedural car. First URL that exists wins:
-// a single GLB, or Sketchfab's extracted zip (models/gt3/scene.gltf + scene.bin + textures/).
+// The car model: a single GLB, or Sketchfab's extracted zip (scene.gltf + scene.bin + textures/).
+// If it fails to load, the procedural GT3 stands in. index.html preloads this URL too; keep them in step.
 // rotateY: extra yaw if the nose does not land on +Z after auto-orientation.
-const CAR_MODEL = { urls: ['./assets/models/gt3.glb', './assets/models/2024_porsche_992_gt3_r/scene.gltf'], rotateY: 0 };
+const CAR_MODEL = { url: './assets/models/2024_porsche_992_gt3_r/gt3r.glb', rotateY: 0 };
 
 const UP = new THREE.Vector3(0, 1, 0);
 const ROAD_W = 12;
@@ -391,20 +391,18 @@ export function createTrackScene(canvas, options = {}) {
     setTime(state.hour);
   };
   const carLoad = (async () => {
-    let url = null;
-    for (const u of CAR_MODEL.urls) { try { if ((await fetch(u, { method: 'HEAD' })).ok) { url = u; break; } } catch (e) { /* keep looking */ } }
-    if (url) {
-      try {
-        const [a, p] = await Promise.all([
-          loadCarModel(url, { rotateY: CAR_MODEL.rotateY, paint: PAINT_AHEAD, mirrors: false, onProgress: onProgress('cars') }),
-          loadCarModel(url, { rotateY: CAR_MODEL.rotateY, paint: PAINT_PLAYER }),
-        ]);
-        placeCars(a, p);
-        progress.cars = 1; report();
-        console.info(`[track] car model loaded: ${url} (${a.userData.triangles.toLocaleString()} tris)`);
-        return;
-      } catch (e) { console.warn('[track] car model failed to load, using the procedural GT3:', e); }
-    } else console.info('[track] no car model in assets/models — using the procedural GT3');
+    const url = CAR_MODEL.url;
+    try {
+      // both cars come from one download: loadCarModel parses the file once and clones it
+      const [a, p] = await Promise.all([
+        loadCarModel(url, { rotateY: CAR_MODEL.rotateY, paint: PAINT_AHEAD, mirrors: false, onProgress: onProgress('cars') }),
+        loadCarModel(url, { rotateY: CAR_MODEL.rotateY, paint: PAINT_PLAYER }),
+      ]);
+      placeCars(a, p);
+      progress.cars = 1; report();
+      console.info(`[track] car model loaded: ${url} (${a.userData.triangles.toLocaleString()} tris)`);
+      return;
+    } catch (e) { console.warn('[track] car model failed to load, using the procedural GT3:', e); }
     placeCars(buildProceduralGT3(PAINT_AHEAD), buildProceduralGT3(PAINT_PLAYER));
     progress.cars = 1; report();
   })();
@@ -522,7 +520,10 @@ export function createTrackScene(canvas, options = {}) {
   // ---------- state ----------
   const state = {
     hour: 16, rain: 0.15, progress: 0, cameraMode: 'helmet',
-    uSmooth: 0, uPrev: 0, uVel: 0, speedMps: 0, steer: 0, t: 0, frame: 0, carsReady: false, rivalLateral: 0.7,
+    uSmooth: 0, uPrev: 0, speedMps: 0, steer: 0, t: 0, frame: 0, carsReady: false, rivalLateral: 0.7,
+    // scroll banks distance; the car drives it off at one steady pace. Scroll speed changes how far it goes,
+    // never how fast. m/s, m/s², m/s², metres (banked distance beyond maxLag is dropped). Tweakable at runtime.
+    drive: { cruise: 36, accel: 20, brake: 16, maxLag: 150 }, dropped: 0,
     // car-local camera offsets [x, y, z, lookDrop] (forward +Z, +X = driver's left on this LHD model);
     // lookDrop lowers the aim point (metres at the look-ahead distance) so the dash and wheel stay in frame. Tweakable at runtime.
     camOffsets: { helmet: [0.3, 0.92, -0.32, 0.5], hood: [0, 0.92, 1.05, 0.2], chase: [0, 2.6, -8.5, 0] },
@@ -654,21 +655,20 @@ export function createTrackScene(canvas, options = {}) {
     state.t += dt; state.frame++;
     resize();
 
-    // scroll → track position, damped; velocity → speed
-    const target = state.progress;
-    if (reduced) { state.uSmooth = target; }
+    // scroll → distance owed; the car pays it off at cruise speed, accelerating in and braking to a stop
+    // exactly where the scroll left it. A flick of the wheel only makes the drive longer, never faster.
+    if (reduced) { state.uSmooth = state.progress - state.dropped; state.speedMps = 0; }
     else {
-      // SmoothDamp (critically damped spring): no lurch on a wheel notch, no overshoot at the end
-      const smoothTime = 0.55, omega = 2 / smoothTime, x = omega * dt;
-      const exp = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x);
-      const change = state.uSmooth - target, temp = (state.uVel + omega * change) * dt;
-      state.uVel = (state.uVel - omega * temp) * exp;
-      state.uSmooth = target + (change + temp) * exp;
+      const { cruise, accel, brake, maxLag } = state.drive;
+      let owed = (state.progress - state.dropped - state.uSmooth) * trackLength;
+      if (owed > maxLag) { state.dropped += (owed - maxLag) / trackLength; owed = maxLag; } // don't run a lap behind
+      // fastest speed that can still stop in the distance left, capped at cruise
+      const want = owed > 0 ? Math.min(cruise, Math.sqrt(2 * brake * owed)) : 0;
+      state.speedMps = want > state.speedMps ? Math.min(want, state.speedMps + accel * dt) : Math.max(want, state.speedMps - brake * dt);
+      state.uSmooth += Math.min(Math.max(owed, 0), state.speedMps * dt) / trackLength;
     }
     const du = state.uSmooth - state.uPrev;
     state.uPrev = state.uSmooth;
-    const instMps = Math.min(84, Math.abs(du) * trackLength / Math.max(dt, 1e-3)); // cap ≈ 190 mph
-    state.speedMps += (instMps - state.speedMps) * Math.min(1, dt * (instMps > state.speedMps ? 2.2 : 1.1));
     const u = ((state.uSmooth % 1) + 1) % 1;
     const metres = Math.abs(du) * trackLength; // distance covered this frame
 

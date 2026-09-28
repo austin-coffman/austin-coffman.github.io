@@ -7,13 +7,13 @@
 <link rel="icon" href="assets/images/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/css/site.css?v=3">
+<link rel="stylesheet" href="assets/css/site.css?v=4">
 <style>
   .guide-nav { position: sticky; top: 96px; display: flex; flex-direction: column; gap: 6px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
   .guide-nav a { color: var(--muted); }
   .guide-nav a:hover { color: var(--accent); }
   .guide { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: var(--s-8); align-items: start; }
-  @media (max-width: 900px) { .guide { grid-template-columns: 1fr; } .guide-nav { position: static; flex-direction: row; flex-wrap: wrap; gap: 14px; } }
+  @media (max-width: 900px) { .guide { grid-template-columns: minmax(0, 1fr); } .rule, .anatomy { grid-template-columns: minmax(0, 1fr); gap: var(--s-2); } .guide-nav { position: static; flex-direction: row; flex-wrap: wrap; gap: 14px; } }
   .rule { display: grid; grid-template-columns: 200px 1fr; gap: var(--s-5); padding: var(--s-4) 0; border-bottom: 1px solid var(--line); }
   .rule b { font-family: var(--display); font-size: 22px; text-transform: uppercase; font-weight: 700; line-height: 1; }
   .rule p { color: var(--soft); font-size: 15px; }
@@ -117,7 +117,7 @@
           <div class="section-head"><span class="eyebrow">04</span><h2>Space &amp; layout.</h2></div>
           <div class="scale" aria-hidden="true"><i style="height: 4px"></i><i style="height: 8px"></i><i style="height: 12px"></i><i style="height: 16px"></i><i style="height: 24px"></i><i style="height: 32px"></i><i style="height: 48px"></i><i style="height: 64px"></i><i style="height: 96px"></i></div>
           <div class="spec" style="margin-top: 8px;">--s-1 … --s-9 · 4 8 12 16 24 32 48 64 96</div>
-          <div class="rule" style="margin-top: var(--s-5);"><b>Columns</b><p><code>--col</code> 1040px for sections and grids; <code>--col-narrow</code> 720px for reading. Gutter 48px desktop, 20px phone.</p></div>
+          <div class="rule" style="margin-top: var(--s-5);"><b>Columns</b><p><code>--col</code> 1040px for sections and grids on detail pages; home sections run the full width between gutters, with paragraphs held to 68ch. <code>--col-narrow</code> 720px for reading. Gutter 48px desktop, 20px phone.</p></div>
           <div class="rule"><b>Sections</b><p>64px vertical padding on the home page, 48px on detail pages, a 1px <code>--line</code> between sections. Every section opens with eyebrow + h2 (<code>.section-head</code>). Detail pages also step the display sizes down (h1 ≤ 88px, h2 ≤ 52px) — they are dense on purpose; the home page is where space is spent.</p></div>
           <div class="rule"><b>Corners</b><p>None. Square edges everywhere — buttons, cards, images, tags. The only curves on the site are the track.</p></div>
           <div class="rule"><b>Borders over shadows</b><p>Surfaces are separated by 1px hairlines and a slightly lighter fill, never drop shadows.</p></div>
@@ -175,7 +175,7 @@
             <div class="card"><span class="num">Home · index.html</span><h3>The lap</h3><pre>nav (frosted)
 hero            ← scene fully visible
 breather        ← scene visible
-block: about    ← own backdrop, fades right
+block: about    ← own backdrop, full width
 breather
 block: projects  ← featured + the log
 breather
@@ -194,7 +194,7 @@ no scene, no hud; grain + grid ghost</pre></div>
 
         <div id="motion">
           <div class="section-head"><span class="eyebrow">08</span><h2>Motion.</h2></div>
-          <div class="rule"><b>Scroll is throttle</b><p>On the home page scrolling in either direction drives the car forward. Position follows with a critically damped spring (0.55s). Nothing else is scroll-linked.</p></div>
+          <div class="rule"><b>Scroll is throttle</b><p>On the home page scrolling in either direction drives the car forward. Scrolling banks distance and the car drives it off at one steady cruise speed, braking to a stop where the scroll left it; scroll speed never changes car speed. Nothing else is scroll-linked.</p></div>
           <div class="rule"><b>Eased navigation</b><p>In-page links ride to their target (0.5–2.4s by distance, ease-in-out). A wheel or key from the visitor cancels the ride.</p></div>
           <div class="rule"><b>Head stays still</b><p>The camera aims through the windscreen in the car’s own frame; corner glance ≈ 6°, bob 3mm, roll under 1°. No parallax on content.</p></div>
           <div class="rule"><b>Detail pages</b><p>No animation beyond hover colour (150ms). Motion is what the home page is for.</p></div>

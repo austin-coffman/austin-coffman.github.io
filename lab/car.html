@@ -21,7 +21,7 @@
 <canvas id="c"></canvas>
 <div class="bar">
   <button data-src="procedural" class="on">Procedural GT3</button>
-  <button data-src="../assets/models/2024_porsche_992_gt3_r/scene.gltf">GT3 R (Sketchfab)</button>
+  <button data-src="../assets/models/2024_porsche_992_gt3_r/gt3r.glb">GT3 R (Sketchfab)</button>
   <button id="wire">Wireframe</button>
   <button id="spin">Turntable</button>
   <label>Paint <input id="paint" type="color" value="#1d4fc4" style="vertical-align: middle; width: 28px; height: 20px; border: 0; background: none;"></label>
@@ -31,7 +31,7 @@
   import * as THREE from 'three';
   import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
   import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-  import { buildProceduralGT3, loadCarModel } from '../assets/js/car.js';
+  import { buildProceduralGT3, loadCarModel } from '../assets/js/car.js?v=9';
 
   const canvas = document.getElementById('c');
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });

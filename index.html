@@ -8,8 +8,10 @@
 <link rel="icon" href="assets/images/favicon.ico">
 <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
-<link rel="stylesheet" href="assets/css/home.css?v=5">
+<link rel="stylesheet" href="assets/css/home.css?v=8">
 <script type="importmap">
 {
   "imports": {
@@ -37,6 +39,22 @@
     if (!(window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('importmap'))) __noScene('import maps unsupported');
     window.addEventListener('error', function (e) { if (!window.__sceneReady) __noScene(e.message || e); });
     window.addEventListener('unhandledrejection', function (e) { if (!window.__sceneReady) __noScene(e.reason); });
+    // The scene is on: start its big downloads now, while the module graph and the path file are still
+    // resolving, instead of after them. crossorigin makes each preload match the loaders' fetch().
+    // Keep these in step with the imports and CAR_MODEL in scene.js and the "model" in drift_track.path.json.
+    if (html.classList.contains('no-scene')) return;
+    [
+      ['modulepreload', 'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js'],
+      ['preload', 'assets/models/drift_track.path.json'],
+      ['preload', 'assets/models/drift_race_track_free/scene.gltf'],
+      ['preload', 'assets/models/drift_race_track_free/scene.bin'],
+      ['preload', 'assets/models/2024_porsche_992_gt3_r/gt3r.glb'],
+    ].forEach(function (p) {
+      var l = document.createElement('link');
+      l.rel = p[0]; l.href = p[1]; l.crossOrigin = 'anonymous';
+      if (p[0] === 'preload') l.as = 'fetch';
+      document.head.appendChild(l);
+    });
   })();
 </script>
 </head>
@@ -62,8 +80,8 @@
   <div class="hud-left">
   <div class="tele">
     <span class="rec"></span>
-    <span class="lbl">CAM 01</span>
-    <span class="sep"></span>
+    <span class="lbl cam">CAM 01</span>
+    <span class="sep cam"></span>
     <span class="val" id="speed">0</span><span class="lbl">MPH</span>
     <span class="sep"></span>
     <span class="val accent" id="gear">N</span><span class="lbl">GEAR</span>
@@ -154,7 +172,7 @@
       <h2>Built because it was interesting.</h2>
       <p class="lede narrow">Each one gets the same write-up: what it is, why I built it, what I learned, and a link to try it.</p>
       <a class="feature" href="projects/chain.html">
-        <img src="assets/images/chain/chain-0.jpg" alt="Chain’s opening walkthrough: a pile of letters and the one rule">
+        <img src="assets/images/chain/chain-0.jpg" loading="lazy" decoding="async" alt="Chain’s opening walkthrough: a pile of letters and the one rule">
         <div class="feature-text">
           <small>004 · JUL 2026 · NEXT.JS · TYPESCRIPT</small>
           <strong>Chain</strong>
@@ -163,9 +181,9 @@
         </div>
       </a>
       <div class="grid">
-        <a class="card" href="projects/rep-zero.html"><img src="assets/images/rep-zero/rep-zero-0.jpg" alt="Rep Zero landing page"><small>005 · SEP 2026 · REACT · PWA</small><strong>Rep Zero</strong><p>A lifting tracker you install from Safari. Works with no signal, keeps everything on the phone.</p></a>
-        <a class="card" href="projects/spare.html"><img src="assets/images/spare/spare-0.jpg" alt="Spare landing page"><small>003 · NOV 2025 · NEXT.JS · SUPABASE</small><strong>Spare</strong><p>A spending tracker with no bank sync. You type each purchase in, and note how it felt.</p></a>
-        <a class="card" href="projects/vent.html"><img src="assets/images/vent/vent-0.jpg" alt="Vent landing page"><small>002 · JUL 2023 · NEXT.JS · SUPABASE</small><strong>Vent</strong><p>Parts, mods, fill-ups and loan payments for every car in your garage, and what they add up to.</p></a>
+        <a class="card" href="projects/rep-zero.html"><img src="assets/images/rep-zero/rep-zero-0.jpg" loading="lazy" decoding="async" alt="Rep Zero landing page"><small>005 · SEP 2026 · REACT · PWA</small><strong>Rep Zero</strong><p>A lifting tracker you install from Safari. Works with no signal, keeps everything on the phone.</p></a>
+        <a class="card" href="projects/spare.html"><img src="assets/images/spare/spare-0.jpg" loading="lazy" decoding="async" alt="Spare landing page"><small>003 · NOV 2025 · NEXT.JS · SUPABASE</small><strong>Spare</strong><p>A spending tracker with no bank sync. You type each purchase in, and note how it felt.</p></a>
+        <a class="card" href="projects/vent.html"><img src="assets/images/vent/vent-0.jpg" loading="lazy" decoding="async" alt="Vent landing page"><small>002 · JUL 2023 · NEXT.JS · SUPABASE</small><strong>Vent</strong><p>Parts, mods, fill-ups and loan payments for every car in your garage, and what they add up to.</p></a>
       </div>
       <div class="log-head">
         <span class="eyebrow">The log</span>
@@ -191,14 +209,14 @@
       <h2>Let’s talk.</h2>
       <a class="mail" href="mailto:austincartercoffman@gmail.com">austincartercoffman@gmail.com</a>
       <div class="links"><a href="about.html">Resume &amp; tools</a><a href="https://github.com/austin-coffman">GitHub</a><a href="https://www.linkedin.com/in/austin-coffman-82b4a495/">LinkedIn</a></div>
-      <span class="fine">© 2026 Austin Coffman · Scene built in three.js. Car: <a href="https://sketchfab.com/3d-models/2024-porsche-992-gt3-r-b76c9b2ae2d548c3869426eac4ab8a19">“2024 Porsche 992 GT3 R”</a> by <a href="https://sketchfab.com/Tyler_Dave">Dave Love</a>, <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, repainted (original livery selectable). Track: <a href="https://sketchfab.com/3d-models/drift-race-track-free-b4108132c93f4736957d97e274fbd11e">“Drift Race Track Free”</a> by <a href="https://sketchfab.com/Nicholas01">Nicholas-3D</a>, <a href="http://creativecommons.org/licenses/by-nd/4.0/">CC BY-ND 4.0</a>, used unmodified.</span>
+      <span class="fine">© 2026 Austin Coffman · Scene built in three.js. Car: <a href="https://sketchfab.com/3d-models/2024-porsche-992-gt3-r-b76c9b2ae2d548c3869426eac4ab8a19">“2024 Porsche 992 GT3 R”</a> by <a href="https://sketchfab.com/Tyler_Dave">Dave Love</a>, <a href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>, repainted (original livery selectable) and compressed for the web. Track: <a href="https://sketchfab.com/3d-models/drift-race-track-free-b4108132c93f4736957d97e274fbd11e">“Drift Race Track Free”</a> by <a href="https://sketchfab.com/Nicholas01">Nicholas-3D</a>, <a href="http://creativecommons.org/licenses/by-nd/4.0/">CC BY-ND 4.0</a>, used unmodified.</span>
     </div>
   </section>
 
 </main>
 
 <script type="module" onerror="__noScene('scene module failed to load')">
-  import { createTrackScene } from './assets/js/scene.js?v=37';
+  import { createTrackScene } from './assets/js/scene.js?v=41';
 
   const $ = (id) => document.getElementById(id);
   // A real track: a path traced in track.html plus the model it belongs to. Missing → procedural circuit.
