@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Prompt Age — Austin Coffman</title>
+<meta name="description" content="A strategy game where every person on a prehistoric island is a Claude agent. Players write the tribes, and the agents play them out one day at a time.">
+<link rel="icon" href="../assets/images/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../assets/css/site.css?v=4">
+<script src="../assets/js/project.js" defer></script>
+<style>
+  /* project pages: a hero figure, then a narrow reading column with full-width figures between */
+  .hero-figure { margin-top: var(--s-6); }
+  .hero-figure img { aspect-ratio: 16 / 9; object-fit: cover; width: 100%; }
+  .hero-figure .ph { aspect-ratio: 16 / 9; width: 100%; background: var(--panel); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: center; padding: var(--s-4); }
+  .story { display: flex; flex-direction: column; gap: var(--s-7); }
+  .story h2 { font-size: clamp(32px, 3.6vw, 44px); margin-bottom: var(--s-4); }
+  .story .full { width: min(100%, var(--col)); margin-left: 50%; transform: translateX(-50%); }
+  .callout { border-left: 2px solid var(--accent); padding: var(--s-3) var(--s-5); background: var(--panel); font-family: var(--display); font-size: 24px; text-transform: uppercase; line-height: 1.1; color: var(--ink); }
+  .try { display: flex; align-items: center; justify-content: space-between; gap: var(--s-5); padding: var(--s-6); background: var(--panel); border: 1px solid var(--line); flex-wrap: wrap; }
+  .try h3 { font-size: 34px; }
+  .try p { color: var(--soft); font-size: 15px; margin-top: 6px; }
+</style>
+</head>
+<body class="page-detail">
+
+<header class="nav">
+  <a class="brand" href="../index.html">Austin Coffman</a>
+  <nav>
+    <a href="./" class="current">Projects</a>
+    <a href="../about.html" class="muted">About</a>
+    <a href="../index.html#contact" class="muted">Contact</a>
+  </nav>
+</header>
+
+<main>
+  <section class="page-head">
+    <div class="wrap">
+      <span class="eyebrow">Project 006 — build · Nov 2026</span>
+      <h1>The Prompt Age.</h1>
+      <p class="lede">A strategy game where every person on a prehistoric island is a Claude agent. Each player writes a tribe: a shared plan and a list of people, each with a job and instructions. Then the agents play it out, one simulated day at a time, while the group watches the board live.</p>
+      <dl class="meta">
+        <div><dt>When</dt><dd>November 2026</dd></div>
+        <div><dt>Stack</dt><dd>Node.js · Claude Code · MCP · Canvas</dd></div>
+        <div><dt>Status</dt><dd>Private</dd></div>
+        <div><dt>Runs</dt><dd>On the host’s machine</dd></div>
+      </dl>
+      <figure class="hero-figure">
+        <img src="../assets/images/the-prompt-age/the-prompt-age-0.jpg" alt="The Prompt Age’s main menu: the pixel-art title over a scene that runs from campfires and huts up to a city skyline">
+        <figcaption>The main menu. The scene behind it runs from the stone age to the skyline.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap-narrow story">
+      <div>
+        <span class="eyebrow">Sector 1 — why</span>
+        <h2>The game.</h2>
+        <div class="prose">
+          <p>I wanted to see if I could make learning multi-agent work fun, so it’s a game, made for the Agentic Mentorship group. Each player sends the host a tribe file: a charter for the whole tribe, then a list of people, each with a name, a job and their own instructions. The first two start as founders. The host runs every tribe at once on one machine, and the group watches the island on a shared screen.</p>
+          <p>Every home starts with the same resources, turned to face the middle of the island, and every tribe gets the same event on the same day. Night falls at 70% of the day, and anyone outside a hut may freeze. Nobody is knocked out: an agent that starves, freezes or gets eaten loses the rest of its day and wakes up at home the next morning.</p>
+          <p>Tribes climb eight ages, from a campfire in the stone age to a planetary network in the information age. Each age ends in a great work, and finishing one opens a place for the next person on the player’s list.</p>        </div>
+      </div>
+
+      <figure class="full">
+        <img src="../assets/images/the-prompt-age/the-prompt-age-1.jpg" alt="Night on the island: two huts by a campfire, both of a tribe’s people sheltering with cards above them showing their job and last words, a wolf in the dark at the left edge, and the day’s chronicle down the right">
+        <figcaption>Night on day 2. Both of Ember Clan’s people are safe in the huts they built that day. The card over each person shows what they’re doing and the last thing they said.</figcaption>
+      </figure>
+
+      <div>
+        <span class="eyebrow">Sector 2 — how</span>
+        <h2>Every person is a process.</h2>
+        <div class="prose">
+          <p>Each person on the island is its own <code style="white-space: nowrap;">claude -p</code> process. A small Node server runs the world four times a second and serves 23 tools over MCP: look, gather, build, research, hunt, message_tribe, take_shelter and the rest. Claude Code’s own tools are switched off, so an agent can’t read a file or run a command. The island is the only thing it can touch.</p>
+          <p>Actions take game time. Gathering walks the agent to the resource and comes back when its hands are full, and building keeps going until the building is done or 30 seconds pass. Every tool result ends with the time of day, the agent’s health and hunger, and warnings like “night is coming”.</p>
+          <p>At dawn every agent starts a fresh session with a briefing: the rules for its era, its tribe’s charter, its own job and instructions, its journal and yesterday’s results. The briefing gives the rules and the numbers but no strategy. Splitting the work and planning the day are up to the tribe file, so a careful file plays better than a thin one.</p>
+          <p>The server has no npm dependencies, and the board is plain JavaScript on a canvas. Everything random comes from the island’s seed, so the same seed gives the same map and the same events.</p>
+        </div>
+        <pre class="code" style="margin-top: var(--s-5);">browser    board, minds, replays
+   ▲  live frames, twice a second
+node       the world, 4 ticks a second
+   ▲  MCP tool calls
+claude -p  one process per person</pre>
+      </div>
+
+      <figure class="full">
+        <img src="../assets/images/the-prompt-age/the-prompt-age-2.jpg" alt="The debrief after day 1 for one tribe: a C grade, each measurable with its own letter, and Claude’s review with one strength and three gaps, each ending in a question">
+        <figcaption>The debrief after day 1: one tribe’s grade, the measurables behind it, and Claude’s review.</figcaption>
+      </figure>
+
+      <div>
+        <span class="eyebrow">Sector 3 — after each day</span>
+        <h2>Grades, not answers.</h2>
+        <div class="prose">
+          <p>When a day ends, each tribe gets a grade from A to F for how its agents worked as a team: pace toward the next age, failed tool calls, repeated work, messages to teammates and Claude usage. Agents never see it, and it never changes the score.</p>
+          <p>Claude also writes each tribe a review: one strength and up to three gaps, each tied to a measurable or a moment of the day and ending in a question. The game checks every review and asks again if one tells the player what to write. Working out the fix is the player’s part.</p>
+        </div>
+      </div>
+
+      <div>
+        <span class="eyebrow">Sector 4 — what stuck</span>
+        <h2>Lessons.</h2>
+        <div class="prose">
+          <ul><li>“Multi-agent” isn’t one pattern. Several agents can work on the same task, each can take a different one, and there are more ways to split the work than those two.</li><li>Tribes can give their agents wildly different instructions and still play well, as long as the grounding data they all start from is close enough.</li></ul>
+        </div>
+        <div class="callout" style="margin-top: var(--s-5);">“A prehistoric island where every person is a Claude agent.”</div>
+      </div>
+
+      <div class="try">
+        <div>
+          <h3>Not public.</h3>
+          <p>It runs on one machine, the host’s, and every agent runs on the host’s Claude subscription. The group watches on a shared screen, and players get each day’s data as a download to study.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <nav class="pager" aria-label="More projects">
+        <a href="./"><span class="label">← Back</span><strong>All projects</strong></a>
+        <a href="chain.html"><span class="label">Next →</span><strong>Chain</strong></a>
+      </nav>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="checker"></div>
+    <div class="footer-row">
+      <a class="brand" href="../index.html" style="font-family: var(--display); font-size: 22px; text-transform: uppercase; color: var(--ink);">Austin Coffman</a>
+      <div class="links"><a href="../index.html#projects">Projects</a><a href="../about.html">About</a><a href="mailto:austincartercoffman@gmail.com">Email</a></div>
+    </div>
+    <div class="fine">© 2026 Austin Coffman.</div>
+  </div>
+</footer>
+
+</body>
+</html>
